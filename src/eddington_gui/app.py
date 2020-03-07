@@ -3,24 +3,20 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel, FitFunctionsRegistry, FitData, InvalidDataFile
-from eddington.fit_util import fit_to_data
-from eddington.input.util import get_a0
+from eddington import read_data_from_excel, InvalidDataFile
 
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
 from eddington_gui.data_box import DataBox
-
-NO_VALUE = "----------"
+from eddington_gui.consts import NO_VALUE
 
 
 class EddingtonGUI(toga.App):
 
     input_file_path: toga.TextInput
     sheet_selection: toga.Selection
-    fitting_function_selection: toga.Selection
     data_box: DataBox
 
     def startup(self):
@@ -48,12 +44,6 @@ class EddingtonGUI(toga.App):
         self.sheet_selection = toga.Selection(enabled=False, on_select=self.select_sheet)
         sheet_box.add(self.sheet_selection)
         main_box.add(sheet_box)
-
-        fitting_function_box = toga.Box(style=Pack(direction=ROW))
-        fitting_function_box.add(toga.Label(text="Fitting function:"))
-        self.fitting_function_selection = toga.Selection(items=[NO_VALUE] + list(FitFunctionsRegistry.names()))
-        fitting_function_box.add(self.fitting_function_selection)
-        main_box.add(fitting_function_box)
 
         self.data_box = DataBox()
         main_box.add(self.data_box)
@@ -91,11 +81,10 @@ class EddingtonGUI(toga.App):
             self.data_box.data_dict = None
 
     def fit(self, widget):
-        data_dict = self.data_box.reduced_data_dict
-        fit_func = FitFunctionsRegistry.load(self.fitting_function_selection.value)
-        fit_data = FitData.build_from_data_dict(data_dict, get_a0(fit_func.n))
-        fit_result = fit_to_data(data=fit_data, func=fit_func)
-        self.main_window.info_dialog(title="Fit Result", message=str(fit_result))
+        if self.data_box.fit_result is None:
+            self.main_window.info_dialog(title="Fit Result", message="Nothing to fit yet")
+        else:
+            self.main_window.info_dialog(title="Fit Result", message=str(self.data_box.fit_result))
 
 
 def main():
