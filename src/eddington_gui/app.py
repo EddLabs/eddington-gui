@@ -3,7 +3,7 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel, InvalidDataFile
+from eddington import read_data_from_excel, InvalidDataFile, plot_fitting
 
 import toga
 from toga.style import Pack
@@ -48,7 +48,10 @@ class EddingtonGUI(toga.App):
         self.data_box = DataBox()
         main_box.add(self.data_box)
 
-        main_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1, alignment=BOTTOM)))
+        buttons_box = toga.Box(style=Pack(direction=ROW))
+        buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1, alignment=BOTTOM)))
+        buttons_box.add(toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1, alignment=BOTTOM)))
+        main_box.add(buttons_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
@@ -85,6 +88,14 @@ class EddingtonGUI(toga.App):
             self.main_window.info_dialog(title="Fit Result", message="Nothing to fit yet")
         else:
             self.main_window.info_dialog(title="Fit Result", message=str(self.data_box.fit_result))
+
+    def plot(self, widget):
+        if self.data_box.fit_result is None:
+            self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
+        else:
+            plot_fitting(func=self.data_box.fit_function, data=self.data_box.fit_data,
+                         plot_configuration=self.data_box.plot_configuration,
+                         a=self.data_box.fit_result.a)
 
 
 def main():
