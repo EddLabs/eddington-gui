@@ -1,3 +1,4 @@
 --pre
-briefcase
 xlrd>=1.2.0
+eddington
+briefcase

@@ -3,11 +3,14 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
+from eddington import read_data_from_excel
+from eddington.exceptions import InvalidDataFile
 
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
 
+from eddington_gui.data_box import DataBox
 
 NO_VALUE = "----------"
 
@@ -16,6 +19,7 @@ class EddingtonGUI(toga.App):
 
     input_file_path: toga.TextInput
     sheet_selection: toga.Selection
+    data_box: DataBox
 
     def startup(self):
         """
@@ -39,9 +43,12 @@ class EddingtonGUI(toga.App):
 
         sheet_box = toga.Box(style=Pack(direction=ROW))
         sheet_box.add(toga.Label(text="Sheet:"))
-        self.sheet_selection = toga.Selection(enabled=False)
+        self.sheet_selection = toga.Selection(enabled=False, on_select=self.select_sheet)
         sheet_box.add(self.sheet_selection)
         main_box.add(sheet_box)
+
+        self.data_box = DataBox()
+        main_box.add(self.data_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
@@ -58,6 +65,20 @@ class EddingtonGUI(toga.App):
         else:
             self.sheet_selection.items = []
             self.sheet_selection.enabled = False
+        self.data_box.data_frame = None
+
+    def select_sheet(self, widget):
+        value = widget.value
+        if value == NO_VALUE:
+            self.data_box.data_frame = None
+            return
+        file_path_value = Path(self.input_file_path.value)
+        try:
+            self.data_box.data_frame = read_data_from_excel(filepath=file_path_value, sheet=value)
+        except InvalidDataFile:
+            self.main_window.error_dialog(title="Invalid Input Source",
+                                          message=f"\"{value}\" sheet in \"{file_path_value.name}\" has invalid syntax")
+            self.data_box.data_frame = None
 
 
 def main():
