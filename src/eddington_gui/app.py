@@ -3,7 +3,7 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel
+from eddington import read_data_from_excel, FitFunctionsRegistry
 from eddington.exceptions import InvalidDataFile
 
 import toga
@@ -19,6 +19,7 @@ class EddingtonGUI(toga.App):
 
     input_file_path: toga.TextInput
     sheet_selection: toga.Selection
+    fitting_function_selection: toga.Selection
     data_box: DataBox
 
     def startup(self):
@@ -46,6 +47,12 @@ class EddingtonGUI(toga.App):
         self.sheet_selection = toga.Selection(enabled=False, on_select=self.select_sheet)
         sheet_box.add(self.sheet_selection)
         main_box.add(sheet_box)
+
+        fitting_function_box = toga.Box(style=Pack(direction=ROW))
+        fitting_function_box.add(toga.Label(text="Fitting function:"))
+        self.fitting_function_selection = toga.Selection(items=[NO_VALUE] + list(FitFunctionsRegistry.names()))
+        fitting_function_box.add(self.fitting_function_selection)
+        main_box.add(fitting_function_box)
 
         self.data_box = DataBox()
         main_box.add(self.data_box)
