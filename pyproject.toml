@@ -15,7 +15,9 @@ formal_name = "EddingtonGUI"
 description = "A gui library wrapping Eddington"
 icon = "src/eddington_gui/resources/eddington_gui"
 sources = ['src/eddington_gui']
-requires = []
+requires = [
+    'xlrd>=1.2.0'
+]
 
 
 [tool.briefcase.app.eddington_gui.macOS]
