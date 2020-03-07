@@ -2,6 +2,7 @@ from typing import List
 from collections import OrderedDict
 
 import toga
+from eddington import reduce_data
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN, LEFT
 
@@ -10,7 +11,7 @@ class DataBox(toga.Box):
 
     SELECTION_WIDTH = 200
 
-    __data_frame: OrderedDict = None
+    __data_dict: OrderedDict = None
     __items: List[str] = []
     __selection_enabled: bool = False
 
@@ -64,15 +65,23 @@ class DataBox(toga.Box):
         self.yerr_selection.enabled = selection_enabled
 
     @property
-    def data_frame(self):
-        return self.__data_frame
+    def data_dict(self):
+        return self.__data_dict
 
-    @data_frame.setter
-    def data_frame(self, data_frame):
-        self.__data_frame = data_frame
-        if data_frame is None:
+    @data_dict.setter
+    def data_dict(self, data_dict):
+        self.__data_dict = data_dict
+        if data_dict is None:
             self.items = []
             self.selection_enabled = False
         else:
-            self.items = list(data_frame.keys())
+            self.items = list(data_dict.keys())
             self.selection_enabled = True
+
+    @property
+    def reduced_data_dict(self):
+        if self.data_dict is None:
+            return None
+        return reduce_data(data_dict=self.data_dict,
+                           x_column=self.x_selection.value, xerr_column=self.xerr_selection.value,
+                           y_column=self.y_selection.value, yerr_column=self.yerr_selection.value)

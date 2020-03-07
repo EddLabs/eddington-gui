@@ -3,12 +3,13 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel, FitFunctionsRegistry
-from eddington.exceptions import InvalidDataFile
+from eddington import read_data_from_excel, FitFunctionsRegistry, FitData, InvalidDataFile
+from eddington.fit_util import fit_to_data
+from eddington.input.util import get_a0
 
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
+from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
 from eddington_gui.data_box import DataBox
 
@@ -57,6 +58,8 @@ class EddingtonGUI(toga.App):
         self.data_box = DataBox()
         main_box.add(self.data_box)
 
+        main_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1, alignment=BOTTOM)))
+
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
@@ -72,20 +75,27 @@ class EddingtonGUI(toga.App):
         else:
             self.sheet_selection.items = []
             self.sheet_selection.enabled = False
-        self.data_box.data_frame = None
+        self.data_box.data_dict = None
 
     def select_sheet(self, widget):
         value = widget.value
         if value == NO_VALUE:
-            self.data_box.data_frame = None
+            self.data_box.data_dict = None
             return
         file_path_value = Path(self.input_file_path.value)
         try:
-            self.data_box.data_frame = read_data_from_excel(filepath=file_path_value, sheet=value)
+            self.data_box.data_dict = read_data_from_excel(filepath=file_path_value, sheet=value)
         except InvalidDataFile:
             self.main_window.error_dialog(title="Invalid Input Source",
                                           message=f"\"{value}\" sheet in \"{file_path_value.name}\" has invalid syntax")
-            self.data_box.data_frame = None
+            self.data_box.data_dict = None
+
+    def fit(self, widget):
+        data_dict = self.data_box.reduced_data_dict
+        fit_func = FitFunctionsRegistry.load(self.fitting_function_selection.value)
+        fit_data = FitData.build_from_data_dict(data_dict, get_a0(fit_func.n))
+        fit_result = fit_to_data(data=fit_data, func=fit_func)
+        self.main_window.info_dialog(title="Fit Result", message=str(fit_result))
 
 
 def main():
