@@ -3,7 +3,7 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel, InvalidDataFile, plot_fitting
+from eddington import read_data_from_excel, InvalidDataFile, plot_fitting, plot_residuals, PlotConfiguration
 
 import toga
 from toga.style import Pack
@@ -54,6 +54,7 @@ class EddingtonGUI(toga.App):
         buttons_box = toga.Box(style=Pack(direction=ROW, padding_bottom=15, alignment=BOTTOM))
         buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)))
         buttons_box.add(toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1)))
+        buttons_box.add(toga.Button(label="Residuals", on_press=self.residuals, style=Pack(flex=1)))
         main_box.add(buttons_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name)
@@ -99,6 +100,14 @@ class EddingtonGUI(toga.App):
             plot_fitting(func=self.data_box.fit_function, data=self.data_box.fit_data,
                          plot_configuration=self.data_box.plot_configuration,
                          a=self.data_box.fit_result.a)
+
+    def residuals(self, widget):
+        if self.data_box.fit_result is None:
+            self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
+        else:
+            plot_residuals(func=self.data_box.fit_function, data=self.data_box.fit_data,
+                           plot_configuration=self.data_box.plot_configuration,
+                           res=self.data_box.fit_result)
 
 
 def main():
