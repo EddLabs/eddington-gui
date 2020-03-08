@@ -48,9 +48,12 @@ class EddingtonGUI(toga.App):
         self.data_box = DataBox()
         main_box.add(self.data_box)
 
-        buttons_box = toga.Box(style=Pack(direction=ROW))
-        buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1, alignment=BOTTOM)))
-        buttons_box.add(toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1, alignment=BOTTOM)))
+        spaced_box = toga.Box(style=Pack(flex=1))
+        main_box.add(spaced_box)
+
+        buttons_box = toga.Box(style=Pack(direction=ROW, padding_bottom=15, alignment=BOTTOM))
+        buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)))
+        buttons_box.add(toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1)))
         main_box.add(buttons_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name)
