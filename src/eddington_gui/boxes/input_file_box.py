@@ -75,8 +75,11 @@ class InputFileBox(toga.Box):
         self.__handlers.append(handler)
 
     def select_file(self, widget):
-        input_file_path = self.__main_window.open_file_dialog(title="Choose input file",
-                                                              multiselect=False)
+        try:
+            input_file_path = self.__main_window.open_file_dialog(title="Choose input file",
+                                                                  multiselect=False)
+        except ValueError:
+            return
         self.file_path = input_file_path
         if Path(input_file_path).suffix in ['.xlsx', '.xls']:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
