@@ -13,7 +13,7 @@ from eddington.input.util import get_a0
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
-from eddington_gui.boxes.data_box import DataBox
+from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 
@@ -22,7 +22,7 @@ class EddingtonGUI(toga.App):
 
     input_file_box: InputFileBox
     fitting_function_box: FittingFunctionBox
-    data_box: DataBox
+    data_box: DataColumnsBox
 
     __fit_data: FitData = None
     __fit_result: FitResult = None
@@ -48,7 +48,7 @@ class EddingtonGUI(toga.App):
         self.fitting_function_box.add_handler(self.reset_all)
         main_box.add(self.fitting_function_box)
 
-        self.data_box = DataBox()
+        self.data_box = DataColumnsBox()
         self.data_box.add_handler(self.reset_all)
         self.input_file_box.add_handler(self.data_box.update_data_dict)
         main_box.add(self.data_box)

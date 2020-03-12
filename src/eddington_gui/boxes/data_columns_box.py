@@ -5,12 +5,15 @@ from toga.style import Pack
 from toga.style.pack import ROW, COLUMN, LEFT
 
 
-class DataBox(toga.Box):
+class DataColumnsBox(toga.Box):
 
     SELECTION_WIDTH = 200
 
     __items: List[str] = []
     __selection_enabled: bool = False
+
+    __labels_column: toga.Box
+    __selection_column: toga.Box
 
     x_selection: toga.Selection
     xerr_selection: toga.Selection
@@ -20,28 +23,17 @@ class DataBox(toga.Box):
     __handlers = []
 
     def __init__(self):
-        super(DataBox, self).__init__(style=Pack(direction=COLUMN))
+        super(DataColumnsBox, self).__init__(style=Pack(direction=ROW, padding_top=5))
 
-        columns_box = toga.Box(style=Pack(direction=ROW, padding_top=5))
-        labels_column = toga.Box(style=Pack(direction=COLUMN, flex=1))
-        labels_column.add(toga.Label(text="X column:", style=Pack()))
-        labels_column.add(toga.Label(text="X error column:"))
-        labels_column.add(toga.Label(text="Y column:"))
-        labels_column.add(toga.Label(text="Y error column:"))
-        columns_box.add(labels_column)
+        self.__labels_column = toga.Box(style=Pack(direction=COLUMN, flex=1))
+        self.__selection_column = toga.Box(style=Pack(direction=COLUMN, flex=2))
+        self.add(self.__labels_column)
+        self.add(self.__selection_column)
 
-        self.x_selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
-                                          style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
-        self.xerr_selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
-                                             style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
-        self.y_selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
-                                          style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
-        self.yerr_selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
-                                             style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
-        columns_box.add(toga.Box(style=Pack(direction=COLUMN, flex=2),
-                                 children=[self.x_selection, self.xerr_selection,
-                                           self.y_selection, self.yerr_selection]))
-        self.add(columns_box)
+        self.x_selection = self.__add_column_option(label="X column:")
+        self.xerr_selection = self.__add_column_option(label="X error column:")
+        self.y_selection = self.__add_column_option(label="Y column:")
+        self.yerr_selection = self.__add_column_option(label="Y error column:")
 
     @property
     def items(self):
@@ -99,3 +91,11 @@ class DataBox(toga.Box):
         else:
             self.items = list(data_dict.keys())
             self.selection_enabled = True
+
+    def __add_column_option(self, label):
+        self.__labels_column.add(toga.Label(text=label))
+
+        selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
+                                   style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
+        self.__selection_column.add(selection)
+        return selection
