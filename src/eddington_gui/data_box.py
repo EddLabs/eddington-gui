@@ -28,12 +28,13 @@ class DataBox(toga.Box):
     __fit_result = None
     __plot_configuration: Union[PlotConfiguration, None] = None
 
+    fitting_function_selection: toga.Selection
+    fitting_function_syntax: toga.TextInput
+
     x_selection: toga.Selection
     xerr_selection: toga.Selection
     y_selection: toga.Selection
     yerr_selection: toga.Selection
-
-    fitting_function_selection: toga.Selection
 
     def __init__(self):
         super(DataBox, self).__init__(style=Pack(direction=COLUMN))
@@ -43,6 +44,8 @@ class DataBox(toga.Box):
         self.fitting_function_selection = toga.Selection(items=[NO_VALUE] + list(FitFunctionsRegistry.names()),
                                                          on_select=self.load_fit_function)
         fitting_function_box.add(self.fitting_function_selection)
+        self.fitting_function_syntax = toga.TextInput(readonly=True, style=Pack(padding_left=5, padding_right=5, flex=1))
+        fitting_function_box.add(self.fitting_function_syntax)
         self.add(fitting_function_box)
 
         columns_box = toga.Box(style=Pack(direction=ROW, padding_top=5))
@@ -148,8 +151,10 @@ class DataBox(toga.Box):
         self.plot_configuration = None
         if self.fitting_function_selection.value == NO_VALUE:
             self.fit_function = None
+            self.fitting_function_syntax.value = None
         else:
             self.fit_function = FitFunctionsRegistry.load(self.fitting_function_selection.value)
+            self.fitting_function_syntax.value = self.fit_function.syntax
 
     def __calculate_fit_data(self):
         if self.data_dict is None or self.fit_function is None:
