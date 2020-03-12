@@ -3,13 +3,13 @@ A gui library wrapping Eddington
 """
 from pathlib import Path
 import xlrd
-from eddington import read_data_from_excel, InvalidDataFile, plot_fitting, plot_residuals, PlotConfiguration
+from eddington import read_data_from_excel, InvalidDataFile, plot_fitting, plot_residuals
 
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
-from eddington_gui.data_box import DataBox
+from eddington_gui.boxes.data_box import DataBox
 from eddington_gui.consts import NO_VALUE
 
 
