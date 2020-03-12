@@ -10,13 +10,13 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
 from eddington_gui.boxes.data_box import DataBox
+from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.consts import NO_VALUE
 
 
 class EddingtonGUI(toga.App):
 
-    input_file_path: toga.TextInput
-    sheet_selection: toga.Selection
+    file_box: InputFileBox
     data_box: DataBox
 
     def startup(self):
@@ -32,18 +32,10 @@ class EddingtonGUI(toga.App):
                                  style=Pack(text_align=CENTER, font_family=FANTASY, font_size=23))
         main_box.add(title_label)
 
-        file_box = toga.Box(style=Pack(direction=ROW))
-        file_box.add(toga.Label(text="Input file:"))
-        self.input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1, padding_left=3, padding_right=3))
-        file_box.add(self.input_file_path)
-        file_box.add(toga.Button(label="Choose file", on_press=self.select_file))
-        main_box.add(file_box)
-
-        sheet_box = toga.Box(style=Pack(direction=ROW))
-        sheet_box.add(toga.Label(text="Sheet:"))
-        self.sheet_selection = toga.Selection(enabled=False, on_select=self.select_sheet)
-        sheet_box.add(self.sheet_selection)
-        main_box.add(sheet_box)
+        self.file_box = InputFileBox()
+        self.file_box.select_file = self.select_file
+        self.file_box.select_sheet = self.select_sheet
+        main_box.add(self.file_box)
 
         self.data_box = DataBox()
         main_box.add(self.data_box)
@@ -64,14 +56,12 @@ class EddingtonGUI(toga.App):
     def select_file(self, widget):
         input_file_path = self.main_window.open_file_dialog(title="Choose input file",
                                                             multiselect=False)
-        self.input_file_path.value = input_file_path
+        self.file_box.file_path = input_file_path
         if Path(input_file_path).suffix in ['.xlsx', '.xls']:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
-            self.sheet_selection.items = [NO_VALUE] + excel_file.sheet_names()
-            self.sheet_selection.enabled = True
+            self.file_box.sheets_options = [NO_VALUE] + excel_file.sheet_names()
         else:
-            self.sheet_selection.items = []
-            self.sheet_selection.enabled = False
+            self.file_box.sheets_options = None
         self.data_box.data_dict = None
 
     def select_sheet(self, widget):
@@ -79,7 +69,7 @@ class EddingtonGUI(toga.App):
         if value == NO_VALUE:
             self.data_box.data_dict = None
             return
-        file_path_value = Path(self.input_file_path.value)
+        file_path_value = Path(self.file_box.file_path)
         try:
             self.data_box.data_dict = read_data_from_excel(filepath=file_path_value, sheet=value)
         except InvalidDataFile:
