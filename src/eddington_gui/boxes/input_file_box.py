@@ -6,7 +6,7 @@ from typing import Union
 import toga
 from eddington import read_data_from_excel, InvalidDataFile
 from toga.style import Pack
-from toga.style.pack import ROW, COLUMN
+from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import NO_VALUE, BIG_PADDING
