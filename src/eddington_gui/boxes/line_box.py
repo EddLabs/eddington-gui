@@ -1,8 +1,6 @@
-from tkinter import CENTER
-
 import toga
 from toga.style import Pack
-from toga.style.pack import ROW
+from toga.style.pack import ROW, CENTER
 
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 
