@@ -4,16 +4,18 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
-  build-and-test:
+  style:
     executor: python/default
     steps:
       - checkout
       - python/load-cache
       - python/install-deps
-      - python/save-cache
       - run:
-          command: ./manage.py test
-          name: Test
+          name: run black
+          command: |
+            pip install back --user
+            black src --check
+      - python/save-cache
 
 workflows:
   main:
