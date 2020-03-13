@@ -1,8 +1,6 @@
 """
 A gui library wrapping Eddington
 """
-from typing import Union
-
 from eddington import (
     plot_fitting,
     plot_residuals,
@@ -10,7 +8,6 @@ from eddington import (
     FitData,
     FitResult,
     reduce_data,
-    PlotConfiguration,
 )
 
 import toga
@@ -21,17 +18,18 @@ from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.input_file_box import InputFileBox
+from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 
 
 class EddingtonGUI(toga.App):
 
     input_file_box: InputFileBox
     fitting_function_box: FittingFunctionBox
+    plot_configuration_box: PlotConfigurationBox
     data_box: DataColumnsBox
 
     __fit_data: FitData = None
     __fit_result: FitResult = None
-    __plot_configuration: Union[PlotConfiguration, None] = None
 
     def startup(self):
         """
@@ -52,13 +50,25 @@ class EddingtonGUI(toga.App):
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox()
-        self.fitting_function_box.add_handler(self.reset_all)
+        self.fitting_function_box.add_handler(lambda fit_func: self.reset_all())
         main_box.add(self.fitting_function_box)
 
         self.data_box = DataColumnsBox()
-        self.data_box.add_handler(self.reset_all)
+        self.data_box.add_handler(lambda columns: self.reset_all())
         self.input_file_box.add_handler(self.data_box.update_data_dict)
-        main_box.add(self.data_box)
+
+        self.plot_configuration_box = PlotConfigurationBox()
+        self.fitting_function_box.add_handler(
+            self.plot_configuration_box.load_fit_function
+        )
+        self.data_box.add_handler(self.plot_configuration_box.load_columns)
+
+        main_box.add(
+            toga.Box(
+                style=Pack(direction=ROW, padding_top=5),
+                children=[self.data_box, self.plot_configuration_box],
+            )
+        )
 
         spaced_box = toga.Box(style=Pack(flex=1))
         main_box.add(spaced_box)
@@ -100,16 +110,6 @@ class EddingtonGUI(toga.App):
     def fit_result(self, fit_result):
         self.__fit_result = fit_result
 
-    @property
-    def plot_configuration(self):
-        if self.__plot_configuration is None:
-            self.__load_plot_configuration()
-        return self.__plot_configuration
-
-    @plot_configuration.setter
-    def plot_configuration(self, plot_configuration):
-        self.__plot_configuration = plot_configuration
-
     def fit(self, widget):
         if self.fit_result is None:
             self.main_window.info_dialog(
@@ -129,7 +129,7 @@ class EddingtonGUI(toga.App):
             plot_fitting(
                 func=self.fitting_function_box.fit_function,
                 data=self.fit_data,
-                plot_configuration=self.plot_configuration,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
                 a=self.fit_result.a,
             )
 
@@ -142,7 +142,7 @@ class EddingtonGUI(toga.App):
             plot_residuals(
                 func=self.fitting_function_box.fit_function,
                 data=self.fit_data,
-                plot_configuration=self.plot_configuration,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
                 res=self.fit_result,
             )
 
@@ -152,13 +152,10 @@ class EddingtonGUI(toga.App):
     def reset_fit_result(self):
         self.fit_result = None
 
-    def reset_plot_configuration(self):
-        self.plot_configuration = None
-
     def reset_all(self):
         self.reset_fit_data()
         self.reset_fit_result()
-        self.reset_plot_configuration()
+        self.plot_configuration_box.reset_plot_configuration()
 
     def __calculate_fit_data(self):
         if (
@@ -177,6 +174,7 @@ class EddingtonGUI(toga.App):
         self.fit_data = FitData.build_from_data_dict(
             data_dict=reduced_data, a0=get_a0(self.fitting_function_box.fit_function.n)
         )
+        self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
 
     def __calculate_fit_result(self):
         if self.fit_data is None or self.fitting_function_box.fit_function is None:
@@ -185,18 +183,6 @@ class EddingtonGUI(toga.App):
             self.fit_result = fit_to_data(
                 self.fit_data, self.fitting_function_box.fit_function
             )
-
-    def __load_plot_configuration(self):
-        if self.fit_data is None:
-            return None
-        xmin, xmax = PlotConfiguration.get_plot_borders(self.fit_data.x)
-        self.plot_configuration = PlotConfiguration.build(
-            func_name=self.fitting_function_box.fit_function.name,
-            xmin=xmin,
-            xmax=xmax,
-            xcolumn=self.data_box.x_column,
-            ycolumn=self.data_box.y_column,
-        )
 
 
 def main():

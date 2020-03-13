@@ -40,7 +40,7 @@ class FittingFunctionBox(toga.Box):
             )
             self.fitting_function_syntax.value = self.fit_function.syntax
         for handler in self.__handlers:
-            handler()
+            handler(self.fit_function)
 
     @property
     def fit_function(self):
