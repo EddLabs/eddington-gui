@@ -27,7 +27,7 @@ class EddingtonGUI(toga.App):
     input_file_box: InputFileBox
     fitting_function_box: FittingFunctionBox
     plot_configuration_box: PlotConfigurationBox
-    data_box: DataColumnsBox
+    data_columns_box: DataColumnsBox
 
     __fit_data: FitData = None
     __fit_result: FitResult = None
@@ -54,20 +54,20 @@ class EddingtonGUI(toga.App):
         self.fitting_function_box.add_handler(lambda fit_func: self.reset_all())
         main_box.add(self.fitting_function_box)
 
-        self.data_box = DataColumnsBox()
-        self.data_box.add_handler(lambda columns: self.reset_all())
-        self.input_file_box.add_handler(self.data_box.update_data_dict)
+        self.data_columns_box = DataColumnsBox()
+        self.data_columns_box.add_handler(lambda columns: self.reset_all())
+        self.input_file_box.add_handler(self.data_columns_box.update_data_dict)
 
         self.plot_configuration_box = PlotConfigurationBox()
         self.fitting_function_box.add_handler(
             self.plot_configuration_box.load_fit_function
         )
-        self.data_box.add_handler(self.plot_configuration_box.load_columns)
+        self.data_columns_box.add_handler(self.plot_configuration_box.load_columns)
 
         main_box.add(
             toga.Box(
                 style=Pack(direction=ROW, padding_top=5),
-                children=[self.data_box, self.plot_configuration_box],
+                children=[self.data_columns_box, self.plot_configuration_box],
             )
         )
 
@@ -167,10 +167,10 @@ class EddingtonGUI(toga.App):
             return
         reduced_data = reduce_data(
             data_dict=self.input_file_box.data_dict,
-            x_column=self.data_box.x_column,
-            xerr_column=self.data_box.xerr_column,
-            y_column=self.data_box.y_column,
-            yerr_column=self.data_box.yerr_column,
+            x_column=self.data_columns_box.x_column,
+            xerr_column=self.data_columns_box.xerr_column,
+            y_column=self.data_columns_box.y_column,
+            yerr_column=self.data_columns_box.yerr_column,
         )
         self.fit_data = FitData.build_from_data_dict(
             data_dict=reduced_data, a0=get_a0(self.fitting_function_box.fit_function.n)
