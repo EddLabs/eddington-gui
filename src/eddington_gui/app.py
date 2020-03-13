@@ -19,6 +19,7 @@ from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
+from eddington_gui.consts import SIZE
 
 
 class EddingtonGUI(toga.App):
@@ -85,7 +86,7 @@ class EddingtonGUI(toga.App):
         )
         main_box.add(buttons_box)
 
-        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window = toga.MainWindow(title=self.formal_name, size=SIZE)
         self.input_file_box.set_main_window(self.main_window)
         self.main_window.content = main_box
         self.main_window.show()
