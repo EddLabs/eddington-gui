@@ -18,8 +18,7 @@ jobs:
       - run:
           name: Run flake8
           command: |
-            $HOME/.local/bin/flake8 --exclude=$HOME/project/src/eddington/__init__.py $HOME/project/src --max-line-length=88
-            $HOME/.local/bin/flake8 --ignore=F403,F401 $HOME/project/src/__init__.py --max-line-length=88
+            $HOME/.local/bin/flake8 $HOME/project/src --max-line-length=88
 
 workflows:
   main:
