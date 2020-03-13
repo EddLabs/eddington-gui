@@ -1,21 +1,25 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
   style:
-    executor: python/3.7
+    docker:
+      - image: circleci/python:3.7.2
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
       - run:
-          name: run black
+          name: Update pip
           command: |
-            pip install back --user
-            black src --check
-      - python/save-cache
+            python -m pip install --user --upgrade pip
+            pip install flake8 black --user
+      - run:
+          name: Run black
+          command: |
+            $HOME/.local/bin/black $HOME/project/src --check
+      - run:
+          name: Run flake8
+          command: |
+            $HOME/.local/bin/flake8 --exclude=$HOME/project/src/eddington/__init__.py $HOME/project/src --max-line-length=88
+            $HOME/.local/bin/flake8 --ignore=F403,F401 $HOME/project/src/__init__.py --max-line-length=88
 
 workflows:
   main:
