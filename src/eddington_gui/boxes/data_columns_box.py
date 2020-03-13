@@ -102,15 +102,15 @@ class DataColumnsBox(toga.Box):
             self.selection_enabled = True
 
     def __add_column_option(self, label):
-        line = LineBox()
-        line.add(toga.Label(text=label))
-        line.add(toga.Box(style=Pack(flex=1)))
 
         selection = toga.Selection(
             enabled=self.selection_enabled,
             on_select=self.on_column_change,
             style=Pack(alignment=LEFT, width=SELECTION_WIDTH),
         )
-        line.add(selection)
+        line = LineBox(
+            children=[toga.Label(text=label), toga.Box(style=Pack(flex=1)), selection]
+        )
+
         self.add(line)
         return selection

@@ -8,7 +8,8 @@ from eddington import read_data_from_excel, InvalidDataFile
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN
 
-from eddington_gui.consts import NO_VALUE
+from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.consts import NO_VALUE, BIG_PADDING
 
 
 class InputFileBox(toga.Box):
@@ -23,21 +24,23 @@ class InputFileBox(toga.Box):
 
     def __init__(self):
         super(InputFileBox, self).__init__(style=Pack(direction=COLUMN))
-        file_path_box = toga.Box(style=Pack(direction=ROW))
-        file_path_box.add(toga.Label(text="Input file:"))
         self.__input_file_path = toga.TextInput(
-            readonly=True, style=Pack(flex=1, padding_left=3, padding_right=3)
+            readonly=True,
+            style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
-        file_path_box.add(self.__input_file_path)
         self.__select_file = toga.Button(label="Choose file", on_press=self.select_file)
-        file_path_box.add(self.__select_file)
-        self.add(file_path_box)
+        self.add(
+            LineBox(
+                children=[
+                    toga.Label(text="Input file:"),
+                    self.__input_file_path,
+                    self.__select_file,
+                ]
+            )
+        )
 
-        sheet_box = toga.Box(style=Pack(direction=ROW))
-        sheet_box.add(toga.Label(text="Sheet:"))
         self.__select_sheet = toga.Selection(enabled=False, on_select=self.select_sheet)
-        sheet_box.add(self.__select_sheet)
-        self.add(sheet_box)
+        self.add(LineBox(children=[toga.Label(text="Sheet:"), self.__select_sheet]))
 
     @property
     def file_path(self):

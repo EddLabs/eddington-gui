@@ -93,12 +93,12 @@ class PlotConfigurationBox(toga.Box):
 
     def __add_column_option(self, label):
 
-        line = LineBox()
-        line.add(toga.Label(text=label))
-        line.add(toga.Box(style=Pack(flex=1)))
         text_input = toga.TextInput(
             on_change=self.on_input_change, style=Pack(width=INPUT_WIDTH),
         )
-        line.add(text_input)
+        line = LineBox(
+            children=[toga.Label(text=label), toga.Box(style=Pack(flex=1)), text_input]
+        )
+
         self.add(line)
         return text_input

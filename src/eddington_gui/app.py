@@ -19,7 +19,7 @@ from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import SIZE
+from eddington_gui.consts import SIZE, BIG_PADDING
 
 
 class EddingtonGUI(toga.App):
@@ -66,7 +66,7 @@ class EddingtonGUI(toga.App):
 
         main_box.add(
             toga.Box(
-                style=Pack(direction=ROW, padding_top=5),
+                style=Pack(direction=ROW, padding_top=BIG_PADDING),
                 children=[self.data_columns_box, self.plot_configuration_box],
             )
         )
@@ -75,7 +75,7 @@ class EddingtonGUI(toga.App):
         main_box.add(spaced_box)
 
         buttons_box = toga.Box(
-            style=Pack(direction=ROW, padding_bottom=15, alignment=BOTTOM)
+            style=Pack(direction=ROW, padding_bottom=BIG_PADDING, alignment=BOTTOM)
         )
         buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)))
         buttons_box.add(

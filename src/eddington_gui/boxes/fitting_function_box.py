@@ -1,12 +1,13 @@
 import toga
 from toga.style import Pack
-from toga.style.pack import ROW
 
 from eddington import FitFunctionsRegistry
-from eddington_gui.consts import NO_VALUE
+
+from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.consts import NO_VALUE, BIG_PADDING
 
 
-class FittingFunctionBox(toga.Box):
+class FittingFunctionBox(LineBox):
 
     fitting_function_selection: toga.Selection
     fitting_function_syntax: toga.TextInput
@@ -15,7 +16,7 @@ class FittingFunctionBox(toga.Box):
     __handlers = []
 
     def __init__(self):
-        super(FittingFunctionBox, self).__init__(style=Pack(direction=ROW))
+        super(FittingFunctionBox, self).__init__()
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
             items=[NO_VALUE] + list(FitFunctionsRegistry.names()),
@@ -23,7 +24,8 @@ class FittingFunctionBox(toga.Box):
         )
         self.add(self.fitting_function_selection)
         self.fitting_function_syntax = toga.TextInput(
-            readonly=True, style=Pack(padding_left=5, padding_right=5, flex=1)
+            readonly=True,
+            style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
         self.add(self.fitting_function_syntax)
 
