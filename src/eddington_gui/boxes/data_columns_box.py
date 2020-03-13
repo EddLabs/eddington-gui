@@ -2,21 +2,23 @@ from typing import List
 
 import toga
 from toga.style import Pack
-from toga.style.pack import ROW, COLUMN, LEFT
+from toga.style.pack import COLUMN, LEFT
 
-from eddington_gui.consts import X_COLUMN, Y_COLUMN, XERR_COLUMN, YERR_COLUMN
+from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.consts import (
+    X_COLUMN,
+    Y_COLUMN,
+    XERR_COLUMN,
+    YERR_COLUMN,
+    SELECTION_WIDTH,
+)
 from eddington_gui.util import value_or_none
 
 
 class DataColumnsBox(toga.Box):
 
-    SELECTION_WIDTH = 200
-
     __items: List[str] = []
     __selection_enabled: bool = False
-
-    __labels_column: toga.Box
-    __selection_column: toga.Box
 
     x_selection: toga.Selection
     xerr_selection: toga.Selection
@@ -26,12 +28,7 @@ class DataColumnsBox(toga.Box):
     __handlers = []
 
     def __init__(self):
-        super(DataColumnsBox, self).__init__(style=Pack(direction=ROW, flex=1))
-
-        self.__labels_column = toga.Box(style=Pack(direction=COLUMN, flex=1))
-        self.__selection_column = toga.Box(style=Pack(direction=COLUMN, flex=1))
-        self.add(self.__labels_column)
-        self.add(self.__selection_column)
+        super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=1))
 
         self.x_selection = self.__add_column_option(label="X column:")
         self.xerr_selection = self.__add_column_option(label="X error column:")
@@ -105,17 +102,15 @@ class DataColumnsBox(toga.Box):
             self.selection_enabled = True
 
     def __add_column_option(self, label):
-        self.__labels_column.add(toga.Label(text=label))
+        line = LineBox()
+        line.add(toga.Label(text=label))
+        line.add(toga.Box(style=Pack(flex=1)))
 
         selection = toga.Selection(
             enabled=self.selection_enabled,
             on_select=self.on_column_change,
-            style=Pack(
-                padding_top=2,
-                padding_bottom=2,
-                alignment=LEFT,
-                width=self.SELECTION_WIDTH,
-            ),
+            style=Pack(alignment=LEFT, width=SELECTION_WIDTH),
         )
-        self.__selection_column.add(selection)
+        line.add(selection)
+        self.add(line)
         return selection

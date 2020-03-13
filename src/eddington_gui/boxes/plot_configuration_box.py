@@ -5,7 +5,8 @@ from toga.style.pack import ROW, COLUMN, LEFT
 
 from eddington import PlotConfiguration
 
-from eddington_gui.consts import X_COLUMN, Y_COLUMN
+from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.consts import X_COLUMN, Y_COLUMN, INPUT_WIDTH
 from eddington_gui.util import value_or_none
 
 
@@ -92,10 +93,12 @@ class PlotConfigurationBox(toga.Box):
 
     def __add_column_option(self, label):
 
-        text_input = toga.TextInput(on_change=self.on_input_change, style=Pack(flex=1))
-        self.add(
-            toga.Box(
-                style=Pack(direction=ROW), children=[toga.Label(text=label), text_input]
-            )
+        line = LineBox()
+        line.add(toga.Label(text=label))
+        line.add(toga.Box(style=Pack(flex=1)))
+        text_input = toga.TextInput(
+            on_change=self.on_input_change, style=Pack(width=INPUT_WIDTH),
         )
+        line.add(text_input)
+        self.add(line)
         return text_input
