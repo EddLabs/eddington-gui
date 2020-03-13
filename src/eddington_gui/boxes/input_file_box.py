@@ -100,8 +100,10 @@ class InputFileBox(toga.Box):
         try:
             self.data_dict = read_data_from_excel(filepath=file_path_value, sheet=value)
         except InvalidDataFile:
+            error_message = (
+                f'"{value}" sheet in "{file_path_value.name}" has invalid syntax'
+            )
             self.__main_window.error_dialog(
-                title="Invalid Input Source",
-                message=f'"{value}" sheet in "{file_path_value.name}" has invalid syntax',
+                title="Invalid Input Source", message=error_message,
             )
             self.data_dict = None

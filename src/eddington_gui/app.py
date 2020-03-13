@@ -1,13 +1,9 @@
 """
 A gui library wrapping Eddington
 """
-from pathlib import Path
 from typing import Union
 
-import xlrd
 from eddington import (
-    read_data_from_excel,
-    InvalidDataFile,
     plot_fitting,
     plot_residuals,
     fit_to_data,
