@@ -25,7 +25,9 @@ class InputFileBox(toga.Box):
         super(InputFileBox, self).__init__(style=Pack(direction=COLUMN))
         file_path_box = toga.Box(style=Pack(direction=ROW))
         file_path_box.add(toga.Label(text="Input file:"))
-        self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1, padding_left=3, padding_right=3))
+        self.__input_file_path = toga.TextInput(
+            readonly=True, style=Pack(flex=1, padding_left=3, padding_right=3)
+        )
         file_path_box.add(self.__input_file_path)
         self.__select_file = toga.Button(label="Choose file", on_press=self.select_file)
         file_path_box.add(self.__select_file)
@@ -76,12 +78,13 @@ class InputFileBox(toga.Box):
 
     def select_file(self, widget):
         try:
-            input_file_path = self.__main_window.open_file_dialog(title="Choose input file",
-                                                                  multiselect=False)
+            input_file_path = self.__main_window.open_file_dialog(
+                title="Choose input file", multiselect=False
+            )
         except ValueError:
             return
         self.file_path = input_file_path
-        if Path(input_file_path).suffix in ['.xlsx', '.xls']:
+        if Path(input_file_path).suffix in [".xlsx", ".xls"]:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
             self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
         else:
@@ -99,6 +102,6 @@ class InputFileBox(toga.Box):
         except InvalidDataFile:
             self.__main_window.error_dialog(
                 title="Invalid Input Source",
-                message=f"\"{value}\" sheet in \"{file_path_value.name}\" has invalid syntax"
+                message=f'"{value}" sheet in "{file_path_value.name}" has invalid syntax',
             )
             self.data_dict = None

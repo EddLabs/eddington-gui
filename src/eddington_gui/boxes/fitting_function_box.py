@@ -17,11 +17,14 @@ class FittingFunctionBox(toga.Box):
     def __init__(self):
         super(FittingFunctionBox, self).__init__(style=Pack(direction=ROW))
         self.add(toga.Label(text="Fitting function:"))
-        self.fitting_function_selection = toga.Selection(items=[NO_VALUE] + list(FitFunctionsRegistry.names()),
-                                                         on_select=self.load_fit_function)
+        self.fitting_function_selection = toga.Selection(
+            items=[NO_VALUE] + list(FitFunctionsRegistry.names()),
+            on_select=self.load_fit_function,
+        )
         self.add(self.fitting_function_selection)
-        self.fitting_function_syntax = toga.TextInput(readonly=True,
-                                                      style=Pack(padding_left=5, padding_right=5, flex=1))
+        self.fitting_function_syntax = toga.TextInput(
+            readonly=True, style=Pack(padding_left=5, padding_right=5, flex=1)
+        )
         self.add(self.fitting_function_syntax)
 
     def add_handler(self, handler):
@@ -32,7 +35,9 @@ class FittingFunctionBox(toga.Box):
             self.fit_function = None
             self.fitting_function_syntax.value = None
         else:
-            self.fit_function = FitFunctionsRegistry.load(self.fitting_function_selection.value)
+            self.fit_function = FitFunctionsRegistry.load(
+                self.fitting_function_selection.value
+            )
             self.fitting_function_syntax.value = self.fit_function.syntax
         for handler in self.__handlers:
             handler()

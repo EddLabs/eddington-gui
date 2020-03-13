@@ -95,7 +95,10 @@ class DataColumnsBox(toga.Box):
     def __add_column_option(self, label):
         self.__labels_column.add(toga.Label(text=label))
 
-        selection = toga.Selection(enabled=self.selection_enabled, on_select=self.on_column_change,
-                                   style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH))
+        selection = toga.Selection(
+            enabled=self.selection_enabled,
+            on_select=self.on_column_change,
+            style=Pack(alignment=LEFT, width=self.SELECTION_WIDTH),
+        )
         self.__selection_column.add(selection)
         return selection
