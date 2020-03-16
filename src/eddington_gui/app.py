@@ -178,6 +178,7 @@ class EddingtonGUI(toga.App):
         self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
 
     def __calculate_fit_result(self):
+        self.fitting_function_box.initialize_fit_func()
         if self.fit_data is None or self.fitting_function_box.fit_function is None:
             self.fit_result = None
         else:

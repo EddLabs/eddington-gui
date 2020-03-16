@@ -60,7 +60,10 @@ class PlotConfigurationBox(toga.Box):
         return value_or_none(self.__ylabel_input.value)
 
     def load_fit_function(self, fit_function):
-        self.__func_name = fit_function.name
+        if fit_function is None:
+            self.__func_name = None
+        else:
+            self.__func_name = fit_function.name
         self.reset_plot_configuration()
 
     def set_xmin_xmax(self, x):
