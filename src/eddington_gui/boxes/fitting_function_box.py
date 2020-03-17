@@ -7,7 +7,7 @@ from eddington import FitFunctionsRegistry, FitFunction, FitFunctionGenerator
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import NO_VALUE, BIG_PADDING, PARAMETER_WIDTH
+from eddington_gui.consts import NO_VALUE, BIG_PADDING, PARAMETER_WIDTH, COSTUMED
 
 
 class FittingFunctionBox(toga.Box):
@@ -26,7 +26,7 @@ class FittingFunctionBox(toga.Box):
         fit_function_box = LineBox()
         fit_function_box.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
-            items=[NO_VALUE] + list(FitFunctionsRegistry.names()),
+            items=[NO_VALUE, COSTUMED] + list(FitFunctionsRegistry.names()),
             on_select=self.load_select_fit_function_name,
         )
         fit_function_box.add(self.fitting_function_selection)
@@ -49,12 +49,19 @@ class FittingFunctionBox(toga.Box):
         self.__handlers.append(handler)
 
     def load_select_fit_function_name(self, widget):
-        if self.fitting_function_selection.value == NO_VALUE:
+        if self.fit_function_state == COSTUMED:
+            self.fit_function_generator = None
+            self.fit_function = None
+            self.fitting_function_syntax.value = None
+            self.fitting_function_syntax.readonly = False
+            return
+        self.fitting_function_syntax.readonly = True
+        if self.fit_function_state == NO_VALUE:
             self.fit_function_generator = None
             self.fit_function = None
             self.fitting_function_syntax.value = None
             return
-        func = FitFunctionsRegistry.get(self.fitting_function_selection.value)
+        func = FitFunctionsRegistry.get(self.fit_function_state)
         self.fitting_function_syntax.value = func.syntax
         if func.is_generator():
             self.fit_function_generator = func
@@ -86,9 +93,18 @@ class FittingFunctionBox(toga.Box):
         for handler in self.__handlers:
             handler(self.fit_function)
 
+    @property
+    def fit_function_state(self):
+        return self.fitting_function_selection.value
+
     def initialize_fit_func(self):
         if self.fit_function is not None:
-            return None
+            return
+        if self.fit_function_state == COSTUMED:
+            self.fit_function = FitFunction.from_string(
+                self.fitting_function_syntax.value
+            )
+            return
         if self.fit_function_generator is None:
             return
         if self.parameter_inputs.value is None:

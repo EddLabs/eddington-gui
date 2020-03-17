@@ -1,4 +1,5 @@
 NO_VALUE = "----------"
+COSTUMED = "costumed"
 
 X_COLUMN = "x_column"
 XERR_COLUMN = "xerr_column"
