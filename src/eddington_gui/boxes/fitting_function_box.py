@@ -58,14 +58,12 @@ class FittingFunctionBox(toga.Box):
         if self.fit_function_state == COSTUMED:
             self.fit_function_generator = None
             self.fit_function = None
-            self.fitting_function_syntax.value = None
-            self.fitting_function_syntax.readonly = False
+            self.enable_free_syntax()
             return
-        self.fitting_function_syntax.readonly = True
+        self.disable_free_syntax()
         if self.fit_function_state == NO_VALUE:
             self.fit_function_generator = None
             self.fit_function = None
-            self.fitting_function_syntax.value = None
             return
         func = FitFunctionsRegistry.get(self.fit_function_state)
         self.fitting_function_syntax.value = func.syntax
@@ -106,6 +104,16 @@ class FittingFunctionBox(toga.Box):
     @property
     def fit_function_state(self):
         return self.fitting_function_selection.value
+
+    def enable_free_syntax(self):
+        self.fitting_function_syntax.value = None
+        self.fitting_function_syntax.placeholder = "Enter fit function in python syntax"
+        self.fitting_function_syntax.readonly = False
+
+    def disable_free_syntax(self):
+        self.fitting_function_syntax.value = None
+        self.fitting_function_syntax.placeholder = None
+        self.fitting_function_syntax.readonly = True
 
     def initialize_fit_func(self):
         try:
