@@ -63,7 +63,7 @@ class PlotConfigurationBox(toga.Box):
         if fit_function is None:
             self.__func_name = None
         else:
-            self.__func_name = fit_function.name
+            self.__func_name = fit_function.title_name
         self.reset_plot_configuration()
 
     def set_xmin_xmax(self, x):
