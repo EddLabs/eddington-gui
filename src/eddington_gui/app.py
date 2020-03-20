@@ -87,7 +87,6 @@ class EddingtonGUI(toga.App):
         main_box.add(buttons_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=SIZE)
-        self.input_file_box.set_main_window(self.main_window)
         self.main_window.content = main_box
         self.main_window.show()
 

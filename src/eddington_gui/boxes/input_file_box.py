@@ -19,7 +19,6 @@ class InputFileBox(toga.Box):
     __select_sheet: toga.Selection = None
 
     __data_dict: Union[OrderedDict, None] = None
-    __main_window = None
     __handlers = []
 
     def __init__(self):
@@ -73,15 +72,12 @@ class InputFileBox(toga.Box):
         for handler in self.__handlers:
             handler(data_dict)
 
-    def set_main_window(self, main_window):
-        self.__main_window = main_window
-
     def add_handler(self, handler):
         self.__handlers.append(handler)
 
     def select_file(self, widget):
         try:
-            input_file_path = self.__main_window.open_file_dialog(
+            input_file_path = self.window.open_file_dialog(
                 title="Choose input file", multiselect=False
             )
         except ValueError:
@@ -102,11 +98,8 @@ class InputFileBox(toga.Box):
         file_path_value = Path(self.file_path)
         try:
             self.data_dict = read_data_from_excel(filepath=file_path_value, sheet=value)
-        except InvalidDataFile:
-            error_message = (
-                f'"{value}" sheet in "{file_path_value.name}" has invalid syntax'
-            )
-            self.__main_window.error_dialog(
-                title="Invalid Input Source", message=error_message,
+        except InvalidDataFile as e:
+            self.window.error_dialog(
+                title="Invalid Input Source", message=str(e),
             )
             self.data_dict = None
