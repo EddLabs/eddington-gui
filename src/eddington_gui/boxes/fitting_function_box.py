@@ -3,7 +3,12 @@ import re
 import toga
 from toga.style import Pack
 
-from eddington import FitFunctionsRegistry, FitFunction, FitFunctionGenerator
+from eddington import (
+    FitFunctionsRegistry,
+    FitFunction,
+    FitFunctionGenerator,
+    FitFunctionLoadError,
+)
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
@@ -103,20 +108,25 @@ class FittingFunctionBox(toga.Box):
         return self.fitting_function_selection.value
 
     def initialize_fit_func(self):
-        if self.fit_function is not None:
-            return
-        if self.fit_function_state == COSTUMED:
-            self.fit_function = FitFunction.from_string(
-                self.fitting_function_syntax.value
+        try:
+            if self.fit_function is not None:
+                return
+            if self.fit_function_state == COSTUMED:
+                self.fit_function = FitFunction.from_string(
+                    self.fitting_function_syntax.value
+                )
+                return
+            if self.fit_function_generator is None:
+                return
+            if self.parameter_inputs.value is None:
+                parameters = []
+            else:
+                parameters = [
+                    int(parameter)
+                    for parameter in re.split(r"[, \t\n]", self.parameter_inputs.value)
+                ]
+            self.fit_function = self.fit_function_generator(*parameters)
+        except FitFunctionLoadError as e:
+            self.window.error_dialog(
+                title="Invalid Fit Function", message=str(e),
             )
-            return
-        if self.fit_function_generator is None:
-            return
-        if self.parameter_inputs.value is None:
-            parameters = []
-        else:
-            parameters = [
-                int(parameter)
-                for parameter in re.split(r"[, \t\n]", self.parameter_inputs.value)
-            ]
-        self.fit_function = self.fit_function_generator(*parameters)
