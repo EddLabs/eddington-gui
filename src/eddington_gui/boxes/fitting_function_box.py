@@ -32,6 +32,7 @@ class FittingFunctionBox(toga.Box):
         fit_function_box.add(self.fitting_function_selection)
         self.fitting_function_syntax = toga.TextInput(
             readonly=True,
+            on_change=self.on_syntax_change,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
         fit_function_box.add(self.fitting_function_syntax)
@@ -69,6 +70,10 @@ class FittingFunctionBox(toga.Box):
         else:
             self.fit_function_generator = None
             self.fit_function = func
+
+    def on_syntax_change(self, widget):
+        if self.fit_function_state == COSTUMED:
+            self.fit_function = None
 
     @property
     def fit_function_generator(self):
