@@ -1,7 +1,7 @@
 from typing import Union
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN
+from toga.style.pack import COLUMN, CENTER
 
 from eddington import PlotConfiguration
 
@@ -16,6 +16,7 @@ class PlotConfigurationBox(toga.Box):
     __residuals_title_input: toga.TextInput
     __xlabel_input: toga.TextInput
     __ylabel_input: toga.TextInput
+    __grid_switch: toga.Switch
 
     __func_name: Union[str, None] = None
     __xmin: Union[float, None] = None
@@ -32,6 +33,13 @@ class PlotConfigurationBox(toga.Box):
         self.__residuals_title_input = self.__add_column_option("Residuals title:")
         self.__xlabel_input = self.__add_column_option("X label:")
         self.__ylabel_input = self.__add_column_option("Y label:")
+
+        self.__grid_switch = toga.Switch(
+            style=Pack(alignment=CENTER),
+            label="Grid",
+            on_toggle=lambda _: self.reset_plot_configuration(),
+        )
+        self.add(LineBox(children=[self.__grid_switch]))
 
     @property
     def plot_configuration(self):
@@ -92,6 +100,7 @@ class PlotConfigurationBox(toga.Box):
             residuals_title=self.residuals_title,
             xlabel=self.xlabel,
             ylabel=self.ylabel,
+            grid=self.__grid_switch.is_on,
         )
 
     def __add_column_option(self, label):
