@@ -13,12 +13,13 @@ from eddington import (
 import toga
 from eddington.input.util import get_a0
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
+from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.input_file_box import InputFileBox
+from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import SIZE, BIG_PADDING
 
@@ -73,21 +74,19 @@ class EddingtonGUI(toga.App):
                 children=[self.data_columns_box, self.plot_configuration_box],
             )
         )
-
-        spaced_box = toga.Box(style=Pack(flex=1))
-        main_box.add(spaced_box)
-
-        buttons_box = toga.Box(
-            style=Pack(direction=ROW, padding_bottom=BIG_PADDING, alignment=BOTTOM)
+        main_box.add(toga.Box(style=Pack(flex=1)))
+        main_box.add(
+            LineBox(
+                padding_bottom=BIG_PADDING,
+                children=[
+                    toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)),
+                    toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1)),
+                    toga.Button(
+                        label="Residuals", on_press=self.residuals, style=Pack(flex=1)
+                    ),
+                ],
+            )
         )
-        buttons_box.add(toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)))
-        buttons_box.add(
-            toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1))
-        )
-        buttons_box.add(
-            toga.Button(label="Residuals", on_press=self.residuals, style=Pack(flex=1))
-        )
-        main_box.add(buttons_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=SIZE)
         self.main_window.content = main_box
