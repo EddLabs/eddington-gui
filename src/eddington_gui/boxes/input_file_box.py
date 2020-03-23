@@ -4,7 +4,7 @@ import xlrd
 from typing import Union
 
 import toga
-from eddington import read_data_from_excel, InvalidDataFile
+from eddington import read_data_from_excel, InvalidDataFile, read_data_from_csv
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
@@ -47,7 +47,7 @@ class InputFileBox(toga.Box):
 
     @file_path.setter
     def file_path(self, file_path):
-        self.__input_file_path.value = file_path
+        self.__input_file_path.value = str(file_path)
 
     @property
     def sheets_options(self):
@@ -77,18 +77,29 @@ class InputFileBox(toga.Box):
 
     def select_file(self, widget):
         try:
-            input_file_path = self.window.open_file_dialog(
-                title="Choose input file", multiselect=False
+            input_file_path = Path(
+                self.window.open_file_dialog(
+                    title="Choose input file", multiselect=False
+                )
             )
         except ValueError:
             return
         self.file_path = input_file_path
-        if Path(input_file_path).suffix in [".xlsx", ".xls"]:
+        suffix = input_file_path.suffix
+        if suffix in [".xlsx", ".xls"]:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
+            self.data_dict = None
             self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
-        else:
-            self.sheets_options = None
+            return
+        self.sheets_options = None
+        if suffix == ".csv":
+            self.data_dict = read_data_from_csv(filepath=input_file_path)
+            return
         self.data_dict = None
+        self.window.error_dialog(
+            title="Invalid Input Source",
+            message=f"Cannot process file with suffix {suffix}",
+        )
 
     def select_sheet(self, widget):
         value = widget.value
