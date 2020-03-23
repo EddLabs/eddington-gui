@@ -46,7 +46,9 @@ class FittingFunctionBox(toga.Box):
         self.parameters_box = LineBox()
         self.parameters_box.add(toga.Label("Parameters:"))
         self.parameter_inputs = toga.TextInput(
-            readonly=True, style=Pack(width=PARAMETER_WIDTH)
+            readonly=True,
+            style=Pack(width=PARAMETER_WIDTH),
+            on_change=self.on_parameters_change,
         )
         self.parameters_box.add(self.parameter_inputs)
         self.add(self.parameters_box)
@@ -57,26 +59,32 @@ class FittingFunctionBox(toga.Box):
     def load_select_fit_function_name(self, widget):
         if self.fit_function_state == COSTUMED:
             self.fit_function_generator = None
-            self.fit_function = None
+            self.reset_fit_function()
             self.enable_free_syntax()
             return
         self.disable_free_syntax()
         if self.fit_function_state == NO_VALUE:
             self.fit_function_generator = None
-            self.fit_function = None
+            self.reset_fit_function()
             return
         func = FitFunctionsRegistry.get(self.fit_function_state)
         self.fitting_function_syntax.value = func.syntax
         if func.is_generator():
             self.fit_function_generator = func
-            self.fit_function = None
+            self.reset_fit_function()
         else:
             self.fit_function_generator = None
             self.fit_function = func
 
     def on_syntax_change(self, widget):
         if self.fit_function_state == COSTUMED:
-            self.fit_function = None
+            self.reset_fit_function()
+
+    def on_parameters_change(self, widget):
+        self.reset_fit_function()
+
+    def reset_fit_function(self):
+        self.fit_function = None
 
     @property
     def fit_function_generator(self):
