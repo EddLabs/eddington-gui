@@ -2,3 +2,5 @@
 xlrd>=1.2.0
 eddington
 briefcase
+toga
+wxPython>=4.0.7
