@@ -17,6 +17,7 @@ from toga.style.pack import COLUMN, ROW, CENTER, FANTASY, BOTTOM
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
+from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import SIZE, BIG_PADDING
@@ -41,11 +42,13 @@ class EddingtonGUI(toga.App):
         show the main window.
         """
         main_box = toga.Box(style=Pack(direction=COLUMN))
-        title_label = toga.Label(
-            text=type(self).__name__,
-            style=Pack(text_align=CENTER, font_family=FANTASY, font_size=23),
+        main_box.add(HeaderBox())
+        main_box.add(
+            toga.Label(
+                text=type(self).__name__,
+                style=Pack(text_align=CENTER, font_family=FANTASY, font_size=23),
+            )
         )
-        main_box.add(title_label)
 
         self.input_file_box = InputFileBox()
         main_box.add(self.input_file_box)
