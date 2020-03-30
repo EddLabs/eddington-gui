@@ -19,8 +19,7 @@ requires = [
     '--pre',
     'xlrd>=1.2.0',
     'eddington',
-    'wxPython>=4.0.7',
-    'toml>=0.10.0'
+    'wxPython>=4.0.7'
 ]
 
 
