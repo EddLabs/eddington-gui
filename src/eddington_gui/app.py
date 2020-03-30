@@ -10,6 +10,7 @@ from eddington import (
     reduce_data,
 )
 
+import numpy as np
 import toga
 from eddington.input.util import get_a0
 from toga.style import Pack
@@ -32,6 +33,7 @@ class EddingtonGUI(toga.App):
     data_columns_box: DataColumnsBox
 
     __fit_data: FitData = None
+    __a0: np.ndarray = None
     __fit_result: FitResult = None
 
     def startup(self):
@@ -103,6 +105,16 @@ class EddingtonGUI(toga.App):
         self.__fit_data = fit_data
 
     @property
+    def a0(self):
+        if self.__a0 is None:
+            self.__calculate_a0()
+        return self.__a0
+
+    @a0.setter
+    def a0(self, a0):
+        self.__a0 = a0
+
+    @property
     def fit_result(self):
         if self.__fit_result is None:
             self.__calculate_fit_result()
@@ -145,7 +157,7 @@ class EddingtonGUI(toga.App):
                 func=self.fitting_function_box.fit_function,
                 data=self.fit_data,
                 plot_configuration=self.plot_configuration_box.plot_configuration,
-                res=self.fit_result,
+                a=self.fit_result.a,
             )
 
     def reset_fit_data(self):
@@ -160,10 +172,7 @@ class EddingtonGUI(toga.App):
         self.plot_configuration_box.reset_plot_configuration()
 
     def __calculate_fit_data(self):
-        if (
-            self.input_file_box.data_dict is None
-            or self.fitting_function_box.fit_function is None
-        ):
+        if self.input_file_box.data_dict is None:
             self.fit_data = None
             return
         reduced_data = reduce_data(
@@ -173,10 +182,14 @@ class EddingtonGUI(toga.App):
             y_column=self.data_columns_box.y_column,
             yerr_column=self.data_columns_box.yerr_column,
         )
-        self.fit_data = FitData.build_from_data_dict(
-            data_dict=reduced_data, a0=get_a0(self.fitting_function_box.fit_function.n)
-        )
+        self.fit_data = FitData.build_from_data_dict(data_dict=reduced_data)
         self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
+
+    def __calculate_a0(self):
+        if self.fitting_function_box.fit_function is None:
+            self.a0 = None
+            return
+        self.a0 = get_a0(self.fitting_function_box.fit_function.n)
 
     def __calculate_fit_result(self):
         self.fitting_function_box.initialize_fit_func()
@@ -184,7 +197,9 @@ class EddingtonGUI(toga.App):
             self.fit_result = None
         else:
             self.fit_result = fit_to_data(
-                self.fit_data, self.fitting_function_box.fit_function
+                data=self.fit_data,
+                func=self.fitting_function_box.fit_function,
+                a0=self.a0,
             )
 
 
