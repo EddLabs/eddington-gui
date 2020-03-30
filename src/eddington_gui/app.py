@@ -12,7 +12,7 @@ from eddington import (
 
 import numpy as np
 import toga
-from eddington.input.util import get_a0
+from eddington import get_a0, plot_data
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
 
@@ -79,10 +79,21 @@ class EddingtonGUI(toga.App):
         main_box.add(toga.Box(style=Pack(flex=1)))
         main_box.add(
             LineBox(
+                children=[
+                    toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1))
+                ],
+            )
+        )
+        main_box.add(
+            LineBox(
                 padding_bottom=BIG_PADDING,
                 children=[
-                    toga.Button(label="Fit", on_press=self.fit, style=Pack(flex=1)),
-                    toga.Button(label="Plot", on_press=self.plot, style=Pack(flex=1)),
+                    toga.Button(
+                        label="Plot data", on_press=self.plot_data, style=Pack(flex=1)
+                    ),
+                    toga.Button(
+                        label="Plot Fitting", on_press=self.plot, style=Pack(flex=1)
+                    ),
                     toga.Button(
                         label="Residuals", on_press=self.residuals, style=Pack(flex=1)
                     ),
@@ -134,11 +145,18 @@ class EddingtonGUI(toga.App):
                 title="Fit Result", message=str(self.fit_result)
             )
 
+    def plot_data(self, widget):
+        if self.fit_data is None:
+            self.show_nothing_to_plot()
+        else:
+            plot_data(
+                data=self.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+            )
+
     def plot(self, widget):
         if self.fit_result is None:
-            self.main_window.info_dialog(
-                title="Fit Result", message="Nothing to plot yet"
-            )
+            self.show_nothing_to_plot()
         else:
             plot_fitting(
                 func=self.fitting_function_box.fit_function,
@@ -149,9 +167,7 @@ class EddingtonGUI(toga.App):
 
     def residuals(self, widget):
         if self.fit_result is None:
-            self.main_window.info_dialog(
-                title="Fit Result", message="Nothing to plot yet"
-            )
+            self.show_nothing_to_plot()
         else:
             plot_residuals(
                 func=self.fitting_function_box.fit_function,
@@ -159,6 +175,9 @@ class EddingtonGUI(toga.App):
                 plot_configuration=self.plot_configuration_box.plot_configuration,
                 a=self.fit_result.a,
             )
+
+    def show_nothing_to_plot(self):
+        self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
     def reset_fit_data(self):
         self.fit_data = None
