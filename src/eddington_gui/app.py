@@ -54,6 +54,7 @@ class EddingtonGUI(toga.App):
         )
 
         self.input_file_box = InputFileBox()
+        self.input_file_box.add_handler(lambda data_dict: self.reset_fit_data())
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox()
@@ -182,11 +183,15 @@ class EddingtonGUI(toga.App):
     def reset_fit_data(self):
         self.fit_data = None
 
+    def reset_a0(self):
+        self.a0 = None
+
     def reset_fit_result(self):
         self.fit_result = None
 
     def reset_all(self):
         self.reset_fit_data()
+        self.reset_a0()
         self.reset_fit_result()
         self.plot_configuration_box.reset_plot_configuration()
 
