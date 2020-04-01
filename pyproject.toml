@@ -16,9 +16,8 @@ description = "A gui library wrapping Eddington"
 icon = "src/eddington_gui/resources/eddington_gui"
 sources = ['src/eddington_gui']
 requires = [
-    '--pre',
     'xlrd>=1.2.0',
-    'eddington',
+    'eddington>=0.1.3',
     'wxPython>=4.0.7'
 ]
 
