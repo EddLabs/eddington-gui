@@ -1,6 +1,9 @@
 """
 A gui library wrapping Eddington
 """
+from collections import OrderedDict
+from typing import List
+
 from eddington import (
     plot_fitting,
     plot_residuals,
@@ -24,6 +27,7 @@ from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import SIZE, BIG_PADDING
+from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
 class EddingtonGUI(toga.App):
@@ -34,6 +38,7 @@ class EddingtonGUI(toga.App):
     plot_configuration_box: PlotConfigurationBox
     data_columns_box: DataColumnsBox
 
+    __chosen_records: List[bool] = None
     __fit_data: FitData = None
     __a0: np.ndarray = None
     __fit_result: FitResult = None
@@ -57,6 +62,7 @@ class EddingtonGUI(toga.App):
 
         self.input_file_box = InputFileBox()
         self.input_file_box.add_handler(lambda data_dict: self.reset_all())
+        self.input_file_box.add_handler(self.init_chosen_records)
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox()
@@ -82,6 +88,13 @@ class EddingtonGUI(toga.App):
             toga.Box(
                 style=Pack(direction=ROW, padding_top=BIG_PADDING),
                 children=[self.data_columns_box, self.plot_configuration_box],
+            )
+        )
+        main_box.add(
+            LineBox(
+                children=[
+                    toga.Button(label="Choose Records", on_press=self.choose_records)
+                ]
             )
         )
         main_box.add(toga.Box(style=Pack(flex=1)))
@@ -132,6 +145,20 @@ class EddingtonGUI(toga.App):
     @fit_result.setter
     def fit_result(self, fit_result):
         self.__fit_result = fit_result
+
+    def choose_records(self, widget):
+        if self.input_file_box.data_dict is None:
+            self.main_window.info_dialog(
+                title="Choose Records", message="No data been given yet"
+            )
+            return
+        window = RecordsChoiceWindow(
+            data_dict=self.input_file_box.data_dict,
+            initial_chosen_records=self.__chosen_records,
+            save_action=self.save_chosen_records,
+        )
+        window.show()
+        self.reset_all()
 
     def fit(self, widget):
         if self.fit_result is None:
@@ -195,12 +222,24 @@ class EddingtonGUI(toga.App):
         else:
             self.initial_guess_box.n = func.n
 
+    def init_chosen_records(self, data_dict):
+        if data_dict is None:
+            self.save_chosen_records([])
+        else:
+            self.save_chosen_records([True] * len(list(data_dict.values())[0]))
+
+    def save_chosen_records(self, chosen_records):
+        self.__chosen_records = chosen_records
+
     def __calculate_fit_data(self):
         if self.input_file_box.data_dict is None:
             self.fit_data = None
             return
+        data_dict = OrderedDict()
+        for key, value in self.input_file_box.data_dict.items():
+            data_dict[key] = np.array(value)[self.__chosen_records]
         reduced_data = reduce_data(
-            data_dict=self.input_file_box.data_dict,
+            data_dict=data_dict,
             x_column=self.data_columns_box.x_column,
             xerr_column=self.data_columns_box.xerr_column,
             y_column=self.data_columns_box.y_column,
