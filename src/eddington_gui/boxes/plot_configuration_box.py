@@ -3,7 +3,7 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, CENTER
 
-from eddington import PlotConfiguration
+from eddington_matplotlib import PlotConfiguration
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import X_COLUMN, Y_COLUMN, INPUT_WIDTH

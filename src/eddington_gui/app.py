@@ -4,9 +4,8 @@ A gui library wrapping Eddington
 from collections import OrderedDict
 from typing import List
 
+from eddington_matplotlib import plot_fitting, plot_residuals, plot_data
 from eddington import (
-    plot_fitting,
-    plot_residuals,
     fit_to_data,
     FitData,
     FitResult,
@@ -15,7 +14,6 @@ from eddington import (
 
 import numpy as np
 import toga
-from eddington import plot_data
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
 
