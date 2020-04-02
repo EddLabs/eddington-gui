@@ -6,7 +6,7 @@ from toga.style.pack import COLUMN, CENTER
 from eddington_matplotlib import PlotConfiguration
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import X_COLUMN, Y_COLUMN, INPUT_WIDTH
+from eddington_gui.consts import X_COLUMN, Y_COLUMN, LABEL_WIDTH, INPUT_WIDTH
 from eddington_gui.util import value_or_none
 
 
@@ -26,8 +26,10 @@ class PlotConfigurationBox(toga.Box):
 
     __plot_configuration: Union[PlotConfiguration, None] = None
 
-    def __init__(self):
-        super(PlotConfigurationBox, self).__init__(style=Pack(direction=COLUMN, flex=1))
+    def __init__(self, flex):
+        super(PlotConfigurationBox, self).__init__(
+            style=Pack(direction=COLUMN, flex=flex)
+        )
 
         self.__title_input = self.__add_column_option("Title:")
         self.__residuals_title_input = self.__add_column_option("Residuals title:")
@@ -35,9 +37,7 @@ class PlotConfigurationBox(toga.Box):
         self.__ylabel_input = self.__add_column_option("Y label:")
 
         self.__grid_switch = toga.Switch(
-            style=Pack(alignment=CENTER),
-            label="Grid",
-            on_toggle=lambda _: self.reset_plot_configuration(),
+            label="Grid", on_toggle=lambda _: self.reset_plot_configuration(),
         )
         self.add(LineBox(children=[self.__grid_switch]))
 
@@ -112,7 +112,10 @@ class PlotConfigurationBox(toga.Box):
             on_change=self.on_input_change, style=Pack(width=INPUT_WIDTH),
         )
         line = LineBox(
-            children=[toga.Label(text=label), toga.Box(style=Pack(flex=1)), text_input]
+            children=[
+                toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
+                text_input,
+            ],
         )
 
         self.add(line)

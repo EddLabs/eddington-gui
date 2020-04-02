@@ -11,6 +11,7 @@ from eddington_gui.consts import (
     XERR_COLUMN,
     YERR_COLUMN,
     SELECTION_WIDTH,
+    LABEL_WIDTH,
 )
 from eddington_gui.util import value_or_none
 
@@ -27,8 +28,8 @@ class DataColumnsBox(toga.Box):
 
     __handlers = []
 
-    def __init__(self):
-        super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=1))
+    def __init__(self, flex):
+        super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.x_selection = self.__add_column_option(label="X column:")
         self.xerr_selection = self.__add_column_option(label="X error column:")
@@ -109,7 +110,11 @@ class DataColumnsBox(toga.Box):
             style=Pack(alignment=LEFT, width=SELECTION_WIDTH),
         )
         line = LineBox(
-            children=[toga.Label(text=label), toga.Box(style=Pack(flex=1)), selection]
+            alignment=LEFT,
+            children=[
+                toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
+                selection,
+            ],
         )
 
         self.add(line)

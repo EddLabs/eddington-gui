@@ -22,8 +22,8 @@ class InputFileBox(toga.Box):
     __data_dict: Union[OrderedDict, None] = None
     __handlers = []
 
-    def __init__(self):
-        super(InputFileBox, self).__init__(style=Pack(direction=COLUMN))
+    def __init__(self, flex):
+        super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
         self.__input_file_path = toga.TextInput(
             readonly=True,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),

@@ -5,6 +5,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import List
 
+from click import style
 from eddington_matplotlib import (
     plot_fitting,
     plot_residuals,
@@ -62,12 +63,12 @@ class EddingtonGUI(toga.App):
             )
         )
 
-        self.input_file_box = InputFileBox()
+        self.input_file_box = InputFileBox(flex=1)
         self.input_file_box.add_handler(lambda data_dict: self.reset_all())
         self.input_file_box.add_handler(self.init_chosen_records)
         main_box.add(self.input_file_box)
 
-        self.fitting_function_box = FittingFunctionBox()
+        self.fitting_function_box = FittingFunctionBox(flex=1)
         self.fitting_function_box.add_handler(lambda fit_func: self.reset_fit_result())
         main_box.add(self.fitting_function_box)
 
@@ -76,11 +77,11 @@ class EddingtonGUI(toga.App):
         self.fitting_function_box.add_handler(self.set_parameters_number)
         main_box.add(self.initial_guess_box)
 
-        self.data_columns_box = DataColumnsBox()
+        self.data_columns_box = DataColumnsBox(flex=5)
         self.data_columns_box.add_handler(lambda columns: self.reset_all())
         self.input_file_box.add_handler(self.data_columns_box.update_data_dict)
 
-        self.plot_configuration_box = PlotConfigurationBox()
+        self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
             self.plot_configuration_box.load_fit_function
         )
@@ -88,8 +89,12 @@ class EddingtonGUI(toga.App):
 
         main_box.add(
             toga.Box(
-                style=Pack(direction=ROW, padding_top=BIG_PADDING),
-                children=[self.data_columns_box, self.plot_configuration_box],
+                style=Pack(direction=ROW, padding_top=BIG_PADDING, flex=1),
+                children=[
+                    self.data_columns_box,
+                    toga.Box(style=Pack(flex=2)),
+                    self.plot_configuration_box,
+                ],
             )
         )
         main_box.add(

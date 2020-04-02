@@ -4,7 +4,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
+from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING, RECORD_WINDOW_SIZE
 
 
 class RecordsChoiceWindow(toga.Window):
@@ -13,7 +13,7 @@ class RecordsChoiceWindow(toga.Window):
     __checkboxes: List[toga.Switch]
 
     def __init__(self, data_dict, initial_chosen_records, save_action):
-        super(RecordsChoiceWindow, self).__init__()
+        super(RecordsChoiceWindow, self).__init__(size=RECORD_WINDOW_SIZE)
         self.__save_action = save_action
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
