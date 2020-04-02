@@ -2,9 +2,16 @@
 A gui library wrapping Eddington
 """
 from collections import OrderedDict
+from pathlib import Path
 from typing import List
 
-from eddington_matplotlib import plot_fitting, plot_residuals, plot_data
+from eddington_matplotlib import (
+    plot_fitting,
+    plot_residuals,
+    plot_data,
+    OutputConfiguration,
+    plot_all,
+)
 from eddington_core import fit_to_data, FitData, FitResult
 from eddington import reduce_data
 
@@ -20,7 +27,7 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import SIZE, BIG_PADDING
+from eddington_gui.consts import SIZE, BIG_PADDING, MAIN_BOTTOM_PADDING, SMALL_PADDING
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
@@ -31,6 +38,7 @@ class EddingtonGUI(toga.App):
     initial_guess_box: InitialGuessBox
     plot_configuration_box: PlotConfigurationBox
     data_columns_box: DataColumnsBox
+    output_directory_input: toga.TextInput
 
     __chosen_records: List[bool] = None
     __fit_data: FitData = None
@@ -101,7 +109,6 @@ class EddingtonGUI(toga.App):
         )
         main_box.add(
             LineBox(
-                padding_bottom=BIG_PADDING,
                 children=[
                     toga.Button(
                         label="Plot data", on_press=self.plot_data, style=Pack(flex=1)
@@ -111,6 +118,28 @@ class EddingtonGUI(toga.App):
                     ),
                     toga.Button(
                         label="Residuals", on_press=self.residuals, style=Pack(flex=1)
+                    ),
+                ],
+            )
+        )
+        self.output_directory_input = toga.TextInput(readonly=True, style=Pack(flex=1))
+        main_box.add(
+            LineBox(
+                padding_bottom=MAIN_BOTTOM_PADDING,
+                children=[
+                    toga.Label(text="Output directory:"),
+                    self.output_directory_input,
+                    toga.Button(
+                        label="Choose directory",
+                        on_press=self.choose_output_dir,
+                        style=Pack(padding_left=SMALL_PADDING),
+                    ),
+                    toga.Button(
+                        label="Save",
+                        on_press=self.save_to_output_dir,
+                        style=Pack(
+                            padding_left=SMALL_PADDING, padding_right=SMALL_PADDING
+                        ),
                     ),
                 ],
             )
@@ -194,6 +223,38 @@ class EddingtonGUI(toga.App):
                 plot_configuration=self.plot_configuration_box.plot_configuration,
                 a=self.fit_result.a,
             )
+
+    def choose_output_dir(self, widget):
+        try:
+            folder_path = self.main_window.select_folder_dialog(
+                title="Output directory"
+            )
+        except ValueError:
+            return
+        self.output_directory_input.value = folder_path[0]
+
+    def save_to_output_dir(self, widget):
+        if self.fit_result is None:
+            self.show_nothing_to_plot()
+            return
+        if self.output_directory_input.value == "":
+            self.main_window.info_dialog(
+                title="Save output", message="Output directory hasn't been chosen"
+            )
+        output_configuration = OutputConfiguration.build(
+            func_name=self.fitting_function_box.fit_function.name,
+            output_dir=Path(self.output_directory_input.value),
+        )
+        plot_all(
+            func=self.fitting_function_box.fit_function,
+            data=self.fit_data,
+            plot_configuration=self.plot_configuration_box.plot_configuration,
+            output_configuration=output_configuration,
+            a=self.fit_result.a,
+        )
+        self.main_window.info_dialog(
+            title="Save output", message="All plots have been saved successfully!"
+        )
 
     def show_nothing_to_plot(self):
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")

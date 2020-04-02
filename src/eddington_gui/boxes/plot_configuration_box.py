@@ -101,6 +101,9 @@ class PlotConfigurationBox(toga.Box):
             xlabel=self.xlabel,
             ylabel=self.ylabel,
             grid=self.__grid_switch.is_on,
+            plot_data=True,
+            plot_fitting=True,
+            plot_residuals=True,
         )
 
     def __add_column_option(self, label):
