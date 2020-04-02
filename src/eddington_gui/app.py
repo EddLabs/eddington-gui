@@ -12,7 +12,7 @@ from eddington import (
 
 import numpy as np
 import toga
-from eddington import get_a0, plot_data
+from eddington import plot_data
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
 
