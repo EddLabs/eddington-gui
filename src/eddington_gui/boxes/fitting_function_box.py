@@ -3,7 +3,7 @@ import re
 import toga
 from toga.style import Pack
 
-from eddington import (
+from eddington_core import (
     FitFunctionsRegistry,
     FitFunction,
     FitFunctionGenerator,

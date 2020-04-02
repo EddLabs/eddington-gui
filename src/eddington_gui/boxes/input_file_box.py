@@ -4,7 +4,8 @@ import xlrd
 from typing import Union
 
 import toga
-from eddington import read_data_from_excel, InvalidDataFile, read_data_from_csv
+from eddington import read_data_from_excel, read_data_from_csv
+from eddington.exceptions import InvalidDataFile
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
