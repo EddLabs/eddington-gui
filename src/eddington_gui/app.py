@@ -5,7 +5,7 @@ from collections import OrderedDict
 from typing import List
 
 from eddington_matplotlib import plot_fitting, plot_residuals, plot_data
-from eddington.core import fit_to_data, FitData, FitResult
+from eddington_core import fit_to_data, FitData, FitResult
 from eddington import reduce_data
 
 import numpy as np
