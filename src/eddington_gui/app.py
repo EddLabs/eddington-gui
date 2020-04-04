@@ -127,7 +127,7 @@ class EddingtonGUI(toga.App):
                 ],
             )
         )
-        self.output_directory_input = toga.TextInput(readonly=True, style=Pack(flex=1))
+        self.output_directory_input = toga.TextInput(style=Pack(flex=1))
         main_box.add(
             LineBox(
                 padding_bottom=MAIN_BOTTOM_PADDING,
