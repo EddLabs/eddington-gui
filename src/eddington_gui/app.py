@@ -13,7 +13,7 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington_core import fit_to_data, FitData, FitResult
+from eddington_core import fit_to_data, FitData, FitResult, EddingtonException
 from eddington import reduce_data
 
 import numpy as np
@@ -303,13 +303,20 @@ class EddingtonGUI(toga.App):
         data_dict = OrderedDict()
         for key, value in self.input_file_box.data_dict.items():
             data_dict[key] = np.array(value)[self.__chosen_records]
-        reduced_data = reduce_data(
-            data_dict=data_dict,
-            x_column=self.data_columns_box.x_column,
-            xerr_column=self.data_columns_box.xerr_column,
-            y_column=self.data_columns_box.y_column,
-            yerr_column=self.data_columns_box.yerr_column,
-        )
+        try:
+            reduced_data = reduce_data(
+                data_dict=data_dict,
+                x_column=self.data_columns_box.x_column,
+                xerr_column=self.data_columns_box.xerr_column,
+                y_column=self.data_columns_box.y_column,
+                yerr_column=self.data_columns_box.yerr_column,
+            )
+        except EddingtonException as e:
+            self.main_window.error_dialog(
+                title="Fit data error", message=str(e),
+            )
+            self.fit_data = None
+            return
         self.fit_data = FitData.build_from_data_dict(data_dict=reduced_data)
         self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
 
