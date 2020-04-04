@@ -246,9 +246,10 @@ class EddingtonGUI(toga.App):
             self.main_window.info_dialog(
                 title="Save output", message="Output directory hasn't been chosen"
             )
+        output_dir = Path(self.output_directory_input.value)
+        func_name = self.fitting_function_box.fit_function.name
         output_configuration = OutputConfiguration.build(
-            func_name=self.fitting_function_box.fit_function.name,
-            output_dir=Path(self.output_directory_input.value),
+            func_name=func_name, output_dir=output_dir,
         )
         plot_all(
             func=self.fitting_function_box.fit_function,
@@ -257,6 +258,10 @@ class EddingtonGUI(toga.App):
             output_configuration=output_configuration,
             a=self.fit_result.a,
         )
+        with open(
+            output_dir / f"{func_name}_fitting_result.txt", mode="w"
+        ) as result_file:
+            result_file.write(str(self.fit_result))
         self.main_window.info_dialog(
             title="Save output", message="All plots have been saved successfully!"
         )
