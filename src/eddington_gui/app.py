@@ -253,10 +253,6 @@ class EddingtonGUI(toga.App):
             output_configuration=output_configuration,
             result=self.fit_result,
         )
-        with open(
-            output_dir / f"{func_name}_fitting_result.txt", mode="w"
-        ) as result_file:
-            result_file.write(str(self.fit_result))
         self.main_window.info_dialog(
             title="Save output", message="All plots have been saved successfully!"
         )
