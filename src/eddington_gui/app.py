@@ -14,7 +14,6 @@ from eddington_matplotlib import (
     plot_all,
 )
 from eddington_core import fit_to_data, FitData, FitResult, EddingtonException
-from eddington import reduce_data
 
 import numpy as np
 import toga
@@ -242,21 +241,17 @@ class EddingtonGUI(toga.App):
         if self.fit_result is None:
             self.show_nothing_to_plot()
             return
-        if self.output_directory_input.value == "":
-            self.main_window.info_dialog(
-                title="Save output", message="Output directory hasn't been chosen"
-            )
         output_dir = Path(self.output_directory_input.value)
         func_name = self.fitting_function_box.fit_function.name
         output_configuration = OutputConfiguration.build(
-            func_name=func_name, output_dir=output_dir,
+            base_name=func_name, output_dir=output_dir,
         )
         plot_all(
             func=self.fitting_function_box.fit_function,
             data=self.fit_data,
             plot_configuration=self.plot_configuration_box.plot_configuration,
             output_configuration=output_configuration,
-            a=self.fit_result.a,
+            result=self.fit_result,
         )
         with open(
             output_dir / f"{func_name}_fitting_result.txt", mode="w"
@@ -304,12 +299,11 @@ class EddingtonGUI(toga.App):
         for key, value in self.input_file_box.data_dict.items():
             data_dict[key] = np.array(value)[self.__chosen_records]
         try:
-            reduced_data = reduce_data(
-                data_dict=data_dict,
-                x_column=self.data_columns_box.x_column,
-                xerr_column=self.data_columns_box.xerr_column,
-                y_column=self.data_columns_box.y_column,
-                yerr_column=self.data_columns_box.yerr_column,
+            self.fit_data = FitData(
+                x=data_dict[self.data_columns_box.x_column],
+                xerr=data_dict[self.data_columns_box.xerr_column],
+                y=data_dict[self.data_columns_box.y_column],
+                yerr=data_dict[self.data_columns_box.yerr_column],
             )
         except EddingtonException as e:
             self.main_window.error_dialog(
@@ -317,7 +311,6 @@ class EddingtonGUI(toga.App):
             )
             self.fit_data = None
             return
-        self.fit_data = FitData.build_from_data_dict(data_dict=reduced_data)
         self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
 
     def __calculate_fit_result(self):
