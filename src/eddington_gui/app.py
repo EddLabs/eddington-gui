@@ -321,12 +321,19 @@ class EddingtonGUI(toga.App):
             or self.initial_guess_box.a0 is None
         ):
             self.fit_result = None
-        else:
+            return
+        try:
             self.fit_result = fit_to_data(
                 data=self.fit_data,
                 func=self.fitting_function_box.fit_function,
                 a0=self.initial_guess_box.a0,
             )
+        except EddingtonException as e:
+            self.main_window.error_dialog(
+                title="Fit result error", message=str(e),
+            )
+            self.fit_result = None
+            return
 
 
 def main():
