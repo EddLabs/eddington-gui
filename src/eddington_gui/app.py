@@ -242,6 +242,8 @@ class EddingtonGUI(toga.App):
             self.show_nothing_to_plot()
             return
         output_dir = Path(self.output_directory_input.value)
+        if not output_dir.exists():
+            output_dir.mkdir()
         func_name = self.fitting_function_box.fit_function.name
         output_configuration = OutputConfiguration.build(
             base_name=func_name, output_dir=output_dir,
