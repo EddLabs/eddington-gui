@@ -5,7 +5,6 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import List
 
-from click import style
 from eddington_matplotlib import (
     plot_fitting,
     plot_residuals,
