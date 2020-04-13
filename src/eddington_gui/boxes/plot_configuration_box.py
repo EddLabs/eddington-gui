@@ -91,7 +91,7 @@ class PlotConfigurationBox(toga.Box):
 
     def __build_plot_configuration(self):
         self.plot_configuration = PlotConfiguration.build(
-            func_name=self.__func_name,
+            base_name=self.__func_name,
             xmin=self.__xmin,
             xmax=self.__xmax,
             xcolumn=self.__xcolumn,
