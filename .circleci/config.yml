@@ -32,6 +32,10 @@ jobs:
           name: Install briefcase
           command: |
             pip install briefcase
+      - run:
+          name: Briefcase create
+          command: |
+            briefcase create
 
 workflows:
   main:
