@@ -35,6 +35,7 @@ jobs:
             setx path "%path%;%homepath%\AppData\Local\Programs\Python\Python37-32\Scripts\"
             echo %path%
             dir %homepath%\AppData\Local\Programs\Python
+          shell: cmd.exe
       - run:
           name: Briefcase create
           command: |
