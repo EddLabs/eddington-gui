@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Install briefcase
           command: |
-            pip install briefcase
+            pip install briefcase --pre --user
       - run:
           name: Briefcase create
           command: |
