@@ -38,5 +38,5 @@ workflows:
     jobs:
       - style
       - build:
-        requires:
-          - style
+          requires:
+            - style
