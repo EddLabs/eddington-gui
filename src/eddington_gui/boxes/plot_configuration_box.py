@@ -1,7 +1,7 @@
 from typing import Union
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, CENTER
+from toga.style.pack import COLUMN
 
 from eddington_matplotlib import PlotConfiguration
 
