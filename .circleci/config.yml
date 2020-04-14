@@ -32,14 +32,20 @@ jobs:
           name: Install briefcase
           command: |
             pip install briefcase
-            setx path "%path%;%homepath%\AppData\Local\Programs\Python\Python37-32\Scripts\"
-            echo %path%
-            dir %homepath%\AppData\Local\Programs\Python
-          shell: cmd.exe
       - run:
           name: Briefcase create
           command: |
-            briefcase create
+            python -m briefcase create
+      - run:
+          name: Briefcase update
+          command: |
+            python -m briefcase update
+      - run:
+          name: Briefcase package
+          command: |
+            python -m briefcase package
+      - store_artifacts:
+          path: windows/
 
 workflows:
   main:
