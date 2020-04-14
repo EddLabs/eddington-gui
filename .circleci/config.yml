@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
 jobs:
   style:
     docker:
@@ -19,8 +22,21 @@ jobs:
           name: Run flake8
           command: |
             $HOME/.local/bin/flake8 $HOME/project/src --max-line-length=88
+  build:
+    executor:
+      name: win/default # executor type
+      size: "medium"
+    steps:
+      - checkout
+      - run:
+          name: Install briefcase
+          command: |
+            pip install briefcase
 
 workflows:
   main:
     jobs:
       - style
+      - build:
+        requires:
+          - style
