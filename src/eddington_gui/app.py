@@ -26,7 +26,7 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import SIZE, BIG_PADDING, MAIN_BOTTOM_PADDING, SMALL_PADDING
+from eddington_gui.consts import WINDOW_SIZE, BIG_PADDING, MAIN_BOTTOM_PADDING, SMALL_PADDING
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
@@ -54,12 +54,6 @@ class EddingtonGUI(toga.App):
         """
         main_box = toga.Box(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
-        main_box.add(
-            toga.Label(
-                text=type(self).__name__,
-                style=Pack(text_align=CENTER, font_family=FANTASY, font_size=23),
-            )
-        )
 
         self.input_file_box = InputFileBox(flex=1)
         self.input_file_box.add_handler(lambda data_dict: self.reset_all())
@@ -148,7 +142,7 @@ class EddingtonGUI(toga.App):
             )
         )
 
-        self.main_window = toga.MainWindow(title=self.formal_name, size=SIZE)
+        self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
         self.main_window.show()
 
