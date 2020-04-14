@@ -32,6 +32,9 @@ jobs:
           name: Install briefcase
           command: |
             pip install briefcase
+            setx path "%path%;%homepath%\AppData\Local\Programs\Python\Python37-32\Scripts\"
+            echo %path%
+            dir %homepath%\AppData\Local\Programs\Python
       - run:
           name: Briefcase create
           command: |
