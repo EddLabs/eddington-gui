@@ -17,7 +17,7 @@ from eddington_core import fit_to_data, FitData, FitResult, EddingtonException
 import numpy as np
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, CENTER, FANTASY
+from toga.style.pack import COLUMN, ROW
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -26,7 +26,12 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import WINDOW_SIZE, BIG_PADDING, MAIN_BOTTOM_PADDING, SMALL_PADDING
+from eddington_gui.consts import (
+    WINDOW_SIZE,
+    BIG_PADDING,
+    MAIN_BOTTOM_PADDING,
+    SMALL_PADDING,
+)
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
