@@ -50,7 +50,7 @@ jobs:
           command: |
             python -m briefcase package
       - store_artifacts:
-          path: windows/
+          path: windows/*.msi
 
 workflows:
   main:
