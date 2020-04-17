@@ -1,9 +1,9 @@
+import importlib.util
 import re
-
 import toga
 from toga.style import Pack
 
-from eddington import (
+from eddington_core import (
     FitFunctionsRegistry,
     FitFunction,
     FitFunctionGenerator,
@@ -21,17 +21,19 @@ class FittingFunctionBox(toga.Box):
     fitting_function_syntax: toga.TextInput
     parameters_box: LineBox
     parameter_inputs: toga.TextInput
+    load_module_button: toga.Button
 
     __fit_function_generator: FitFunctionGenerator = None
     __fit_function: FitFunction = None
     __handlers = []
 
-    def __init__(self):
-        super(FittingFunctionBox, self).__init__(style=Pack(direction=COLUMN))
+    def __init__(self, flex):
+        super(FittingFunctionBox, self).__init__(
+            style=Pack(direction=COLUMN, flex=flex)
+        )
         fit_function_box = LineBox()
         fit_function_box.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
-            items=[NO_VALUE, COSTUMED] + list(FitFunctionsRegistry.names()),
             on_select=self.load_select_fit_function_name,
         )
         fit_function_box.add(self.fitting_function_selection)
@@ -41,6 +43,10 @@ class FittingFunctionBox(toga.Box):
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
         fit_function_box.add(self.fitting_function_syntax)
+        self.load_module_button = toga.Button(
+            label="Load module", on_press=self.load_module
+        )
+        fit_function_box.add(self.load_module_button)
         self.add(fit_function_box)
 
         self.parameters_box = LineBox()
@@ -53,8 +59,15 @@ class FittingFunctionBox(toga.Box):
         self.parameters_box.add(self.parameter_inputs)
         self.add(self.parameters_box)
 
+        self.update_fitting_function_options()
+
     def add_handler(self, handler):
         self.__handlers.append(handler)
+
+    def update_fitting_function_options(self):
+        self.fitting_function_selection.items = [NO_VALUE, COSTUMED] + list(
+            FitFunctionsRegistry.names()
+        )
 
     def load_select_fit_function_name(self, widget):
         if self.fit_function_state == COSTUMED:
@@ -75,6 +88,18 @@ class FittingFunctionBox(toga.Box):
         else:
             self.fit_function_generator = None
             self.fit_function = func
+
+    def load_module(self, widget):
+        try:
+            file_path = self.window.open_file_dialog(
+                title="Choose module file", multiselect=False
+            )
+        except ValueError:
+            return
+        spec = importlib.util.spec_from_file_location("eddington.dummy", file_path)
+        dummy_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dummy_module)
+        self.update_fitting_function_options()
 
     def on_syntax_change(self, widget):
         if self.fit_function_state == COSTUMED:
