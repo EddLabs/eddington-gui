@@ -49,8 +49,10 @@ jobs:
           name: Briefcase package
           command: |
             python -m briefcase package
+            mkdir artifacts
+            cp windows\*.msi artifacts
       - store_artifacts:
-          path: windows/*.msi
+          path: artifacts
 
 workflows:
   main:
