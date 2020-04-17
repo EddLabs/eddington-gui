@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@2.2.0
-
 jobs:
   style:
     docker:
@@ -22,40 +19,8 @@ jobs:
           name: Run flake8
           command: |
             $HOME/.local/bin/flake8 $HOME/project/src --max-line-length=88
-  build:
-    executor:
-      name: win/default # executor type
-      size: "medium"
-    steps:
-      - checkout
-      - run:
-          name: Install briefcase
-          command: |
-            pip install briefcase --pre --user
-      - run:
-          name: Install Wix Toolset
-          command: |
-            Start-Process wpr -verb runAs -Args "-start GeneralProfile"
-            choco install wixtoolset -y
-      - run:
-          name: Briefcase create
-          command: |
-            python -m briefcase create
-      - run:
-          name: Briefcase update
-          command: |
-            python -m briefcase update
-      - run:
-          name: Briefcase package
-          command: |
-            python -m briefcase package
-      - store_artifacts:
-          path: windows/*.msi
 
 workflows:
   main:
     jobs:
-    - style
-    - build:
-        requires:
-          - style
+      - style
