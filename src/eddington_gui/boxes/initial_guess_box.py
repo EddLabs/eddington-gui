@@ -2,7 +2,7 @@ import re
 from typing import Union
 import numpy as np
 import toga
-from eddington import get_a0
+from eddington_fit import get_a0
 
 from eddington_gui.boxes.line_box import LineBox
 
