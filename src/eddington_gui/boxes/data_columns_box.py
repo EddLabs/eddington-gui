@@ -6,14 +6,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import (
-    X_COLUMN,
-    Y_COLUMN,
-    XERR_COLUMN,
-    YERR_COLUMN,
-    SELECTION_WIDTH,
-    LABEL_WIDTH,
-)
+from eddington_gui.consts import SELECTION_WIDTH, LABEL_WIDTH
 from eddington_gui.util import value_or_none
 
 
@@ -93,15 +86,6 @@ class DataColumnsBox(toga.Box):
     @property
     def yerr_column(self):
         return value_or_none(self.yerr_selection.value)
-
-    @property
-    def columns(self):
-        return {
-            X_COLUMN: self.x_column,
-            XERR_COLUMN: self.xerr_column,
-            Y_COLUMN: self.y_column,
-            YERR_COLUMN: self.yerr_column,
-        }
 
     @property
     def selection_enabled(self):

@@ -6,7 +6,7 @@ from toga.style.pack import COLUMN
 from eddington_matplotlib import PlotConfiguration
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import X_COLUMN, Y_COLUMN, LABEL_WIDTH, INPUT_WIDTH
+from eddington_gui.consts import LABEL_WIDTH, INPUT_WIDTH
 from eddington_gui.util import value_or_none
 
 

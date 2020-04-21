@@ -3,11 +3,6 @@ from toga.style.pack import MONOSPACE
 NO_VALUE = "----------"
 COSTUMED = "costumed"
 
-X_COLUMN = "x_column"
-XERR_COLUMN = "xerr_column"
-Y_COLUMN = "ycolumn"
-YERR_COLUMN = "yerr_column"
-
 LOGO_SIZE = 192
 WINDOW_SIZE = (1100, 800)
 
