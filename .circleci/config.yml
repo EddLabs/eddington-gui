@@ -68,13 +68,16 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
+          name: "Copy MSI"
+          command: |
+            mkdir /tmp/artifacts/
+            cp /tmp/workspace/windows/*msi /tmp/artifacts/
+      - run:
           name: "Publish Release on GitHub"
           command: |
             go get github.com/tcnksm/ghr
             VERSION=v$(cat VERSION)
-            echo ${ls /tmp/workspace}
-            echo ${ls /tmp/workspace/*.msi}
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/workspace
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/artifacts/
 
 workflows:
   main:
