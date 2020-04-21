@@ -54,14 +54,14 @@ jobs:
             python -m briefcase package
             mkdir artifacts
             cp windows\*.msi artifacts
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - windows\*.msi
       - save_cache:
           paths:
-            - ~/project/windows
+            - windows
           key: windows-{{ checksum "pyproject.toml" }}
+      - persist_to_workspace:
+          root: ~\project
+          paths:
+            - windows\*.msi
   publish:
     docker:
       - image: circleci/golang:1.14-buster
