@@ -2,7 +2,6 @@
 A gui library wrapping Eddington
 """
 from pathlib import Path
-from typing import List
 
 from eddington_matplotlib import (
     plot_fitting,
