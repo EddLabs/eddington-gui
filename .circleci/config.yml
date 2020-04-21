@@ -85,7 +85,7 @@ jobs:
 workflows:
   main:
     jobs:
-    - style
+    - style:
         filters:
           tags:
             only: /^v.*/
