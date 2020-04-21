@@ -77,7 +77,7 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=v$(cat VERSION)
-            if [[ "$VERSION" == "*dev*" ]]; then
+            if [[ ${VERSION} == *"dev"* ]]; then
                PRERELEASE="-prerelease"
             fi
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PRERELEASE} ${VERSION} /tmp/artifacts/
