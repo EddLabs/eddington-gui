@@ -59,9 +59,9 @@ jobs:
             - windows
           key: windows-{{ checksum "pyproject.toml" }}
       - persist_to_workspace:
-          root: ~\project
+          root: ~/
           paths:
-            - windows\*.msi
+            - project/windows/*.msi
   publish:
     docker:
       - image: circleci/golang:1.14-buster
@@ -74,6 +74,7 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=v$(cat VERSION)
+            ls /tmp/workspace
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/workspace
 
 workflows:
