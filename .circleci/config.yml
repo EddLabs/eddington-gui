@@ -86,6 +86,9 @@ workflows:
   main:
     jobs:
     - style
+      filters:
+        tags:
+          only: /^v.*/
     - build:
         requires:
           - style
