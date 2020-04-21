@@ -31,16 +31,19 @@ jobs:
       - run:
           name: Install briefcase
           command: |
-            pip install briefcase --pre --user
+            pip install briefcase --user
       - run:
           name: Install Wix Toolset
           command: |
             Start-Process wpr -verb runAs -Args "-start GeneralProfile"
             choco install wixtoolset -y
+      - restore_cache:
+          keys:
+            - windows-{{ checksum "pyproject.toml" }}
       - run:
           name: Briefcase create
           command: |
-            python -m briefcase create
+            python -m briefcase create --no-input
       - run:
           name: Briefcase update
           command: |
@@ -53,6 +56,10 @@ jobs:
             cp windows\*.msi artifacts
       - store_artifacts:
           path: artifacts
+      - save_cache:
+          paths:
+            - ~/project/windows
+          key: windows-{{ checksum "pyproject.toml" }}
 
 workflows:
   main:
