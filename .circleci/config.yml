@@ -52,8 +52,6 @@ jobs:
           name: Briefcase package
           command: |
             python -m briefcase package
-            mkdir artifacts
-            cp windows\*.msi artifacts
       - save_cache:
           paths:
             - windows
