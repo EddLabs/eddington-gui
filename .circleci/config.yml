@@ -54,12 +54,27 @@ jobs:
             python -m briefcase package
             mkdir artifacts
             cp windows\*.msi artifacts
-      - store_artifacts:
-          path: artifacts
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - windows\*.msi
       - save_cache:
           paths:
             - ~/project/windows
           key: windows-{{ checksum "pyproject.toml" }}
+  publish:
+    docker:
+      - image: circleci/golang:1.14-buster
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=v$(cat VERSION)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/workspace
 
 workflows:
   main:
@@ -68,3 +83,6 @@ workflows:
     - build:
         requires:
           - style
+    - publish:
+        requires:
+          - build
