@@ -58,7 +58,7 @@ class InitialGuessBox(LineBox):
     def __calculate_a0(self):
         if self.initial_guess_string is not None:
             self.a0 = np.array(
-                list(map(float, re.split(r",[ \n\t]+", self.initial_guess_string)))
+                list(map(float, re.split(r",[ \n\t]?", self.initial_guess_string)))
             )
             return
         if self.n is not None:
