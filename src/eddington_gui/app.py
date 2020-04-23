@@ -112,6 +112,17 @@ class EddingtonGUI(toga.App):
                         label="Plot data", on_press=self.plot_data, style=Pack(flex=1)
                     ),
                     toga.Button(
+                        label="Plot Initial Guess",
+                        on_press=self.plot_initial_guess,
+                        style=Pack(flex=1),
+                    ),
+                ]
+            )
+        )
+        main_box.add(
+            LineBox(
+                children=[
+                    toga.Button(
                         label="Plot Fitting", on_press=self.plot, style=Pack(flex=1)
                     ),
                     toga.Button(
@@ -186,6 +197,17 @@ class EddingtonGUI(toga.App):
             plot_data(
                 data=self.data_columns_box.fit_data,
                 plot_configuration=self.plot_configuration_box.plot_configuration,
+            )
+
+    def plot_initial_guess(self, widget):
+        if self.data_columns_box.fit_data is None or self.initial_guess_box.a0 is None:
+            self.show_nothing_to_plot()
+        else:
+            plot_fitting(
+                func=self.fitting_function_box.fit_function,
+                data=self.data_columns_box.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+                a=self.initial_guess_box.a0,
             )
 
     def plot(self, widget):
