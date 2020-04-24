@@ -12,16 +12,15 @@ jobs:
       - run:
           name: Update pip
           command: |
-            python -m pip install --user --upgrade pip
-            pip install flake8 black --user
+            pip install tox --user
       - run:
           name: Run black
           command: |
-            $HOME/.local/bin/black $HOME/project/src --check
+            $HOME/.local/bin/tox -e black
       - run:
           name: Run flake8
           command: |
-            $HOME/.local/bin/flake8 $HOME/project/src --max-line-length=88
+            $HOME/.local/bin/tox -e flake
   build:
     executor:
       name: win/default # executor type
