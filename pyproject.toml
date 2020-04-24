@@ -19,7 +19,7 @@ requires = [
     '--pre',
     'xlrd>=1.2.0',
     'eddington-core>=0.0.5.dev6',
-    'eddington-fit>=0.0.1.dev3',
+    'eddington-fit>=0.0.1.dev4',
     'eddington-matplotlib>=0.0.5.dev5',
     'wxPython>=4.0.7'
 ]
