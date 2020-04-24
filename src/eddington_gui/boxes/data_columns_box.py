@@ -1,7 +1,7 @@
 from typing import List, Union
 
 import toga
-from eddington_core import FitData
+from eddington_core import FitData, FitDataError
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
@@ -123,10 +123,18 @@ class DataColumnsBox(toga.Box):
             handler(self.fit_data)
 
     def read_csv(self, filename):
-        self.fit_data = FitData.read_from_csv(filename)
+        try:
+            self.fit_data = FitData.read_from_csv(filename)
+        except FitDataError as e:
+            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = None
 
     def read_excel(self, filename, sheet):
-        self.fit_data = FitData.read_from_excel(filename, sheet)
+        try:
+            self.fit_data = FitData.read_from_excel(filename, sheet)
+        except FitDataError as e:
+            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = None
 
     def __add_column_option(self, label, on_select):
 
