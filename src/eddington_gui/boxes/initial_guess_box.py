@@ -2,7 +2,6 @@ import re
 from typing import Union
 import numpy as np
 import toga
-from eddington_fit import get_a0
 from toga.style import Pack
 
 from eddington_gui.boxes.line_box import LineBox
@@ -65,6 +64,6 @@ class InitialGuessBox(LineBox):
             )
             return
         if self.n is not None:
-            self.a0 = get_a0(self.n)
+            self.a0 = None
             return
         self.a0 = None

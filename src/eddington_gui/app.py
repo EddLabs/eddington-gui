@@ -10,8 +10,7 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington_core import FitResult, EddingtonException
-from eddington_fit import fit_to_data
+from eddington import FitResult, EddingtonException, fit_to_data
 
 import numpy as np
 import toga
@@ -276,11 +275,9 @@ class EddingtonGUI(toga.App):
             self.initial_guess_box.n = func.n
 
     def __calculate_fit_result(self):
-        self.fitting_function_box.initialize_fit_func()
         if (
             self.data_columns_box.fit_data is None
             or self.fitting_function_box.fit_function is None
-            or self.initial_guess_box.a0 is None
         ):
             self.fit_result = None
             return

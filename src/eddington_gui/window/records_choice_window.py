@@ -1,6 +1,6 @@
 from typing import List, Callable
 import toga
-from eddington_core import FitData
+from eddington import FitData
 from toga.style import Pack
 from toga.style.pack import COLUMN
 

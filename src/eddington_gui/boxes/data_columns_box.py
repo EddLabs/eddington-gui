@@ -1,7 +1,7 @@
 from typing import List, Union
 
 import toga
-from eddington_core import FitData, FitDataError
+from eddington import FitData, FitDataError
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
