@@ -6,7 +6,7 @@ from toga.style.pack import COLUMN
 from eddington_matplotlib import PlotConfiguration
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import X_COLUMN, Y_COLUMN, LABEL_WIDTH, INPUT_WIDTH
+from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH
 from eddington_gui.util import value_or_none
 
 
@@ -18,7 +18,7 @@ class PlotConfigurationBox(toga.Box):
     __ylabel_input: toga.TextInput
     __grid_switch: toga.Switch
 
-    __func_name: Union[str, None] = None
+    __base_name: Union[str] = ""
     __xmin: Union[float, None] = None
     __xmax: Union[float, None] = None
     __xcolumn: Union[str, None] = None
@@ -69,18 +69,19 @@ class PlotConfigurationBox(toga.Box):
 
     def load_fit_function(self, fit_function):
         if fit_function is None:
-            self.__func_name = None
+            self.__base_name = ""
         else:
-            self.__func_name = fit_function.title_name
+            self.__base_name = fit_function.title_name
         self.reset_plot_configuration()
 
     def set_xmin_xmax(self, x):
         self.__xmin, self.__xmax = PlotConfiguration.get_plot_borders(x)
         self.reset_plot_configuration()
 
-    def load_columns(self, columns):
-        self.__xcolumn = columns[X_COLUMN]
-        self.__ycolumn = columns[Y_COLUMN]
+    def load_fit_data(self, fit_data):
+        self.__xcolumn = fit_data.x_column
+        self.__ycolumn = fit_data.y_column
+        self.set_xmin_xmax(fit_data.x)
         self.reset_plot_configuration()
 
     def reset_plot_configuration(self):
@@ -91,7 +92,7 @@ class PlotConfigurationBox(toga.Box):
 
     def __build_plot_configuration(self):
         self.plot_configuration = PlotConfiguration.build(
-            base_name=self.__func_name,
+            base_name=self.__base_name,
             xmin=self.__xmin,
             xmax=self.__xmax,
             xcolumn=self.__xcolumn,
@@ -109,7 +110,7 @@ class PlotConfigurationBox(toga.Box):
     def __add_column_option(self, label):
 
         text_input = toga.TextInput(
-            on_change=self.on_input_change, style=Pack(width=INPUT_WIDTH),
+            on_change=self.on_input_change, style=Pack(width=LONG_INPUT_WIDTH),
         )
         line = LineBox(
             children=[

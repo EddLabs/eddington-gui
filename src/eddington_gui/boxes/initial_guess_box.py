@@ -2,9 +2,11 @@ import re
 from typing import Union
 import numpy as np
 import toga
-from eddington import get_a0
+from eddington_fit import get_a0
+from toga.style import Pack
 
 from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.consts import MEDIUM_INPUT_WIDTH
 
 
 class InitialGuessBox(LineBox):
@@ -17,7 +19,8 @@ class InitialGuessBox(LineBox):
         super(InitialGuessBox, self).__init__()
         self.add(toga.Label(text="Initial Guess:"))
         self.initial_guess_input = toga.TextInput(
-            on_change=lambda widget: self.reset_initial_guess()
+            style=Pack(width=MEDIUM_INPUT_WIDTH),
+            on_change=lambda widget: self.reset_initial_guess(),
         )
         self.initial_guess_input.value = None
         self.add(self.initial_guess_input)
@@ -58,7 +61,7 @@ class InitialGuessBox(LineBox):
     def __calculate_a0(self):
         if self.initial_guess_string is not None:
             self.a0 = np.array(
-                list(map(float, re.split(r",[ \n\t]+", self.initial_guess_string)))
+                list(map(float, re.split(r",[ \n\t]?", self.initial_guess_string)))
             )
             return
         if self.n is not None:

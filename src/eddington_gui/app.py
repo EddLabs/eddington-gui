@@ -1,9 +1,7 @@
 """
 A gui library wrapping Eddington
 """
-from collections import OrderedDict
 from pathlib import Path
-from typing import List
 
 from eddington_matplotlib import (
     plot_fitting,
@@ -12,7 +10,8 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington_core import fit_to_data, FitData, FitResult, EddingtonException
+from eddington_core import FitResult, EddingtonException
+from eddington_fit import fit_to_data
 
 import numpy as np
 import toga
@@ -44,8 +43,6 @@ class EddingtonGUI(toga.App):
     data_columns_box: DataColumnsBox
     output_directory_input: toga.TextInput
 
-    __chosen_records: List[bool] = None
-    __fit_data: FitData = None
     __a0: np.ndarray = None
     __fit_result: FitResult = None
 
@@ -61,8 +58,6 @@ class EddingtonGUI(toga.App):
         main_box.add(HeaderBox())
 
         self.input_file_box = InputFileBox(flex=1)
-        self.input_file_box.add_handler(lambda data_dict: self.reset_all())
-        self.input_file_box.add_handler(self.init_chosen_records)
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
@@ -75,14 +70,15 @@ class EddingtonGUI(toga.App):
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
-        self.data_columns_box.add_handler(lambda columns: self.reset_all())
-        self.input_file_box.add_handler(self.data_columns_box.update_data_dict)
+        self.data_columns_box.add_handler(lambda fit_data: self.reset_fit_result())
+        self.input_file_box.on_csv_read = self.data_columns_box.read_csv
+        self.input_file_box.on_excel_read = self.data_columns_box.read_excel
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
             self.plot_configuration_box.load_fit_function
         )
-        self.data_columns_box.add_handler(self.plot_configuration_box.load_columns)
+        self.data_columns_box.add_handler(self.plot_configuration_box.load_fit_data)
 
         main_box.add(
             toga.Box(
@@ -115,6 +111,17 @@ class EddingtonGUI(toga.App):
                     toga.Button(
                         label="Plot data", on_press=self.plot_data, style=Pack(flex=1)
                     ),
+                    toga.Button(
+                        label="Plot Initial Guess",
+                        on_press=self.plot_initial_guess,
+                        style=Pack(flex=1),
+                    ),
+                ]
+            )
+        )
+        main_box.add(
+            LineBox(
+                children=[
                     toga.Button(
                         label="Plot Fitting", on_press=self.plot, style=Pack(flex=1)
                     ),
@@ -152,16 +159,6 @@ class EddingtonGUI(toga.App):
         self.main_window.show()
 
     @property
-    def fit_data(self):
-        if self.__fit_data is None:
-            self.__calculate_fit_data()
-        return self.__fit_data
-
-    @fit_data.setter
-    def fit_data(self, fit_data):
-        self.__fit_data = fit_data
-
-    @property
     def fit_result(self):
         if self.__fit_result is None:
             self.__calculate_fit_result()
@@ -172,18 +169,16 @@ class EddingtonGUI(toga.App):
         self.__fit_result = fit_result
 
     def choose_records(self, widget):
-        if self.input_file_box.data_dict is None:
+        if self.data_columns_box.fit_data is None:
             self.main_window.info_dialog(
                 title="Choose Records", message="No data been given yet"
             )
             return
-        window = RecordsChoiceWindow(
-            data_dict=self.input_file_box.data_dict,
-            initial_chosen_records=self.__chosen_records,
-            save_action=self.save_chosen_records,
-        )
+        window = RecordsChoiceWindow(fit_data=self.data_columns_box.fit_data)
         window.show()
-        self.reset_all()
+        self.reset_fit_result()
+        self.initial_guess_box.reset_initial_guess()
+        self.plot_configuration_box.reset_plot_configuration()
 
     def fit(self, widget):
         if self.fit_result is None:
@@ -196,12 +191,23 @@ class EddingtonGUI(toga.App):
             )
 
     def plot_data(self, widget):
-        if self.fit_data is None:
+        if self.data_columns_box.fit_data is None:
             self.show_nothing_to_plot()
         else:
             plot_data(
-                data=self.fit_data,
+                data=self.data_columns_box.fit_data,
                 plot_configuration=self.plot_configuration_box.plot_configuration,
+            )
+
+    def plot_initial_guess(self, widget):
+        if self.data_columns_box.fit_data is None or self.initial_guess_box.a0 is None:
+            self.show_nothing_to_plot()
+        else:
+            plot_fitting(
+                func=self.fitting_function_box.fit_function,
+                data=self.data_columns_box.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+                a=self.initial_guess_box.a0,
             )
 
     def plot(self, widget):
@@ -210,7 +216,7 @@ class EddingtonGUI(toga.App):
         else:
             plot_fitting(
                 func=self.fitting_function_box.fit_function,
-                data=self.fit_data,
+                data=self.data_columns_box.fit_data,
                 plot_configuration=self.plot_configuration_box.plot_configuration,
                 a=self.fit_result.a,
             )
@@ -221,7 +227,7 @@ class EddingtonGUI(toga.App):
         else:
             plot_residuals(
                 func=self.fitting_function_box.fit_function,
-                data=self.fit_data,
+                data=self.data_columns_box.fit_data,
                 plot_configuration=self.plot_configuration_box.plot_configuration,
                 a=self.fit_result.a,
             )
@@ -248,7 +254,7 @@ class EddingtonGUI(toga.App):
         )
         plot_all(
             func=self.fitting_function_box.fit_function,
-            data=self.fit_data,
+            data=self.data_columns_box.fit_data,
             plot_configuration=self.plot_configuration_box.plot_configuration,
             output_configuration=output_configuration,
             result=self.fit_result,
@@ -260,17 +266,8 @@ class EddingtonGUI(toga.App):
     def show_nothing_to_plot(self):
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    def reset_fit_data(self):
-        self.fit_data = None
-
     def reset_fit_result(self):
         self.fit_result = None
-
-    def reset_all(self):
-        self.reset_fit_data()
-        self.reset_fit_result()
-        self.initial_guess_box.reset_initial_guess()
-        self.plot_configuration_box.reset_plot_configuration()
 
     def set_parameters_number(self, func):
         if func is None:
@@ -278,41 +275,10 @@ class EddingtonGUI(toga.App):
         else:
             self.initial_guess_box.n = func.n
 
-    def init_chosen_records(self, data_dict):
-        if data_dict is None:
-            self.save_chosen_records([])
-        else:
-            self.save_chosen_records([True] * len(list(data_dict.values())[0]))
-
-    def save_chosen_records(self, chosen_records):
-        self.__chosen_records = chosen_records
-
-    def __calculate_fit_data(self):
-        if self.input_file_box.data_dict is None:
-            self.fit_data = None
-            return
-        data_dict = OrderedDict()
-        for key, value in self.input_file_box.data_dict.items():
-            data_dict[key] = np.array(value)[self.__chosen_records]
-        try:
-            self.fit_data = FitData(
-                x=data_dict[self.data_columns_box.x_column],
-                xerr=data_dict[self.data_columns_box.xerr_column],
-                y=data_dict[self.data_columns_box.y_column],
-                yerr=data_dict[self.data_columns_box.yerr_column],
-            )
-        except EddingtonException as e:
-            self.main_window.error_dialog(
-                title="Fit data error", message=str(e),
-            )
-            self.fit_data = None
-            return
-        self.plot_configuration_box.set_xmin_xmax(self.fit_data.x)
-
     def __calculate_fit_result(self):
         self.fitting_function_box.initialize_fit_func()
         if (
-            self.fit_data is None
+            self.data_columns_box.fit_data is None
             or self.fitting_function_box.fit_function is None
             or self.initial_guess_box.a0 is None
         ):
@@ -320,7 +286,7 @@ class EddingtonGUI(toga.App):
             return
         try:
             self.fit_result = fit_to_data(
-                data=self.fit_data,
+                data=self.data_columns_box.fit_data,
                 func=self.fitting_function_box.fit_function,
                 a0=self.initial_guess_box.a0,
             )

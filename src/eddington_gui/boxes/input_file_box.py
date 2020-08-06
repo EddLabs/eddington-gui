@@ -1,11 +1,8 @@
-from collections import OrderedDict
+from collections import Callable
 from pathlib import Path
 import xlrd
-from typing import Union
 
 import toga
-from eddington import read_data_from_excel, read_data_from_csv
-from eddington.exceptions import InvalidDataFile
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
@@ -19,8 +16,8 @@ class InputFileBox(toga.Box):
     __select_file: toga.Button = None
     __select_sheet: toga.Selection = None
 
-    __data_dict: Union[OrderedDict, None] = None
-    __handlers = []
+    on_csv_read: Callable = None
+    on_excel_read: Callable = None
 
     def __init__(self, flex):
         super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
@@ -63,19 +60,6 @@ class InputFileBox(toga.Box):
             self.__select_sheet.items = options
             self.__select_sheet.enabled = True
 
-    @property
-    def data_dict(self):
-        return self.__data_dict
-
-    @data_dict.setter
-    def data_dict(self, data_dict):
-        self.__data_dict = data_dict
-        for handler in self.__handlers:
-            handler(data_dict)
-
-    def add_handler(self, handler):
-        self.__handlers.append(handler)
-
     def select_file(self, widget):
         try:
             input_file_path = Path(
@@ -94,7 +78,8 @@ class InputFileBox(toga.Box):
             return
         self.sheets_options = None
         if suffix == ".csv":
-            self.data_dict = read_data_from_csv(filepath=input_file_path)
+            if self.on_csv_read is not None:
+                self.on_csv_read(input_file_path)
             return
         self.data_dict = None
         self.window.error_dialog(
@@ -108,10 +93,5 @@ class InputFileBox(toga.Box):
             self.data_dict = None
             return
         file_path_value = Path(self.file_path)
-        try:
-            self.data_dict = read_data_from_excel(filepath=file_path_value, sheet=value)
-        except InvalidDataFile as e:
-            self.window.error_dialog(
-                title="Invalid Input Source", message=str(e),
-            )
-            self.data_dict = None
+        if self.on_excel_read is not None:
+            self.on_excel_read(file_path_value, value)

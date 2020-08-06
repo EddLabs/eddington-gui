@@ -1,18 +1,12 @@
-from typing import List
+from typing import List, Union
 
 import toga
+from eddington_core import FitData, FitDataError
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import (
-    X_COLUMN,
-    Y_COLUMN,
-    XERR_COLUMN,
-    YERR_COLUMN,
-    SELECTION_WIDTH,
-    LABEL_WIDTH,
-)
+from eddington_gui.consts import SELECTION_WIDTH, LABEL_WIDTH
 from eddington_gui.util import value_or_none
 
 
@@ -26,15 +20,42 @@ class DataColumnsBox(toga.Box):
     y_selection: toga.Selection
     yerr_selection: toga.Selection
 
+    __fit_data: Union[FitData] = None
     __handlers = []
 
     def __init__(self, flex):
         super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
 
-        self.x_selection = self.__add_column_option(label="X column:")
-        self.xerr_selection = self.__add_column_option(label="X error column:")
-        self.y_selection = self.__add_column_option(label="Y column:")
-        self.yerr_selection = self.__add_column_option(label="Y error column:")
+        self.x_selection = self.__add_column_option(
+            label="X column:", on_select=self.select_x
+        )
+        self.xerr_selection = self.__add_column_option(
+            label="X error column:", on_select=self.select_xerr
+        )
+        self.y_selection = self.__add_column_option(
+            label="Y column:", on_select=self.select_y
+        )
+        self.yerr_selection = self.__add_column_option(
+            label="Y error column:", on_select=self.select_yerr
+        )
+
+    @property
+    def fit_data(self):
+        return self.__fit_data
+
+    @fit_data.setter
+    def fit_data(self, fit_data: FitData):
+        self.__fit_data = fit_data
+        if fit_data is None:
+            self.items = []
+            self.selection_enabled = False
+            return
+        self.items = list(fit_data.data.keys())
+        self.selection_enabled = True
+        self.x_selection.value = self.fit_data.x_column
+        self.xerr_selection.value = self.fit_data.xerr_column
+        self.y_selection.value = self.fit_data.y_column
+        self.yerr_selection.value = self.fit_data.yerr_column
 
     @property
     def items(self):
@@ -67,15 +88,6 @@ class DataColumnsBox(toga.Box):
         return value_or_none(self.yerr_selection.value)
 
     @property
-    def columns(self):
-        return {
-            X_COLUMN: self.x_column,
-            XERR_COLUMN: self.xerr_column,
-            Y_COLUMN: self.y_column,
-            YERR_COLUMN: self.yerr_column,
-        }
-
-    @property
     def selection_enabled(self):
         return self.__selection_enabled
 
@@ -90,23 +102,45 @@ class DataColumnsBox(toga.Box):
     def add_handler(self, handler):
         self.__handlers.append(handler)
 
-    def on_column_change(self, widget):
+    def select_x(self, widget):
+        self.fit_data.x_column = self.x_selection.value
+        self.run_handlers()
+
+    def select_xerr(self, widget):
+        self.fit_data.xerr_column = self.xerr_selection.value
+        self.run_handlers()
+
+    def select_y(self, widget):
+        self.fit_data.y_column = self.y_selection.value
+        self.run_handlers()
+
+    def select_yerr(self, widget):
+        self.fit_data.yerr_column = self.yerr_selection.value
+        self.run_handlers()
+
+    def run_handlers(self):
         for handler in self.__handlers:
-            handler(self.columns)
+            handler(self.fit_data)
 
-    def update_data_dict(self, data_dict):
-        if data_dict is None:
-            self.items = None
-            self.selection_enabled = False
-        else:
-            self.items = list(data_dict.keys())
-            self.selection_enabled = True
+    def read_csv(self, filename):
+        try:
+            self.fit_data = FitData.read_from_csv(filename)
+        except FitDataError as e:
+            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = None
 
-    def __add_column_option(self, label):
+    def read_excel(self, filename, sheet):
+        try:
+            self.fit_data = FitData.read_from_excel(filename, sheet)
+        except FitDataError as e:
+            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = None
+
+    def __add_column_option(self, label, on_select):
 
         selection = toga.Selection(
             enabled=self.selection_enabled,
-            on_select=self.on_column_change,
+            on_select=on_select,
             style=Pack(alignment=LEFT, width=SELECTION_WIDTH),
         )
         line = LineBox(

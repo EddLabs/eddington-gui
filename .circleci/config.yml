@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
 jobs:
   style:
     docker:
@@ -9,18 +12,95 @@ jobs:
       - run:
           name: Update pip
           command: |
-            python -m pip install --user --upgrade pip
-            pip install flake8 black --user
+            pip install tox --user
       - run:
           name: Run black
           command: |
-            $HOME/.local/bin/black $HOME/project/src --check
+            $HOME/.local/bin/tox -e black
       - run:
           name: Run flake8
           command: |
-            $HOME/.local/bin/flake8 $HOME/project/src --max-line-length=88
+            $HOME/.local/bin/tox -e flake
+  build:
+    executor:
+      name: win/default # executor type
+      size: "medium"
+    steps:
+      - checkout
+      - run:
+          name: Install briefcase
+          command: |
+            pip install briefcase --user
+      - run:
+          name: Install Wix Toolset
+          command: |
+            Start-Process wpr -verb runAs -Args "-start GeneralProfile"
+            choco install wixtoolset -y
+      - restore_cache:
+          keys:
+            - windows-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Briefcase create
+          command: |
+            python -m briefcase create --no-input
+      - run:
+          name: Briefcase update
+          command: |
+            python -m briefcase update
+      - run:
+          name: Briefcase package
+          command: |
+            python -m briefcase package
+      - save_cache:
+          paths:
+            - windows
+          key: windows-{{ checksum "pyproject.toml" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - windows/*.msi
+  publish:
+    docker:
+      - image: circleci/golang:1.14-buster
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: "Copy MSI"
+          command: |
+            mkdir /tmp/artifacts/
+            cp /tmp/workspace/windows/*msi /tmp/artifacts/
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=v$(cat VERSION)
+            if [[ ${VERSION} == *"dev"* ]]; then
+               PRERELEASE="-prerelease"
+            fi
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${PRERELEASE} ${VERSION} /tmp/artifacts/
 
 workflows:
   main:
     jobs:
-      - style
+    - style:
+        filters:
+          tags:
+            only: /^v.*/
+    - build:
+        requires:
+          - style
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
+    - publish:
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
