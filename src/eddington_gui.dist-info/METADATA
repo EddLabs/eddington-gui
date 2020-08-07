@@ -1,9 +1,0 @@
-Metadata-Version: 2.1
-Name: eddington_gui
-Formal-Name: EddingtonGUI
-App-ID: com.eddington_gui.eddington_gui
-Version: 0.0.1
-Home-page: https://eddington_gui.com/eddington_gui
-Author: Sagi Shadur
-Author-email: saroad2@gmail.com
-Summary: A gui library wrapping Eddington
