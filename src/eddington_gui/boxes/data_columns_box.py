@@ -27,16 +27,16 @@ class DataColumnsBox(toga.Box):
         super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.x_selection = self.__add_column_option(
-            label="X column:", on_select=self.select_x
+            label="X column:", on_select=self.set_columns
         )
         self.xerr_selection = self.__add_column_option(
-            label="X error column:", on_select=self.select_xerr
+            label="X error column:", on_select=self.set_columns
         )
         self.y_selection = self.__add_column_option(
-            label="Y column:", on_select=self.select_y
+            label="Y column:", on_select=self.set_columns
         )
         self.yerr_selection = self.__add_column_option(
-            label="Y error column:", on_select=self.select_yerr
+            label="Y error column:", on_select=self.set_columns
         )
 
     @property
@@ -47,29 +47,29 @@ class DataColumnsBox(toga.Box):
     def fit_data(self, fit_data: FitData):
         self.__fit_data = fit_data
         if fit_data is None:
-            self.items = []
-            self.selection_enabled = False
+            self.clear_selections()
             return
-        self.items = list(fit_data.data.keys())
+        items = list(fit_data.data.keys())
+        self.set_items(self.x_selection, items, self.fit_data.x_column)
+        self.set_items(self.xerr_selection, items, self.fit_data.xerr_column)
+        self.set_items(self.y_selection, items, self.fit_data.y_column)
+        self.set_items(self.yerr_selection, items, self.fit_data.yerr_column)
         self.selection_enabled = True
-        self.x_selection.value = self.fit_data.x_column
-        self.xerr_selection.value = self.fit_data.xerr_column
-        self.y_selection.value = self.fit_data.y_column
-        self.yerr_selection.value = self.fit_data.yerr_column
+        self.set_columns(None)
 
-    @property
-    def items(self):
-        return self.__items
+    @staticmethod
+    def set_items(selection, items, value):
+        selection.items = items
+        if value is not None:
+            selection.value = value
 
-    @items.setter
-    def items(self, items):
-        if items is None:
-            items = []
-        self.__items = items
-        self.x_selection.items = items
-        self.xerr_selection.items = items
-        self.y_selection.items = items
-        self.yerr_selection.items = items
+    def clear_selections(self):
+        self.selection_enabled = False
+        self.set_items(self.x_selection, [], None)
+        self.set_items(self.xerr_selection, [], None)
+        self.set_items(self.y_selection, [], None)
+        self.set_items(self.yerr_selection, [], None)
+        self.run_handlers()
 
     @property
     def x_column(self):
@@ -102,19 +102,12 @@ class DataColumnsBox(toga.Box):
     def add_handler(self, handler):
         self.__handlers.append(handler)
 
-    def select_x(self, widget):
+    def set_columns(self, widget):
+        if not self.selection_enabled:
+            return
         self.fit_data.x_column = self.x_selection.value
-        self.run_handlers()
-
-    def select_xerr(self, widget):
         self.fit_data.xerr_column = self.xerr_selection.value
-        self.run_handlers()
-
-    def select_y(self, widget):
         self.fit_data.y_column = self.y_selection.value
-        self.run_handlers()
-
-    def select_yerr(self, widget):
         self.fit_data.yerr_column = self.yerr_selection.value
         self.run_handlers()
 
