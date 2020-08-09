@@ -50,10 +50,11 @@ class DataColumnsBox(toga.Box):
             self.clear_selections()
             return
         items = list(fit_data.data.keys())
-        self.set_items(self.x_selection, items, self.fit_data.x_column)
-        self.set_items(self.xerr_selection, items, self.fit_data.xerr_column)
-        self.set_items(self.y_selection, items, self.fit_data.y_column)
-        self.set_items(self.yerr_selection, items, self.fit_data.yerr_column)
+        used_columns = self.fit_data.used_columns
+        self.set_items(self.x_selection, items, used_columns.x)
+        self.set_items(self.xerr_selection, items, used_columns.xerr)
+        self.set_items(self.y_selection, items, used_columns.y)
+        self.set_items(self.yerr_selection, items, used_columns.yerr)
         self.selection_enabled = True
         self.set_columns(None)
 

@@ -15,6 +15,7 @@ class InputFileBox(toga.Box):
     __input_file_path: toga.TextInput
     __select_file: toga.Button = None
     __select_sheet: toga.Selection = None
+    __handlers = []
 
     on_csv_read: Callable = None
     on_excel_read: Callable = None
@@ -46,6 +47,9 @@ class InputFileBox(toga.Box):
     @file_path.setter
     def file_path(self, file_path):
         self.__input_file_path.value = str(file_path)
+        self.data_dict = None
+        for handler in self.__handlers:
+            handler()
 
     @property
     def sheets_options(self):
@@ -60,6 +64,9 @@ class InputFileBox(toga.Box):
             self.__select_sheet.items = options
             self.__select_sheet.enabled = True
 
+    def add_handler(self, handler):
+        self.__handlers.append(handler)
+
     def select_file(self, widget):
         try:
             input_file_path = Path(
@@ -73,7 +80,6 @@ class InputFileBox(toga.Box):
         suffix = input_file_path.suffix
         if suffix in [".xlsx", ".xls"]:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
-            self.data_dict = None
             self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
             return
         self.sheets_options = None
@@ -81,7 +87,6 @@ class InputFileBox(toga.Box):
             if self.on_csv_read is not None:
                 self.on_csv_read(input_file_path)
             return
-        self.data_dict = None
         self.window.error_dialog(
             title="Invalid Input Source",
             message=f"Cannot process file with suffix {suffix}",
