@@ -17,6 +17,7 @@ icon = "src/eddington_gui/resources/eddington_gui"
 sources = ['src/eddington_gui']
 requires = [
     '--pre',
+    'toga-chart>=0.1.0',
     'xlrd>=1.2.0',
     'eddington>=0.0.10',
     'eddington-matplotlib>=0.0.9',

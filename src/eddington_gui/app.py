@@ -30,6 +30,7 @@ from eddington_gui.consts import (
     MAIN_BOTTOM_PADDING,
     SMALL_PADDING,
 )
+from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
@@ -193,42 +194,50 @@ class EddingtonGUI(toga.App):
         if self.data_columns_box.fit_data is None:
             self.show_nothing_to_plot()
         else:
-            plot_data(
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
+            self.show_figure_window(
+                plot_data(
+                    data=self.data_columns_box.fit_data,
+                    plot_configuration=self.plot_configuration_box.plot_configuration,
+                )
             )
 
     def plot_initial_guess(self, widget):
         if self.data_columns_box.fit_data is None or self.initial_guess_box.a0 is None:
             self.show_nothing_to_plot()
         else:
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.initial_guess_box.a0,
+            self.show_figure_window(
+                plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    plot_configuration=self.plot_configuration_box.plot_configuration,
+                    a=self.initial_guess_box.a0,
+                )
             )
 
     def plot(self, widget):
         if self.fit_result is None:
             self.show_nothing_to_plot()
         else:
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    plot_configuration=self.plot_configuration_box.plot_configuration,
+                    a=self.fit_result.a,
+                )
             )
 
     def residuals(self, widget):
         if self.fit_result is None:
             self.show_nothing_to_plot()
         else:
-            plot_residuals(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                plot_residuals(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    plot_configuration=self.plot_configuration_box.plot_configuration,
+                    a=self.fit_result.a,
+                )
             )
 
     def choose_output_dir(self, widget):
@@ -264,6 +273,11 @@ class EddingtonGUI(toga.App):
 
     def show_nothing_to_plot(self):
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
+
+    @staticmethod
+    def show_figure_window(fig):
+        figure_window = FigureWindow(fig)
+        figure_window.show()
 
     def reset_fit_result(self):
         self.fit_result = None
