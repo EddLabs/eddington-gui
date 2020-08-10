@@ -4,6 +4,8 @@ import numpy as np
 import toga
 from toga.style import Pack
 
+from eddington import EddingtonException
+
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import MEDIUM_INPUT_WIDTH
 
@@ -58,12 +60,26 @@ class InitialGuessBox(LineBox):
         self.__handlers.append(handler)
 
     def __calculate_a0(self):
-        if self.initial_guess_string is not None:
-            self.a0 = np.array(
-                list(map(float, re.split(r",[ \n\t]?", self.initial_guess_string)))
-            )
-            return
-        if self.n is not None:
+        if self.initial_guess_string is None:
             self.a0 = None
             return
-        self.a0 = None
+        a0_values = [
+            value.strip() for value in re.split(r",[ \n\t]?", self.initial_guess_string)
+        ]
+        a0_values = [value for value in a0_values if value != ""]
+        try:
+            self.a0 = np.array(list(map(float, a0_values)))
+        except ValueError:
+            raise EddingtonException(
+                "Unable to parse initial guess. "
+                "Initial guess should be written as numbers divided by commas."
+            )
+        if self.n is None:
+            return
+        number_of_parameters = self.a0.shape[0]
+        if number_of_parameters != self.n:
+            self.a0 = None
+            raise EddingtonException(
+                f"Initial guess has {number_of_parameters} parameters, "
+                f"but {self.n} were expected."
+            )
