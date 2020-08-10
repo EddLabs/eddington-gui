@@ -6,26 +6,9 @@ on:
       - 'v*'
 
 jobs:
-  create_release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: false
 
   build_windows:
     name: Build Windows
-    needs: create_release
     runs-on: windows-latest
     steps:
       - name: Install briefcase
@@ -44,13 +27,41 @@ jobs:
       - name: Briefcase package
         run: |
           briefcase package
+      - name: Upload msi
+          uses: actions/upload-artifact@v2
+          with:
+            name: msi
+            path: windows/*.msi
+
+  create_release:
+    name: Create Release
+    needs: build_windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+      - name: Download windows msi
+          uses: actions/download-artifact@v2
+          with:
+            name: msi
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ jobs.create_release.steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: windows/*.msi
           asset_name: eddington-gui.msi
           asset_content_type: application/msi
+
