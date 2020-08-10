@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Callable
 
 import toga
 from eddington import FitData, FitDataError
@@ -21,7 +21,7 @@ class DataColumnsBox(toga.Box):
     yerr_selection: toga.Selection
 
     __fit_data: Union[FitData] = None
-    __handlers = []
+    __handlers: List[Callable] = []
 
     def __init__(self, flex):
         super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))

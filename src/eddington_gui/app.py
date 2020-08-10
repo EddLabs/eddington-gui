@@ -295,7 +295,7 @@ class EddingtonGUI(toga.App):
     def __calculate_fit_result(self):
         if (
             self.data_columns_box.fit_data is None
-            or self.fitting_function_box.fit_function is None
+            or self.fitting_function_box.fit_function is None  # noqa: W503
         ):
             self.fit_result = None
             return
