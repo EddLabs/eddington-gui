@@ -60,5 +60,5 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: windows/*.msi
           asset_name: eddington-gui.msi
-          asset_content_type: application/msi
+          asset_content_type: application/x-ole-storage
 
