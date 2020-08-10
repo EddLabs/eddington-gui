@@ -5,7 +5,6 @@ from toga.style import Pack
 from eddington import (
     FitFunctionsRegistry,
     FitFunction,
-    FitFunctionLoadError,
 )
 from toga.style.pack import COLUMN
 
