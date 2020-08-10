@@ -26,6 +26,7 @@ jobs:
   build_windows:
     name: Build Windows
     needs: create_release
+    runs-on: windows-latest
     steps:
       - name: Install briefcase
         run: |
