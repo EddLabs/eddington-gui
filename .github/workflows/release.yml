@@ -48,9 +48,12 @@ jobs:
         with:
           name: msi
           path: windows
-      - name: list windows path
+      - name: Get Name of MSI Artifact
         run: |
-          ls windows
+          MSI_ARTIFACT_PATHNAME=$(ls windows/*.msi | head -n 1)
+          MSI_ARTIFACT_NAME=$(basename $MSI_ARTIFACT_PATHNAME)
+          echo ::set-env name=MSI_ARTIFACT_NAME::${MSI_ARTIFACT_NAME}
+          echo ::set-env name=MSI_ARTIFACT_PATHNAME::${MSI_ARTIFACT_PATHNAME}
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -58,7 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows/*.msi
-          asset_name: eddington-gui.msi
+          asset_path: ${{ env.MSI_ARTIFACT_PATHNAME }}
+          asset_name: ${{ env.MSI_ARTIFACT_NAME }}
           asset_content_type: application/x-ole-storage
 
