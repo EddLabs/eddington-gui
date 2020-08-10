@@ -1,5 +1,5 @@
 import re
-from typing import Union
+from typing import Union, List, Callable
 import numpy as np
 import toga
 from toga.style import Pack
@@ -12,7 +12,7 @@ class InitialGuessBox(LineBox):
     initial_guess_input: toga.TextInput
     __n: Union[int, None] = None
     __a0: np.ndarray = None
-    __handlers = []
+    __handlers: List[Callable] = []
 
     def __init__(self):
         super(InitialGuessBox, self).__init__()

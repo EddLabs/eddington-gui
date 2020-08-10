@@ -34,7 +34,7 @@ class RecordsChoiceWindow(toga.Window):
                     padding_right=SMALL_PADDING,
                 ),
                 children=[toga.Label(text="Chosen", style=Pack(height=LINE_HEIGHT))]
-                + self.__checkboxes,
+                + self.__checkboxes,  # noqa: W503
             )
         )
         for header, column in fit_data.data.items():
@@ -47,7 +47,7 @@ class RecordsChoiceWindow(toga.Window):
                         padding_right=SMALL_PADDING,
                     ),
                     children=[toga.Label(text=header, style=Pack(height=LINE_HEIGHT))]
-                    + [
+                    + [  # noqa: W503
                         toga.Label(text=element, style=Pack(height=LINE_HEIGHT))
                         for element in column
                     ],
