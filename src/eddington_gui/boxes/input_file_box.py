@@ -1,5 +1,7 @@
 from collections import Callable
 from pathlib import Path
+from typing import Optional, List
+
 import xlrd
 
 import toga
@@ -15,10 +17,10 @@ class InputFileBox(toga.Box):
     __input_file_path: toga.TextInput
     __select_file: toga.Button = None
     __select_sheet: toga.Selection = None
-    __handlers = []
+    __handlers: List[Callable] = []
 
-    on_csv_read: Callable = None
-    on_excel_read: Callable = None
+    on_csv_read: Optional[Callable] = None
+    on_excel_read: Optional[Callable] = None
 
     def __init__(self, flex):
         super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
@@ -85,7 +87,7 @@ class InputFileBox(toga.Box):
         self.sheets_options = None
         if suffix == ".csv":
             if self.on_csv_read is not None:
-                self.on_csv_read(input_file_path)
+                self.on_csv_read(input_file_path)  # pylint: disable=not-callable
             return
         self.window.error_dialog(
             title="Invalid Input Source",
@@ -99,4 +101,4 @@ class InputFileBox(toga.Box):
             return
         file_path_value = Path(self.file_path)
         if self.on_excel_read is not None:
-            self.on_excel_read(file_path_value, value)
+            self.on_excel_read(file_path_value, value)  # pylint: disable=not-callable

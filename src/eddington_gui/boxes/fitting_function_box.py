@@ -1,12 +1,14 @@
 import importlib.util
+from typing import List, Callable
+
 import toga
 from toga.style import Pack
+from toga.style.pack import COLUMN
 
 from eddington import (
     FitFunctionsRegistry,
     FitFunction,
 )
-from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import NO_VALUE, BIG_PADDING, PARAMETER_WIDTH
@@ -21,7 +23,7 @@ class FittingFunctionBox(toga.Box):
     load_module_button: toga.Button
 
     __fit_function: FitFunction = None
-    __handlers = []
+    __handlers: List[Callable] = []
 
     def __init__(self, flex):
         super(FittingFunctionBox, self).__init__(
