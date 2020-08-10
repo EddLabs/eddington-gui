@@ -41,6 +41,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     plot_configuration_box: PlotConfigurationBox
     data_columns_box: DataColumnsBox
     output_directory_input: toga.TextInput
+    main_window: toga.Window
 
     __a0: np.ndarray = None
     __fit_result: FitResult = None

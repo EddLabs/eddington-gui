@@ -6,7 +6,7 @@ from toga.style.pack import ROW, CENTER
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 
 
-class LineBox(toga.Box):
+class LineBox(toga.Box):  # pylint: disable=too-few-public-methods
     """Visual box representing a horizontal row."""
 
     def __init__(

@@ -9,7 +9,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING, RECORD_WINDOW_SIZE
 
 
-class RecordsChoiceWindow(toga.Window):
+class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-methods
     """Window for choosing which records to consider when using fit data."""
 
     __save_action: Callable

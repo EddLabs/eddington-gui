@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 from toga_chart import Chart
 
 
-class FigureWindow(toga.Window):
+class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
     """
     Window that contains a chart with a *matplotlib* figure.
 
