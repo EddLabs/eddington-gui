@@ -61,7 +61,7 @@ class RecordsChoiceWindow(toga.Window):
                 ],
             )
         )
-        scroller = toga.ScrollContainer(content = main_box)
+        scroller = toga.ScrollContainer(content=main_box)
         self.content = scroller
 
     def save_action(self, fit_data: FitData):
