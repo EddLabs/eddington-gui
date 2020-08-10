@@ -10,19 +10,14 @@ jobs:
     name: Build Windows
     runs-on: windows-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@master
       - name: Install briefcase
         run: |
           pip install briefcase
-      - name: Install Wix Toolset
-        run: |
-          Start-Process wpr -verb runAs -Args "-start GeneralProfile"
-          choco install wixtoolset -y
       - name: Briefcase create
         run: |
           briefcase create --no-input
-      - name: Briefcase update
-        run: |
-          briefcase update
       - name: Briefcase package
         run: |
           briefcase package
@@ -37,8 +32,6 @@ jobs:
     needs: build_windows
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@master
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
