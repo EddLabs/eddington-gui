@@ -1,7 +1,7 @@
 """Box for choosing from which file to load the input data."""
 from collections import Callable
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
 
 import xlrd
 
