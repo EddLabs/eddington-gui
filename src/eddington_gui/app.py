@@ -182,14 +182,15 @@ class EddingtonGUI(toga.App):
         self.plot_configuration_box.reset_plot_configuration()
 
     def fit(self, widget):  # pylint: disable=unused-argument
-        if self.fit_result is None:
-            self.main_window.info_dialog(
-                title="Fit Result", message="Nothing to fit yet"
-            )
-        else:
-            self.main_window.info_dialog(
-                title="Fit Result", message=str(self.fit_result)
-            )
+        try:
+            if self.fit_result is None:
+                self.main_window.info_dialog(
+                    title="Fit Result", message="Nothing to fit yet"
+                )
+                return
+        except EddingtonException:
+            return
+        self.main_window.info_dialog(title="Fit Result", message=str(self.fit_result))
 
     def plot_data(self, widget):  # pylint: disable=unused-argument
         if self.data_columns_box.fit_data is None:
@@ -203,43 +204,58 @@ class EddingtonGUI(toga.App):
             )
 
     def plot_initial_guess(self, widget):  # pylint: disable=unused-argument
-        if self.data_columns_box.fit_data is None or self.initial_guess_box.a0 is None:
-            self.show_nothing_to_plot()
-        else:
-            self.show_figure_window(
-                plot_fitting(
-                    func=self.fitting_function_box.fit_function,
-                    data=self.data_columns_box.fit_data,
-                    plot_configuration=self.plot_configuration_box.plot_configuration,
-                    a=self.initial_guess_box.a0,
-                )
+        try:
+            if (
+                self.data_columns_box.fit_data is None
+                or self.initial_guess_box.a0 is None  # noqa: W503
+            ):
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException as e:
+            self.main_window.error_dialog(
+                title="Plot initial guess error", message=str(e),
             )
+            return
+        self.show_figure_window(
+            plot_fitting(
+                func=self.fitting_function_box.fit_function,
+                data=self.data_columns_box.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+                a=self.initial_guess_box.a0,
+            )
+        )
 
     def plot(self, widget):  # pylint: disable=unused-argument
-        if self.fit_result is None:
-            self.show_nothing_to_plot()
-        else:
-            self.show_figure_window(
-                plot_fitting(
-                    func=self.fitting_function_box.fit_function,
-                    data=self.data_columns_box.fit_data,
-                    plot_configuration=self.plot_configuration_box.plot_configuration,
-                    a=self.fit_result.a,
-                )
+        try:
+            if self.fit_result is None:
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException:
+            return
+        self.show_figure_window(
+            plot_fitting(
+                func=self.fitting_function_box.fit_function,
+                data=self.data_columns_box.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+                a=self.fit_result.a,
             )
+        )
 
     def residuals(self, widget):  # pylint: disable=unused-argument
-        if self.fit_result is None:
-            self.show_nothing_to_plot()
-        else:
-            self.show_figure_window(
-                plot_residuals(
-                    func=self.fitting_function_box.fit_function,
-                    data=self.data_columns_box.fit_data,
-                    plot_configuration=self.plot_configuration_box.plot_configuration,
-                    a=self.fit_result.a,
-                )
+        try:
+            if self.fit_result is None:
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException:
+            return
+        self.show_figure_window(
+            plot_residuals(
+                func=self.fitting_function_box.fit_function,
+                data=self.data_columns_box.fit_data,
+                plot_configuration=self.plot_configuration_box.plot_configuration,
+                a=self.fit_result.a,
             )
+        )
 
     def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         try:
@@ -251,8 +267,11 @@ class EddingtonGUI(toga.App):
         self.output_directory_input.value = folder_path[0]
 
     def save_to_output_dir(self, widget):  # pylint: disable=unused-argument
-        if self.fit_result is None:
-            self.show_nothing_to_plot()
+        try:
+            if self.fit_result is None:
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException:
             return
         output_dir = Path(self.output_directory_input.value)
         if not output_dir.exists():
@@ -306,11 +325,11 @@ class EddingtonGUI(toga.App):
                 a0=self.initial_guess_box.a0,
             )
         except EddingtonException as e:
+            self.fit_result = None
             self.main_window.error_dialog(
                 title="Fit result error", message=str(e),
             )
-            self.fit_result = None
-            return
+            raise e
 
 
 def main():
