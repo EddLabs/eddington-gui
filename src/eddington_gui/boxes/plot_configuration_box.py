@@ -79,9 +79,12 @@ class PlotConfigurationBox(toga.Box):
         self.reset_plot_configuration()
 
     def load_fit_data(self, fit_data):
-        self.__xcolumn = fit_data.x_column
-        self.__ycolumn = fit_data.y_column
-        self.set_xmin_xmax(fit_data.x)
+        if fit_data is None:
+            self.__xcolumn, self.__ycolumn = None, None
+            self.__xmin, self.__xmax = None, None
+        else:
+            self.__xcolumn, self.__ycolumn = fit_data.x_column, fit_data.y_column
+            self.set_xmin_xmax(fit_data.x)
         self.reset_plot_configuration()
 
     def reset_plot_configuration(self):
