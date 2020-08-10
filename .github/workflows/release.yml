@@ -1,0 +1,55 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+  build_windows:
+    name: Build Windows
+    needs: create_release
+    steps:
+      - name: Install briefcase
+        run: |
+          pip install briefcase
+      - name: Install Wix Toolset
+        run: |
+          Start-Process wpr -verb runAs -Args "-start GeneralProfile"
+          choco install wixtoolset -y
+      - name: Briefcase create
+        run: |
+          briefcase create --no-input
+      - name: Briefcase update
+        run: |
+          briefcase update
+      - name: Briefcase package
+        run: |
+          briefcase package
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ jobs.create_release.steps.create_release.outputs.upload_url }}
+          asset_path: windows/*.msi
+          asset_name: eddington-gui.msi
+          asset_content_type: application/msi
