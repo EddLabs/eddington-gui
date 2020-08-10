@@ -1,3 +1,4 @@
+"""Box for choosing which columns to use in data dictionary."""
 from typing import List, Union, Callable
 
 import toga
@@ -10,7 +11,8 @@ from eddington_gui.consts import SELECTION_WIDTH, LABEL_WIDTH
 from eddington_gui.util import value_or_none
 
 
-class DataColumnsBox(toga.Box):
+class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
+    """Visual box instance for choosing columns."""
 
     __items: List[str] = []
     __selection_enabled: bool = False
@@ -24,6 +26,7 @@ class DataColumnsBox(toga.Box):
     __handlers: List[Callable] = []
 
     def __init__(self, flex):
+        """Initialize box."""
         super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.x_selection = self.__add_column_option(
@@ -41,10 +44,16 @@ class DataColumnsBox(toga.Box):
 
     @property
     def fit_data(self):
+        """Fit data getter."""
         return self.__fit_data
 
     @fit_data.setter
     def fit_data(self, fit_data: FitData):
+        """
+        Fit data setter.
+
+        If fit data is None, reset all selections
+        """
         self.__fit_data = fit_data
         if fit_data is None:
             self.clear_selections()
@@ -60,11 +69,19 @@ class DataColumnsBox(toga.Box):
 
     @staticmethod
     def set_items(selection, items, value):
+        """
+        Set items and value in selection widget.
+
+        :param selection: Selection widget
+        :param items: list of options for the widget
+        :param value: selected value
+        """
         selection.items = items
         if value is not None:
             selection.value = value
 
     def clear_selections(self):
+        """Clear all selections."""
         self.selection_enabled = False
         self.set_items(self.x_selection, [], None)
         self.set_items(self.xerr_selection, [], None)
@@ -74,26 +91,32 @@ class DataColumnsBox(toga.Box):
 
     @property
     def x_column(self):
+        """X column name value."""
         return value_or_none(self.x_selection.value)
 
     @property
     def xerr_column(self):
+        """X error column name value."""
         return value_or_none(self.xerr_selection.value)
 
     @property
     def y_column(self):
+        """Y column name value."""
         return value_or_none(self.y_selection.value)
 
     @property
     def yerr_column(self):
+        """Y error column name value."""
         return value_or_none(self.yerr_selection.value)
 
     @property
     def selection_enabled(self):
+        """Boolean. is selection enabled for columns."""
         return self.__selection_enabled
 
     @selection_enabled.setter
     def selection_enabled(self, selection_enabled):
+        """Set selection enabled for all column selection widgets."""
         self.__selection_enabled = selection_enabled
         self.x_selection.enabled = selection_enabled
         self.xerr_selection.enabled = selection_enabled
@@ -101,9 +124,11 @@ class DataColumnsBox(toga.Box):
         self.yerr_selection.enabled = selection_enabled
 
     def add_handler(self, handler):
+        """Add handler for fit data update."""
         self.__handlers.append(handler)
 
-    def set_columns(self, widget):
+    def set_columns(self, widget):  # pylint: disable=unused-argument
+        """Set columns of the fit data based on the selection of the user."""
         if not self.selection_enabled:
             return
         self.fit_data.x_column = self.x_selection.value
@@ -113,21 +138,33 @@ class DataColumnsBox(toga.Box):
         self.run_handlers()
 
     def run_handlers(self):
+        """Whenever fit data is updated, run handlers to notify other components."""
         for handler in self.__handlers:
             handler(self.fit_data)
 
-    def read_csv(self, filename):
+    def read_csv(self, filepath):
+        """
+        Read data from csv file.
+
+        :param filepath: path of the csv file
+        """
         try:
-            self.fit_data = FitData.read_from_csv(filename)
-        except FitDataError as e:
-            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = FitData.read_from_csv(filepath)
+        except FitDataError as error:
+            self.window.error_dialog(title="Input data error", message=str(error))
             self.fit_data = None
 
-    def read_excel(self, filename, sheet):
+    def read_excel(self, filepath, sheet):
+        """
+        Read data from excel file.
+
+        :param filepath: path of the excel file
+        :param sheet: sheet from which to read the data.
+        """
         try:
-            self.fit_data = FitData.read_from_excel(filename, sheet)
-        except FitDataError as e:
-            self.window.error_dialog(title="Input data error", message=str(e))
+            self.fit_data = FitData.read_from_excel(filepath, sheet)
+        except FitDataError as error:
+            self.window.error_dialog(title="Input data error", message=str(error))
             self.fit_data = None
 
     def __add_column_option(self, label, on_select):

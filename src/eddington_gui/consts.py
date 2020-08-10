@@ -1,3 +1,4 @@
+"""Constants list."""
 from toga.style.pack import MONOSPACE
 
 NO_VALUE = "----------"

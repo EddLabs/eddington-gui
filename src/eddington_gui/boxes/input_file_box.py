@@ -1,3 +1,4 @@
+"""Box for choosing from which file to load the input data."""
 from collections import Callable
 from pathlib import Path
 from typing import List, Optional
@@ -13,6 +14,7 @@ from eddington_gui.consts import NO_VALUE, BIG_PADDING
 
 
 class InputFileBox(toga.Box):
+    """Visual box instance for choosing input file."""
 
     __input_file_path: toga.TextInput
     __select_file: toga.Button = None
@@ -23,6 +25,7 @@ class InputFileBox(toga.Box):
     on_excel_read: Optional[Callable] = None
 
     def __init__(self, flex):
+        """Initialize box."""
         super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
         self.__input_file_path = toga.TextInput(
             readonly=True,
@@ -44,10 +47,17 @@ class InputFileBox(toga.Box):
 
     @property
     def file_path(self):
+        """Getter for the chosen file path."""
         return self.__input_file_path.value
 
     @file_path.setter
     def file_path(self, file_path):
+        """
+        Setter for the chosen file path.
+
+        Once a path has been chosen, run handlers to notify other components of the
+        change.
+        """
         self.__input_file_path.value = str(file_path)
         self.data_dict = None
         for handler in self.__handlers:
@@ -55,10 +65,12 @@ class InputFileBox(toga.Box):
 
     @property
     def sheets_options(self):
+        """Sheets options getter. Relevant for excel files."""
         return self.__select_sheet.items
 
     @sheets_options.setter
     def sheets_options(self, options):
+        """Sheets options setter. Relevant for excel files."""
         if options is None:
             self.__select_sheet.items = []
             self.__select_sheet.enabled = False
@@ -67,9 +79,15 @@ class InputFileBox(toga.Box):
             self.__select_sheet.enabled = True
 
     def add_handler(self, handler):
+        """
+        Add handler to run whenever the input file is changed.
+
+        :param handler: Callable
+        """
         self.__handlers.append(handler)
 
-    def select_file(self, widget):
+    def select_file(self, widget):  # pylint: disable=unused-argument
+        """Open file selection dialog."""
         try:
             input_file_path = Path(
                 self.window.open_file_dialog(
@@ -94,7 +112,8 @@ class InputFileBox(toga.Box):
             message=f"Cannot process file with suffix {suffix}",
         )
 
-    def select_sheet(self, widget):
+    def select_sheet(self, widget):  # pylint: disable=unused-argument
+        """Select sheet to read data from. Relevant for excel files."""
         value = widget.value
         if value == NO_VALUE:
             self.data_dict = None
