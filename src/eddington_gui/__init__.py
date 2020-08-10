@@ -3,5 +3,5 @@ import matplotlib
 
 matplotlib.use("agg")
 
-__version__ = "0.0.2.dev12"
+__version__ = "0.0.2.dev13"
 __author__ = "Sagi Shadur"
