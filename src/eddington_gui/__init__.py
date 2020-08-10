@@ -1,3 +1,4 @@
+"""A gui library wrapping Eddington."""
 import matplotlib
 
 matplotlib.use("agg")
