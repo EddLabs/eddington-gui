@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "EddingtonGUI"
 bundle = "com.eddington_gui"
-version = "0.0.2.dev10"
+version = "0.0.2.dev11"
 url = "https://eddington_gui.com/eddington_gui"
 license = "Apache Software License"
 author = 'Sagi Shadur'
