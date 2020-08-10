@@ -77,9 +77,9 @@ class EddingtonGUI(toga.App):
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
-            self.plot_configuration_box.load_fit_function
+            self.plot_configuration_box.on_fit_function_load
         )
-        self.data_columns_box.add_handler(self.plot_configuration_box.load_fit_data)
+        self.data_columns_box.add_handler(self.plot_configuration_box.on_fit_data_load)
 
         main_box.add(
             toga.Box(
