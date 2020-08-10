@@ -66,7 +66,7 @@ class FittingFunctionBox(toga.Box):
             FitFunctionsRegistry.names()
         )
 
-    def load_select_fit_function_name(self, widget):
+    def load_select_fit_function_name(self, widget):  # pylint: disable=unused-argument
         self.disable_free_syntax()
         if self.fit_function_state == NO_VALUE:
             self.reset_fit_function()
@@ -74,7 +74,7 @@ class FittingFunctionBox(toga.Box):
         self.fit_function = FitFunctionsRegistry.load(self.fit_function_state)
         self.fitting_function_syntax.value = self.fit_function.syntax
 
-    def load_module(self, widget):
+    def load_module(self, widget):  # pylint: disable=unused-argument
         try:
             file_path = self.window.open_file_dialog(
                 title="Choose module file", multiselect=False
@@ -86,7 +86,7 @@ class FittingFunctionBox(toga.Box):
         spec.loader.exec_module(dummy_module)
         self.update_fitting_function_options()
 
-    def on_parameters_change(self, widget):
+    def on_parameters_change(self, widget):  # pylint: disable=unused-argument
         self.reset_fit_function()
 
     def reset_fit_function(self):

@@ -169,7 +169,7 @@ class EddingtonGUI(toga.App):
     def fit_result(self, fit_result):
         self.__fit_result = fit_result
 
-    def choose_records(self, widget):
+    def choose_records(self, widget):  # pylint: disable=unused-argument
         if self.data_columns_box.fit_data is None:
             self.main_window.info_dialog(
                 title="Choose Records", message="No data been given yet"
@@ -181,7 +181,7 @@ class EddingtonGUI(toga.App):
         self.initial_guess_box.reset_initial_guess()
         self.plot_configuration_box.reset_plot_configuration()
 
-    def fit(self, widget):
+    def fit(self, widget):  # pylint: disable=unused-argument
         if self.fit_result is None:
             self.main_window.info_dialog(
                 title="Fit Result", message="Nothing to fit yet"
@@ -191,7 +191,7 @@ class EddingtonGUI(toga.App):
                 title="Fit Result", message=str(self.fit_result)
             )
 
-    def plot_data(self, widget):
+    def plot_data(self, widget):  # pylint: disable=unused-argument
         if self.data_columns_box.fit_data is None:
             self.show_nothing_to_plot()
         else:
@@ -202,7 +202,7 @@ class EddingtonGUI(toga.App):
                 )
             )
 
-    def plot_initial_guess(self, widget):
+    def plot_initial_guess(self, widget):  # pylint: disable=unused-argument
         if self.data_columns_box.fit_data is None or self.initial_guess_box.a0 is None:
             self.show_nothing_to_plot()
         else:
@@ -215,7 +215,7 @@ class EddingtonGUI(toga.App):
                 )
             )
 
-    def plot(self, widget):
+    def plot(self, widget):  # pylint: disable=unused-argument
         if self.fit_result is None:
             self.show_nothing_to_plot()
         else:
@@ -228,7 +228,7 @@ class EddingtonGUI(toga.App):
                 )
             )
 
-    def residuals(self, widget):
+    def residuals(self, widget):  # pylint: disable=unused-argument
         if self.fit_result is None:
             self.show_nothing_to_plot()
         else:
@@ -241,7 +241,7 @@ class EddingtonGUI(toga.App):
                 )
             )
 
-    def choose_output_dir(self, widget):
+    def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         try:
             folder_path = self.main_window.select_folder_dialog(
                 title="Output directory"
@@ -250,7 +250,7 @@ class EddingtonGUI(toga.App):
             return
         self.output_directory_input.value = folder_path[0]
 
-    def save_to_output_dir(self, widget):
+    def save_to_output_dir(self, widget):  # pylint: disable=unused-argument
         if self.fit_result is None:
             self.show_nothing_to_plot()
             return

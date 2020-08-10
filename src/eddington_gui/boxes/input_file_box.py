@@ -69,7 +69,7 @@ class InputFileBox(toga.Box):
     def add_handler(self, handler):
         self.__handlers.append(handler)
 
-    def select_file(self, widget):
+    def select_file(self, widget):  # pylint: disable=unused-argument
         try:
             input_file_path = Path(
                 self.window.open_file_dialog(
@@ -94,7 +94,7 @@ class InputFileBox(toga.Box):
             message=f"Cannot process file with suffix {suffix}",
         )
 
-    def select_sheet(self, widget):
+    def select_sheet(self, widget):  # pylint: disable=unused-argument
         value = widget.value
         if value == NO_VALUE:
             self.data_dict = None

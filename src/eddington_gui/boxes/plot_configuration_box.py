@@ -90,7 +90,7 @@ class PlotConfigurationBox(toga.Box):
     def reset_plot_configuration(self):
         self.plot_configuration = None
 
-    def on_input_change(self, widget):
+    def on_input_change(self, widget):  # pylint: disable=unused-argument
         self.reset_plot_configuration()
 
     def __build_plot_configuration(self):
