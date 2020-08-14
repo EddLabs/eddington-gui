@@ -49,10 +49,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                         padding_left=SMALL_PADDING,
                         padding_right=SMALL_PADDING,
                     ),
-                    children=[toga.Label(text=header, style=Pack(height=LINE_HEIGHT))]
+                    children=[toga.TextInput(initial=header, id=header+",0", style=Pack(height=LINE_HEIGHT))]
                     + [  # noqa: W503
-                        toga.Label(text=element, style=Pack(height=LINE_HEIGHT))
-                        for element in column
+                        toga.TextInput(initial=column[j-1], id=header+","+str(j), style=Pack(height=LINE_HEIGHT))
+                        for j in range(1, 1 + len(column))
                     ],
                 )
             )
@@ -66,6 +66,20 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         )
         scroller = toga.ScrollContainer(content=main_box)
         self.content = scroller
+
+    def change_value(self, fit_data: FitData):
+        #Initially made for on_change for the TextInput holding the values of fit_data.
+        #Because on_change is activated for all changes (every char added) it will get very annoying, very fast.
+        #For now, nothing calls this method.
+        
+        def change_widget_value(widget):
+            col = widget.id.split(",")[0]
+            print(col)
+            row = int(widget.id.split(",")[1])
+            print(row)
+            fit_data.set_cell(row, col, widget.value)
+        
+        return change_widget_value
 
     def save_action(self, fit_data: FitData):
         """Save selected records to fit data."""
