@@ -15,6 +15,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
     __save_action: Callable
     __checkboxes: List[toga.Switch]
+    __fit_data_copy: FitData
 
     def __init__(self, fit_data: FitData):
         """Initialize window."""
@@ -62,9 +63,19 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         main_box.add(
             LineBox(
                 children=[
-                    toga.Button(label="Save selections", on_press=self.save_action(fit_data, self.__fit_data_copy)),
-                    toga.Button(label="Save changes to file", on_press=self.save_to_file_action(self.__fit_data_copy)),
-                    toga.Button(label="Update data and save changes to file", on_press=self.save_to_file_and_update_action(fit_data, self.__fit_data_copy)),
+                    toga.Button(label="Save selections",
+                                on_press=self.save_action(fit_data,
+                                                          self.__fit_data_copy)
+                                ),
+                    toga.Button(label="Save changes to file",
+                                on_press=self.save_to_file_action(
+                                    self.__fit_data_copy)
+                                ),
+                    toga.Button(label="Update data and save changes to file",
+                                on_press=self.save_to_file_and_update_action(
+                                    fit_data,
+                                    self.__fit_data_copy)
+                                ),
                 ],
             )
         )
@@ -72,9 +83,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.content = scroller
 
     def change_value_action(self, fit_data: FitData):
-        #Initially made for on_change for the TextInput holding the values of fit_data.
-        #Because on_change is activated for all changes (every char added) it will get very annoying, very fast.
-        #For now, on_change is used.
+        # Initially made for on_change for the TextInput holding the values of
+        # fit_data.
+        # Because on_change is activated for all changes (every char added) it
+        # will get very annoying, very fast.
+        # For now, on_change is used.
         
         def change_value(widget):
             col = widget.id.split(",")[0]
@@ -89,17 +102,17 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         
         return change_value
 
+    @classmethod
     def inner_save(self, fit_data: FitData, fit_data_copy: FitData):
         columns = fit_data.all_columns
         for i in range(fit_data.length):
             if self.__checkboxes[i].is_on:
                 fit_data.select_record(i + 1)
             else:
-                fit_data.unselect_record(i + 1)   
+                fit_data.unselect_record(i + 1)
             for column in columns:
                 if (fit_data.data[column][i] != fit_data_copy.data[column][i]):
                     fit_data.set_cell(i, column, fit_data_copy.data[column][i])
-
 
     def save_action(self, fit_data: FitData, fit_data_copy: FitData):
         """Save selected records to fit data."""
@@ -110,20 +123,23 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
         return save
 
+    @classmethod
     def inner_save_changes(self, fit_data: FitData):
-        #We only want to save the checked rows
+        # We only want to save the checked rows
 
-            save_file_path = self.save_file_dialog("Save changes to:", "data_changes.csv")
-            #TODO: make suggested_filename same as the name of the input file.
-            with open(save_file_path, 'w') as csv_file:
-                writer = csv.writer(csv_file, delimiter=',')
-                columns = fit_data.all_columns
-                writer.writerow(columns)
-                for i in range(fit_data.length):
-                    #only save the checked rows, but do not change the state of fit_data.
-                    if self.__checkboxes[i].is_on:
-                        row = [fit_data.data[column][i] for column in columns]
-                        writer.writerow(row)       
+        save_file_path = self.save_file_dialog("Save changes to:",
+                                               "data_changes.csv")
+        # TODO: make suggested_filename same as the name of the input file.
+        with open(save_file_path, 'w') as csv_file:
+            writer = csv.writer(csv_file, delimiter=',')
+            columns = fit_data.all_columns
+            writer.writerow(columns)
+            for i in range(fit_data.length):
+                # only save the checked rows,
+                # but do not change the state of fit_data.
+                if self.__checkboxes[i].is_on:
+                    row = [fit_data.data[column][i] for column in columns]
+                    writer.writerow(row)       
 
     def save_to_file_action(self, fit_data: FitData):
         """
@@ -132,10 +148,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
         def save_to_file(widget):
             self.inner_save_changes(fit_data)
-            
+
         return save_to_file
 
-    def save_to_file_and_update_action(self, fit_data: FitData, fit_data_copy: FitData):
+    def save_to_file_and_update_action(self, fit_data: FitData, 
+                                       fit_data_copy: FitData):
         """
         Save changes to a new file and update fit_data.
         """
@@ -144,5 +161,5 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             self.inner_save_changes(fit_data)
             self.inner_save(fit_data, fit_data_copy)
             self.close()
-        
+
         return save_to_file_and_update
