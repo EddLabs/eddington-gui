@@ -1,8 +1,7 @@
+"""A gui library wrapping Eddington."""
 import matplotlib
-import wx
 
-matplotlib.use("WXAgg")
-wx.DisableAsserts()
+matplotlib.use("agg")
 
-__version__ = "0.0.2.dev5"
+__version__ = "0.0.2"
 __author__ = "Sagi Shadur"

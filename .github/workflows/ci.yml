@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  static_code_analysis:
+    name: Static Code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install depecndencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+      - name: Run static code analysis
+        run: |
+          tox -e static
