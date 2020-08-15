@@ -244,6 +244,11 @@ class EddingtonGUI(toga.App):
         if self.fit_result is None:
             self.show_nothing_to_plot()
             return
+        if self.output_directory_input.value == "":
+            self.main_window.error_dialog(
+                title="Save error", message="No output dir was chosen",
+            )
+            return
         output_dir = Path(self.output_directory_input.value)
         if not output_dir.exists():
             output_dir.mkdir()
