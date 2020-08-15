@@ -8,7 +8,7 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington import FitResult, EddingtonException, fit_to_data
+from eddington import FitResult, EddingtonException, fit_to_data, FitData
 
 import numpy as np
 import toga
@@ -74,6 +74,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.data_columns_box.add_handler(lambda fit_data: self.reset_fit_result())
         self.input_file_box.on_csv_read = self.data_columns_box.read_csv
         self.input_file_box.on_excel_read = self.data_columns_box.read_excel
+        self.input_file_box.on_select_file = self.choose_sheet
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
@@ -345,6 +346,24 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 title="Fit result error", message=str(error),
             )
             raise error
+   
+    def choose_sheet(self):
+        """Automatically choose the first valid sheet"""
+        for sheet in self.input_file_box.sheets_options:
+            try:
+                self.data_columns_box.fit_data = FitData.read_from_excel(
+                    Path(self.input_file_box.file_path),
+                    sheet)
+                self.input_file_box.children[1].children[1].value = sheet
+                return
+            except Exception as error:
+                pass
+        if self.data_columns_box.fit_data == None:
+            self.main_window.error_dialog(
+                title="Input data error",
+                message=str("No sheet available with valid data"))
+            self.fit_data = None
+
 
 
 def main():

@@ -23,6 +23,7 @@ class InputFileBox(toga.Box):
 
     on_csv_read: Optional[Callable] = None
     on_excel_read: Optional[Callable] = None
+    on_select_file: Optional[Callable] = None
 
     def __init__(self, flex):
         """Initialize box."""
@@ -101,6 +102,8 @@ class InputFileBox(toga.Box):
         if suffix in [".xlsx", ".xls"]:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
             self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
+            if self.on_select_file is not None:
+                self.on_select_file()  # pylint: disable=not-callable
             return
         self.sheets_options = None
         if suffix == ".csv":
