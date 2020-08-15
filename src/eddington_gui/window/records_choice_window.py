@@ -92,13 +92,23 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         def change_value(widget):
             col = widget.id.split(",")[0]
             row = int(widget.id.split(",")[1])
-            try:
-                fit_data.set_cell(row, col, widget.value)
-            except Exception as error:
-                self.error_dialog(
-                    title="Invalid input!", message=str(error),
-                )
-                widget.value = fit_data.data[col][row-1]
+            if row != 0:
+                try:
+                    fit_data.set_cell(row, col, widget.value)
+                except Exception as error:
+                    self.error_dialog(
+                        title="Invalid input!", message=str(error),
+                    )
+                    widget.value = fit_data.data[col][row-1]
+            else:
+                try:
+                    fit_data.set_header(col, widget.value)
+                except Exception as error:
+                    self.error_dialog(
+                        title="Header name is already in use!",
+                        message=str(error),
+                    )
+                    widget.value = col
         
         return change_value
 
