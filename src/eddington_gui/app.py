@@ -246,7 +246,8 @@ class EddingtonGUI(toga.App):
             return
         if self.output_directory_input.value == "":
             self.main_window.error_dialog(
-                title="Results output save error", message="No output directory was chosen",
+                title="Results output save error",
+                message="No output directory was chosen",
             )
             return
         output_dir = Path(self.output_directory_input.value)
