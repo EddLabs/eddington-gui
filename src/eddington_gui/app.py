@@ -283,6 +283,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
         except EddingtonException:
             return
+        if self.output_directory_input.value == "":
+            self.main_window.error_dialog(
+                title="Results output save error",
+                message="No output directory was chosen",
+            )
+            return
         output_dir = Path(self.output_directory_input.value)
         if not output_dir.exists():
             output_dir.mkdir()
