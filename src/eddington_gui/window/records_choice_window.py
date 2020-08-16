@@ -2,6 +2,7 @@
 from typing import List, Callable
 import toga
 from eddington import FitData
+from eddington.exceptions import FitDataInvalidSyntax, FitDataColumnAlreadyExists
 from toga.style import Pack
 from toga.style.pack import COLUMN
 import csv
@@ -23,6 +24,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         self.__fit_data_copy = FitData(fit_data.data)
+        self.__cols = {}
         self.__checkboxes = [
             toga.Switch(
                 label="",
@@ -44,6 +46,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             )
         )
         for header, column in fit_data.data.items():
+            self.__cols[header] = header
             data_box.add(
                 toga.Box(
                     style=Pack(
@@ -90,12 +93,12 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         # For now, on_change is used.
         
         def change_value(widget):
-            col = widget.id.split(",")[0]
+            col = self.__cols[widget.id.split(",")[0]]
             row = int(widget.id.split(",")[1])
             if row != 0:
                 try:
                     fit_data.set_cell(row, col, widget.value)
-                except Exception as error:
+                except FitDataInvalidSyntax as error:
                     self.error_dialog(
                         title="Invalid input!", message=str(error),
                     )
@@ -103,7 +106,8 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             else:
                 try:
                     fit_data.set_header(col, widget.value)
-                except Exception as error:
+                    self.__cols[widget.id.split(",")[0]] = widget.value
+                except FitDataColumnAlreadyExists as error:
                     self.error_dialog(
                         title="Header name is already in use!",
                         message=str(error),
