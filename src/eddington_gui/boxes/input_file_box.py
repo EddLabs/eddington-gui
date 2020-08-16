@@ -115,6 +115,10 @@ class InputFileBox(toga.Box):
             message=f"Cannot process file with suffix {suffix}",
         )
 
+    @property
+    def selected_sheet(self):
+        return self.__select_sheet
+
     def select_sheet(self, widget):  # pylint: disable=unused-argument
         """Select sheet to read data from. Relevant for excel files."""
         value = widget.value

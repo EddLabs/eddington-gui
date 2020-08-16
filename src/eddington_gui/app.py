@@ -354,14 +354,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 self.data_columns_box.fit_data = FitData.read_from_excel(
                     Path(self.input_file_box.file_path),
                     sheet)
-                self.input_file_box.children[1].children[1].value = sheet
+                self.input_file_box.selected_sheet.value = sheet
                 return
             except Exception as error:
                 pass
         if self.data_columns_box.fit_data == None:
             self.main_window.error_dialog(
                 title="Input data error",
-                message=str("No sheet available with valid data"))
+                message="No sheet available with valid data.\nPlease fix the file or load another one.")
             self.fit_data = None
 
 
