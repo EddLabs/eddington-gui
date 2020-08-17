@@ -59,8 +59,10 @@ class InputFileBox(toga.Box):
         Once a path has been chosen, run handlers to notify other components of the
         change.
         """
-        self.__input_file_path.value = str(file_path)
-        self.data_dict = None
+        if file_path is None:
+            self.__input_file_path.value = ""
+        else:
+            self.__input_file_path.value = str(file_path)
         for handler in self.__handlers:
             handler()
 
@@ -123,13 +125,15 @@ class InputFileBox(toga.Box):
     @selected_sheet.setter
     def selected_sheet(self, selected_sheet):
         """Setter for the chosen sheet."""
-        self.__select_sheet.value = selected_sheet
+        if selected_sheet is None:
+            self.__select_sheet.value = NO_VALUE
+        else:
+            self.__select_sheet.value = selected_sheet
 
     def select_sheet(self, widget):  # pylint: disable=unused-argument
         """Select sheet to read data from. Relevant for excel files."""
         value = widget.value
         if value == NO_VALUE:
-            self.data_dict = None
             return
         file_path_value = Path(self.file_path)
         if self.on_excel_read is not None:
