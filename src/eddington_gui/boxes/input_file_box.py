@@ -23,6 +23,7 @@ class InputFileBox(toga.Box):
 
     on_csv_read: Optional[Callable] = None
     on_excel_read: Optional[Callable] = None
+    on_select_file: Optional[Callable] = None
 
     def __init__(self, flex):
         """Initialize box."""
@@ -58,8 +59,10 @@ class InputFileBox(toga.Box):
         Once a path has been chosen, run handlers to notify other components of the
         change.
         """
-        self.__input_file_path.value = str(file_path)
-        self.data_dict = None
+        if file_path is None:
+            self.__input_file_path.value = ""
+        else:
+            self.__input_file_path.value = str(file_path)
         for handler in self.__handlers:
             handler()
 
@@ -101,6 +104,8 @@ class InputFileBox(toga.Box):
         if suffix in [".xlsx", ".xls"]:
             excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
             self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
+            if self.on_select_file is not None:
+                self.on_select_file()  # pylint: disable=not-callable
             return
         self.sheets_options = None
         if suffix == ".csv":
@@ -112,11 +117,23 @@ class InputFileBox(toga.Box):
             message=f"Cannot process file with suffix {suffix}",
         )
 
+    @property
+    def selected_sheet(self):
+        """Getter for the chosen sheet."""
+        return self.__select_sheet.value
+
+    @selected_sheet.setter
+    def selected_sheet(self, selected_sheet):
+        """Setter for the chosen sheet."""
+        if selected_sheet is None:
+            self.__select_sheet.value = NO_VALUE
+        else:
+            self.__select_sheet.value = selected_sheet
+
     def select_sheet(self, widget):  # pylint: disable=unused-argument
         """Select sheet to read data from. Relevant for excel files."""
         value = widget.value
         if value == NO_VALUE:
-            self.data_dict = None
             return
         file_path_value = Path(self.file_path)
         if self.on_excel_read is not None:

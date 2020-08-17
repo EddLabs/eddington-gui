@@ -2,7 +2,7 @@
 from typing import List, Union, Callable
 
 import toga
-from eddington import FitData, FitDataError
+from eddington import FitData
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
@@ -148,11 +148,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
         :param filepath: path of the csv file
         """
-        try:
-            self.fit_data = FitData.read_from_csv(filepath)
-        except FitDataError as error:
-            self.window.error_dialog(title="Input data error", message=str(error))
-            self.fit_data = None
+        self.fit_data = FitData.read_from_csv(filepath)
 
     def read_excel(self, filepath, sheet):
         """
@@ -161,11 +157,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         :param filepath: path of the excel file
         :param sheet: sheet from which to read the data.
         """
-        try:
-            self.fit_data = FitData.read_from_excel(filepath, sheet)
-        except FitDataError as error:
-            self.window.error_dialog(title="Input data error", message=str(error))
-            self.fit_data = None
+        self.fit_data = FitData.read_from_excel(filepath, sheet)
 
     def __add_column_option(self, label, on_select):
 

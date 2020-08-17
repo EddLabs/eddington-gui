@@ -8,12 +8,13 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington import FitResult, EddingtonException, fit_to_data
+from eddington import FitResult, EddingtonException, FitDataError, fit_to_data, FitData
 
 import numpy as np
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
+from xlrd import XLRDError
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -72,8 +73,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
         self.data_columns_box = DataColumnsBox(flex=5)
         self.data_columns_box.add_handler(lambda fit_data: self.reset_fit_result())
-        self.input_file_box.on_csv_read = self.data_columns_box.read_csv
-        self.input_file_box.on_excel_read = self.data_columns_box.read_excel
+        self.input_file_box.on_csv_read = self.read_csv
+        self.input_file_box.on_excel_read = self.read_excel
+        self.input_file_box.on_select_file = self.select_default_sheet
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
@@ -170,6 +172,37 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     def fit_result(self, fit_result):
         """Setter of the fit result."""
         self.__fit_result = fit_result
+
+    def read_csv(self, filepath):
+        """
+        Read data from csv file.
+
+        If failing to read the file, reset the input file path and fit data.
+
+        :param filepath: path of the csv file
+        """
+        try:
+            self.data_columns_box.read_csv(filepath)
+        except FitDataError as error:
+            self.main_window.error_dialog(title="Input data error", message=str(error))
+            self.data_columns_box.fit_data = None
+            self.input_file_box.file_path = None
+
+    def read_excel(self, filepath, sheet):
+        """
+        Read data from excel file.
+
+        If failing to read the file, reset the selected sheet and fit data.
+
+        :param filepath: path of the excel file
+        :param sheet: sheet from which to read the data.
+        """
+        try:
+            self.data_columns_box.read_excel(filepath, sheet)
+        except FitDataError as error:
+            self.main_window.error_dialog(title="Input data error", message=str(error))
+            self.data_columns_box.fit_data = None
+            self.input_file_box.selected_sheet = None
 
     def choose_records(self, widget):  # pylint: disable=unused-argument
         """Open the choose records window."""
@@ -351,6 +384,33 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 title="Fit result error", message=str(error),
             )
             raise error
+
+    def select_default_sheet(self):
+        """
+        Automatically choose the first valid sheet.
+
+        If it fails to find a valid sheet, resets the input file.
+        """
+        for sheet in self.input_file_box.sheets_options:
+            try:
+                self.data_columns_box.fit_data = FitData.read_from_excel(
+                    Path(self.input_file_box.file_path), sheet
+                )
+                self.input_file_box.selected_sheet = sheet
+                return
+            except FitDataError:
+                pass
+            except XLRDError:
+                pass
+        if self.data_columns_box.fit_data is None:
+            self.main_window.error_dialog(
+                title="Input data error",
+                message=(
+                    "No sheet available with valid data.\n"
+                    "Please fix the file or load another one."
+                ),
+            )
+            self.input_file_box.file_path = None
 
 
 def main():
