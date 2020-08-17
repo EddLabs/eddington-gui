@@ -8,12 +8,13 @@ from eddington_matplotlib import (
     OutputConfiguration,
     plot_all,
 )
-from eddington import FitResult, EddingtonException, fit_to_data, FitData
+from eddington import FitResult, EddingtonException, FitDataError, fit_to_data, FitData
 
 import numpy as np
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
+from xlrd import XLRDError
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -346,24 +347,26 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 title="Fit result error", message=str(error),
             )
             raise error
-   
+
     def choose_sheet(self):
-        """Automatically choose the first valid sheet"""
+        """Automatically choose the first valid sheet."""
         for sheet in self.input_file_box.sheets_options:
             try:
                 self.data_columns_box.fit_data = FitData.read_from_excel(
-                    Path(self.input_file_box.file_path),
-                    sheet)
-                self.input_file_box.selected_sheet.value = sheet
+                    Path(self.input_file_box.file_path), sheet
+                )
+                self.input_file_box.selected_sheet = sheet
                 return
-            except Exception as error:
+            except FitDataError:
                 pass
-        if self.data_columns_box.fit_data == None:
+            except XLRDError:
+                pass
+        if self.data_columns_box.fit_data is None:
             self.main_window.error_dialog(
                 title="Input data error",
-                message="No sheet available with valid data.\nPlease fix the file or load another one.")
-            self.fit_data = None
-
+                message="".join(["No sheet available with valid data.\n",
+                                 "Please fix the file or load another one."]),
+            )
 
 
 def main():

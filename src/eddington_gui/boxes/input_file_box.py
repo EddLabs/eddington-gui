@@ -117,7 +117,13 @@ class InputFileBox(toga.Box):
 
     @property
     def selected_sheet(self):
-        return self.__select_sheet
+        """Getter for the chosen sheet."""
+        return self.__select_sheet.value
+
+    @selected_sheet.setter
+    def selected_sheet(self, selected_sheet):
+        """Setter for the chosen sheet."""
+        self.__select_sheet.value = selected_sheet
 
     def select_sheet(self, widget):  # pylint: disable=unused-argument
         """Select sheet to read data from. Relevant for excel files."""
