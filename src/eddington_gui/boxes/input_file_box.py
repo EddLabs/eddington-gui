@@ -3,7 +3,8 @@ from collections import Callable
 from pathlib import Path
 from typing import List, Optional
 
-import xlrd
+
+from openpyxl import load_workbook
 
 import toga
 from toga.style import Pack
@@ -102,10 +103,11 @@ class InputFileBox(toga.Box):
         self.file_path = input_file_path
         suffix = input_file_path.suffix
         if suffix in [".xlsx", ".xls"]:
-            excel_file = xlrd.open_workbook(input_file_path, on_demand=True)
-            self.sheets_options = [NO_VALUE] + excel_file.sheet_names()
+            excel_file = load_workbook(input_file_path)
+            self.sheets_options = [NO_VALUE] + excel_file.sheetnames
             if self.on_select_file is not None:
                 self.on_select_file()  # pylint: disable=not-callable
+
             return
         self.sheets_options = None
         if suffix == ".csv":
