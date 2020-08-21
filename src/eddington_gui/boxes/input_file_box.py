@@ -26,7 +26,7 @@ class InputFileBox(toga.Box):
 
     def __init__(self, flex):
         """Initialize box."""
-        super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
+        super().__init__(style=Pack(direction=COLUMN, flex=flex))
         self.__input_file_path = toga.TextInput(
             readonly=True,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),

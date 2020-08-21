@@ -25,9 +25,7 @@ class FittingFunctionBox(toga.Box):
 
     def __init__(self, flex):
         """Initialize box."""
-        super(FittingFunctionBox, self).__init__(
-            style=Pack(direction=COLUMN, flex=flex)
-        )
+        super().__init__(style=Pack(direction=COLUMN, flex=flex))
         fit_function_box = LineBox()
         fit_function_box.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(

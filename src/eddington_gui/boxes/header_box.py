@@ -21,7 +21,7 @@ class HeaderBox(LineBox):  # pylint: disable=too-few-public-methods
         """Initialize box."""
         logo_path = Path(__file__).parent.parent / "resources" / "eddington_gui.png"
         logo = toga.Image(str(logo_path))
-        super(HeaderBox, self).__init__(
+        super().__init__(
             alignment=TOP,
             children=[
                 toga.Label(

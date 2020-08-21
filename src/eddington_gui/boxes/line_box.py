@@ -20,7 +20,7 @@ class LineBox(toga.Box):  # pylint: disable=too-few-public-methods
         children=None,
     ):  # pylint: disable=too-many-arguments
         """Initialize box."""
-        super(LineBox, self).__init__(
+        super().__init__(
             style=Pack(
                 direction=ROW,
                 height=height,

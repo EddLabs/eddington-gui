@@ -30,9 +30,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
     def __init__(self, flex):
         """Initialize box."""
-        super(PlotConfigurationBox, self).__init__(
-            style=Pack(direction=COLUMN, flex=flex)
-        )
+        super().__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.__title_input = self.__add_column_option("Title:")
         self.__residuals_title_input = self.__add_column_option("Residuals title:")

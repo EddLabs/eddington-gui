@@ -13,9 +13,7 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
 
     def __init__(self, figure: Figure):
         """Initialize window."""
-        super(FigureWindow, self).__init__(
-            size=figure.get_size_inches() * figure.get_dpi()
-        )
+        super().__init__(size=figure.get_size_inches() * figure.get_dpi())
         chart = Chart()
         self.content = toga.Box(children=[chart])
         chart.draw(figure)
