@@ -3,14 +3,13 @@ from collections import Callable
 from pathlib import Path
 from typing import List, Optional
 
-import xlrd
-
 import toga
+import xlrd
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import NO_VALUE, BIG_PADDING
+from eddington_gui.consts import BIG_PADDING, NO_VALUE
 
 
 class InputFileBox(toga.Box):

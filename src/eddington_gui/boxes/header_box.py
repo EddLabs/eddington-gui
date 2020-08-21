@@ -5,9 +5,9 @@ import toga
 from toga.style import Pack
 from toga.style.pack import TOP
 
-from eddington_gui import __version__, __author__
+from eddington_gui import __author__, __version__
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import SMALL_FONT_SIZE, HEADER_FONT_FAMILY, LOGO_SIZE
+from eddington_gui.consts import HEADER_FONT_FAMILY, LOGO_SIZE, SMALL_FONT_SIZE
 
 
 class HeaderBox(LineBox):  # pylint: disable=too-few-public-methods

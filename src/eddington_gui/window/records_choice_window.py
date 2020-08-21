@@ -1,12 +1,13 @@
 """Window for choosing record to use in fit data."""
-from typing import List, Callable
+from typing import Callable, List
+
 import toga
 from eddington import FitData
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING, RECORD_WINDOW_SIZE
+from eddington_gui.consts import LINE_HEIGHT, RECORD_WINDOW_SIZE, SMALL_PADDING
 
 
 class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-methods
