@@ -17,7 +17,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
     def __init__(self, fit_data: FitData):
         """Initialize window."""
-        super(RecordsChoiceWindow, self).__init__(size=RECORD_WINDOW_SIZE)
+        super().__init__(size=RECORD_WINDOW_SIZE)
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         self.__checkboxes = [

@@ -21,7 +21,7 @@ class InitialGuessBox(LineBox):
 
     def __init__(self):
         """Initial box."""
-        super(InitialGuessBox, self).__init__()
+        super().__init__()
         self.add(toga.Label(text="Initial Guess:"))
         self.initial_guess_input = toga.TextInput(
             style=Pack(width=MEDIUM_INPUT_WIDTH),
@@ -89,11 +89,11 @@ class InitialGuessBox(LineBox):
         a0_values = [value for value in a0_values if value != ""]
         try:
             self.a0 = np.array(list(map(float, a0_values)))
-        except ValueError:
+        except ValueError as exc:
             raise EddingtonException(
                 "Unable to parse initial guess. "
                 "Initial guess should be written as numbers divided by commas."
-            )
+            ) from exc
         if self.n is None:
             return
         number_of_parameters = self.a0.shape[0]

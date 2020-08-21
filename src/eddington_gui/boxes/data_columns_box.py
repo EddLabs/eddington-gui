@@ -27,7 +27,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
     def __init__(self, flex):
         """Initialize box."""
-        super(DataColumnsBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
+        super().__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.x_selection = self.__add_column_option(
             label="X column:", on_select=self.set_columns
