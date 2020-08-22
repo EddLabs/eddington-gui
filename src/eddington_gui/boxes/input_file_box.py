@@ -1,13 +1,9 @@
 """Box for choosing from which file to load the input data."""
 from pathlib import Path
 from typing import Callable, List, Optional
-from typing import List, Optional
-
-
-from openpyxl import load_workbook
 
 import toga
-import xlrd
+from openpyxl import load_workbook
 from toga.style import Pack
 from toga.style.pack import COLUMN
 

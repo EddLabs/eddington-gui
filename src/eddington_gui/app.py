@@ -13,7 +13,6 @@ from eddington_matplotlib import (
 )
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from xlrd import XLRDError
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -25,9 +24,9 @@ from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import (
     BIG_PADDING,
     MAIN_BOTTOM_PADDING,
+    NO_VALUE,
     SMALL_PADDING,
     WINDOW_SIZE,
-    NO_VALUE,
 )
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
