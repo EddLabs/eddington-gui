@@ -1,18 +1,14 @@
 """Box for choosing a fitting function to use."""
 import importlib.util
-from typing import List, Callable
+from typing import Callable, List
 
 import toga
+from eddington import FitFunction, FitFunctionsRegistry
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
-from eddington import (
-    FitFunctionsRegistry,
-    FitFunction,
-)
-
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import NO_VALUE, BIG_PADDING, PARAMETER_WIDTH
+from eddington_gui.consts import BIG_PADDING, NO_VALUE, PARAMETER_WIDTH
 
 
 class FittingFunctionBox(toga.Box):

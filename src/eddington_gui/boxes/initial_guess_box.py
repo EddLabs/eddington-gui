@@ -1,11 +1,11 @@
 """Box for specifying initial guess for the fitting algorithm."""
 import re
-from typing import Union, List, Callable
+from typing import Callable, List, Union
+
 import numpy as np
 import toga
-from toga.style import Pack
-
 from eddington import EddingtonException
+from toga.style import Pack
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import MEDIUM_INPUT_WIDTH

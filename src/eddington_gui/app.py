@@ -1,20 +1,19 @@
 """Main app."""
 from pathlib import Path
 
-from eddington_matplotlib import (
-    plot_fitting,
-    plot_residuals,
-    plot_data,
-    OutputConfiguration,
-    plot_all,
-)
-from eddington import FitResult, EddingtonException, FitDataError, fit_to_data, FitData
-
 import numpy as np
 import toga
+from eddington import EddingtonException, FitData, FitDataError, FitResult, fit_to_data
+from eddington_matplotlib import (
+    OutputConfiguration,
+    plot_all,
+    plot_data,
+    plot_fitting,
+    plot_residuals,
+)
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-
+from xlrd import XLRDError
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -24,10 +23,10 @@ from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import (
-    WINDOW_SIZE,
     BIG_PADDING,
     MAIN_BOTTOM_PADDING,
     SMALL_PADDING,
+    WINDOW_SIZE,
     NO_VALUE,
 )
 from eddington_gui.window.figure_window import FigureWindow

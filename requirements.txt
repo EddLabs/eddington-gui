@@ -1,6 +1,0 @@
---pre
-openpyxl>=3.0.4
-eddington
-briefcase
-toga
-wxPython>=4.0.7

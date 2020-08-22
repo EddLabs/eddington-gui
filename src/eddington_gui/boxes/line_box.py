@@ -1,7 +1,7 @@
 """Row box."""
 import toga
 from toga.style import Pack
-from toga.style.pack import ROW, CENTER
+from toga.style.pack import CENTER, ROW
 
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 

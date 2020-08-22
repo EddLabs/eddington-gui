@@ -1,10 +1,10 @@
 """Box for setting up plot configuration for the output graphs."""
 from typing import Union
+
 import toga
+from eddington_matplotlib import PlotConfiguration
 from toga.style import Pack
 from toga.style.pack import COLUMN
-
-from eddington_matplotlib import PlotConfiguration
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH

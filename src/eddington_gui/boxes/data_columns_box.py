@@ -1,5 +1,5 @@
 """Box for choosing which columns to use in data dictionary."""
-from typing import List, Union, Callable
+from typing import Callable, List, Union
 
 import toga
 from eddington import FitData
@@ -7,7 +7,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import SELECTION_WIDTH, LABEL_WIDTH
+from eddington_gui.consts import LABEL_WIDTH, SELECTION_WIDTH
 from eddington_gui.util import value_or_none
 
 
