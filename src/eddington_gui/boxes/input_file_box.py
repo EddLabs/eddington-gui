@@ -1,16 +1,14 @@
 """Box for choosing from which file to load the input data."""
-from collections import Callable
 from pathlib import Path
-from typing import List, Optional
-
-import xlrd
+from typing import Callable, List, Optional
 
 import toga
+import xlrd
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import NO_VALUE, BIG_PADDING
+from eddington_gui.consts import BIG_PADDING, NO_VALUE
 
 
 class InputFileBox(toga.Box):
@@ -27,7 +25,7 @@ class InputFileBox(toga.Box):
 
     def __init__(self, flex):
         """Initialize box."""
-        super(InputFileBox, self).__init__(style=Pack(direction=COLUMN, flex=flex))
+        super().__init__(style=Pack(direction=COLUMN, flex=flex))
         self.__input_file_path = toga.TextInput(
             readonly=True,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),

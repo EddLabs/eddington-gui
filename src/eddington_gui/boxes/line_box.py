@@ -1,7 +1,7 @@
 """Row box."""
 import toga
 from toga.style import Pack
-from toga.style.pack import ROW, CENTER
+from toga.style.pack import CENTER, ROW
 
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 
@@ -20,7 +20,7 @@ class LineBox(toga.Box):  # pylint: disable=too-few-public-methods
         children=None,
     ):  # pylint: disable=too-many-arguments
         """Initialize box."""
-        super(LineBox, self).__init__(
+        super().__init__(
             style=Pack(
                 direction=ROW,
                 height=height,

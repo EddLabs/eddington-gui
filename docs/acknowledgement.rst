@@ -12,4 +12,5 @@ Logo Design
 Contributors
 ------------
 * Yuval Bardugo
+* Ohad Nir
 * Assaf Zohar
