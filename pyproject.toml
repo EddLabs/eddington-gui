@@ -1,15 +1,7 @@
 [build-system]
-requires = [
-    "briefcase",
-    "setuptools >= 49.6.0",
-    "setuptools_scm >= 4.1.2",
-    "wheel >= 0.34.2",
-    "toml >= 0.10.1"
-]
-build-backend = "setuptools.build_meta"
+requires = ["briefcase"]
 
 [tool.briefcase]
-name = "eddington-gui"
 project_name = "EddingtonGUI"
 bundle = "com.eddington_gui"
 version = "0.0.2"
@@ -24,6 +16,7 @@ description = "A gui library wrapping Eddington"
 icon = "src/eddington_gui/resources/eddington_gui"
 sources = ['src/eddington_gui']
 requires = [
+    '--pre',
     'toga-chart>=0.1.0',
     'xlrd>=1.2.0',
     'eddington>=0.0.11',
