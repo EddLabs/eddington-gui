@@ -13,7 +13,6 @@ from eddington_matplotlib import (
 )
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from xlrd import XLRDError
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -25,6 +24,7 @@ from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import (
     BIG_PADDING,
     MAIN_BOTTOM_PADDING,
+    NO_VALUE,
     SMALL_PADDING,
     WINDOW_SIZE,
 )
@@ -391,16 +391,16 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         If it fails to find a valid sheet, resets the input file.
         """
         for sheet in self.input_file_box.sheets_options:
-            try:
-                self.data_columns_box.fit_data = FitData.read_from_excel(
-                    Path(self.input_file_box.file_path), sheet
-                )
-                self.input_file_box.selected_sheet = sheet
-                return
-            except FitDataError:
-                pass
-            except XLRDError:
-                pass
+            if sheet != NO_VALUE:
+                try:
+                    self.data_columns_box.fit_data = FitData.read_from_excel(
+                        Path(self.input_file_box.file_path), sheet
+                    )
+                    self.input_file_box.selected_sheet = sheet
+                    return
+                except FitDataError:
+                    pass
+
         if self.data_columns_box.fit_data is None:
             self.main_window.error_dialog(
                 title="Input data error",

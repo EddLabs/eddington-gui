@@ -18,8 +18,8 @@ sources = ['src/eddington_gui']
 requires = [
     '--pre',
     'toga-chart>=0.1.0',
-    'xlrd>=1.2.0',
-    'eddington>=0.0.11',
+    'openpyxl>=3.0.4',
+    'eddington>=0.0.14',
     'eddington-matplotlib>=0.0.9'
 ]
 
