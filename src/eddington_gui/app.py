@@ -326,7 +326,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             output_dir.mkdir()
         func_name = self.fitting_function_box.fit_function.name
         output_configuration = OutputConfiguration.build(
-            base_name=func_name, output_dir=output_dir,
+            base_name=func_name, output_dir=output_dir
         )
         plot_all(
             func=self.fitting_function_box.fit_function,
@@ -380,7 +380,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         except EddingtonException as error:
             self.fit_result = None
             self.main_window.error_dialog(
-                title="Fit result error", message=str(error),
+                title="Fit result error",
+                message=str(error),
             )
             raise error
 
