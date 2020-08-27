@@ -251,7 +251,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
         except EddingtonException as error:
             self.main_window.error_dialog(
-                title="Plot initial guess error", message=str(error),
+                title="Plot initial guess error", message=str(error)
             )
             return
         self.show_figure_window(
