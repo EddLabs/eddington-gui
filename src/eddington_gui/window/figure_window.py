@@ -2,6 +2,9 @@
 import toga
 from matplotlib.figure import Figure
 from toga_chart import Chart
+from toga.style import Pack
+from toga.style.pack import COLUMN, ROW
+from pathlib import Path
 
 
 class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
@@ -10,10 +13,18 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
 
     This is made using toga.Chart widget.
     """
+    figure: Figure
 
     def __init__(self, figure: Figure):
         """Initialize window."""
-        super().__init__(size=figure.get_size_inches() * figure.get_dpi())
+        self.figure = figure
+        super().__init__(size=(1.1, 1) * (figure.get_size_inches() * figure.get_dpi()))
         chart = Chart()
-        self.content = toga.Box(children=[chart])
+        save_button=toga.Button(label="Save", style=Pack(flex=1), on_press=self.save_figure)
+        self.content = toga.Box(children=[save_button, chart], style=Pack(direction=ROW))
         chart.draw(figure)
+
+    def save_figure(self,widget):
+        output_path=self.save_file_dialog(title="Save Figure", suggested_filename="fig", file_types=["png"])
+        self.figure.savefig(fname=Path(output_path).with_suffix('.png'), format='png')
+
