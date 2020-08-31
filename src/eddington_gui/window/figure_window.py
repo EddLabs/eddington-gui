@@ -4,7 +4,7 @@ from pathlib import Path
 import toga
 from matplotlib.figure import Figure
 from toga.style import Pack
-from toga.style.pack import COLUMN, RIGHT, ROW
+from toga.style.pack import COLUMN
 from toga_chart import Chart
 
 
@@ -54,5 +54,6 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
         else:
             self.error_dialog(
                 title="Invalid File Suffix",
-                message=f"Cannot save figure with suffix {suffix} . \nallowed formats: png, jpg, pdf.",
+                message=f"Cannot save figure with suffix {suffix} . \n"
+                        f"allowed formats: png, jpg, pdf.",
             )
