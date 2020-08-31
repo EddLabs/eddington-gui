@@ -55,5 +55,5 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
             self.error_dialog(
                 title="Invalid File Suffix",
                 message=f"Cannot save figure with suffix {suffix} . \n"
-                        f"allowed formats: png, jpg, pdf.",
+                f"allowed formats: png, jpg, pdf.",
             )
