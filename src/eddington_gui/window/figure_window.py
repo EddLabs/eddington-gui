@@ -1,10 +1,11 @@
 """Window that presents matplotlib figures."""
+from pathlib import Path
+
 import toga
 from matplotlib.figure import Figure
-from toga_chart import Chart
 from toga.style import Pack
 from toga.style.pack import ROW
-from pathlib import Path
+from toga_chart import Chart
 
 
 class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
