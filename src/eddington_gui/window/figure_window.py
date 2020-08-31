@@ -4,7 +4,7 @@ from pathlib import Path
 import toga
 from matplotlib.figure import Figure
 from toga.style import Pack
-from toga.style.pack import ROW
+from toga.style.pack import COLUMN, RIGHT, ROW
 from toga_chart import Chart
 
 
@@ -20,14 +20,19 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
     def __init__(self, figure: Figure):
         """Initialize window."""
         self.figure = figure
-        super().__init__(size=(1.1, 1) * (figure.get_size_inches() * figure.get_dpi()))
+        super().__init__(size=(1, 1.05) * (figure.get_size_inches() * figure.get_dpi()))
         chart = Chart()
-        save_button = toga.Button(
-            label="Save", style=Pack(flex=1), on_press=self.save_figure
+
+        save_button = toga.Button(label="Save", on_press=self.save_figure)
+        save_box = toga.Box(children=[save_button])
+        chart_box = toga.Box(
+            children=[chart],
+            style=Pack(height=(figure.get_size_inches() * figure.get_dpi())[1]),
         )
-        self.content = toga.Box(
-            children=[save_button, chart], style=Pack(direction=ROW)
+        main_box = toga.Box(
+            children=[chart_box, save_box], style=Pack(direction=COLUMN)
         )
+        self.content = main_box
         chart.draw(figure)
 
     def save_figure(self, widget):  # pylint: disable=unused-argument
@@ -35,14 +40,19 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
         try:
             output_path = Path(
                 self.save_file_dialog(
-                    title="Save Figure", suggested_filename="fig", file_types=["png","jpg","pdf"]
+                    title="Save Figure",
+                    suggested_filename="fig",
+                    file_types=["png", "jpg", "pdf"],
                 )
             )
         except ValueError:
             return
 
-        suffix=output_path.suffix
-        if suffix in [".png",".jpg",".pdf"]:
+        suffix = output_path.suffix
+        if suffix in [".png", ".jpg", ".pdf"]:
             self.figure.savefig(fname=output_path)
         else:
-            self.figure.savefig(fname=output_path.with_suffix(".png"))
+            self.error_dialog(
+                title="Invalid File Suffix",
+                message=f"Cannot save figure with suffix {suffix} . \nallowed formats: png, jpg, pdf.",
+            )
