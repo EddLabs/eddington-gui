@@ -3,7 +3,7 @@ import toga
 from matplotlib.figure import Figure
 from toga_chart import Chart
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
+from toga.style.pack import ROW
 from pathlib import Path
 
 
@@ -25,6 +25,10 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
         chart.draw(figure)
 
     def save_figure(self,widget):
-        output_path=self.save_file_dialog(title="Save Figure", suggested_filename="fig", file_types=["png"])
-        self.figure.savefig(fname=Path(output_path).with_suffix('.png'), format='png')
+        try:
+            output_path=Path(self.save_file_dialog(title="Save Figure", suggested_filename="fig", file_types=["png"]))
+        except ValueError:
+            return
+
+        self.figure.savefig(fname=output_path.with_suffix('.png'), format='png')
 
