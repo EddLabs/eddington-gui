@@ -35,10 +35,14 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
         try:
             output_path = Path(
                 self.save_file_dialog(
-                    title="Save Figure", suggested_filename="fig", file_types=["png"]
+                    title="Save Figure", suggested_filename="fig", file_types=["png","jpg","pdf"]
                 )
             )
         except ValueError:
             return
 
-        self.figure.savefig(fname=output_path.with_suffix(".png"), format="png")
+        suffix=output_path.suffix
+        if suffix in [".png",".jpg",".pdf"]:
+            self.figure.savefig(fname=output_path)
+        else:
+            self.figure.savefig(fname=output_path.with_suffix(".png"))
