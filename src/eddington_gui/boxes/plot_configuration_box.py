@@ -180,9 +180,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         return text_input
 
     def x_domain_switch_handler(self):
-        """
-        Handler to run whenever the custom x domain toggle is switched.
-        """
+        """Handler to run whenever the custom x domain toggle is switched."""
         if self.__x_domain_switch.is_on:
             self.__x_min_input.style.visibility = VISIBLE
             self.__x_max_input.style.visibility = VISIBLE
@@ -193,9 +191,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.reset_plot_configuration()
 
     def x_domain_input_change(self, widget):  # pylint: disable=unused-argument
-        """
-        Handler to run whenever the x domain inputs change
-        """
+        """Handler to run whenever the x domain inputs change."""
         try:
             if value_or_none(self.__x_min_input.value) and value_or_none(
                 self.__x_max_input.value
