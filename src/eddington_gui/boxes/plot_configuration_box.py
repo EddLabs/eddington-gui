@@ -43,7 +43,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.__ylabel_input = self.__add_column_option("Y label:")
 
         self.__grid_switch = toga.Switch(
-            label="Grid", on_toggle=lambda _: self.reset_plot_configuration(),
+            label="Grid",
+            on_toggle=lambda _: self.reset_plot_configuration(),
         )
         self.add(LineBox(children=[self.__grid_switch]))
 
@@ -167,7 +168,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     def __add_column_option(self, label):
 
         text_input = toga.TextInput(
-            on_change=self.on_input_change, style=Pack(width=LONG_INPUT_WIDTH),
+            on_change=self.on_input_change,
+            style=Pack(width=LONG_INPUT_WIDTH),
         )
         line = LineBox(
             children=[
