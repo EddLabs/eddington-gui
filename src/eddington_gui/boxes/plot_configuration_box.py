@@ -4,7 +4,7 @@ from typing import Union
 import toga
 from eddington_matplotlib import PlotConfiguration
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, VISIBLE, NONE, HIDDEN
+from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH
@@ -43,24 +43,28 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.__ylabel_input = self.__add_column_option("Y label:")
 
         self.__grid_switch = toga.Switch(
-            label="Grid",
-            on_toggle=lambda _: self.reset_plot_configuration(),
+            label="Grid", on_toggle=lambda _: self.reset_plot_configuration(),
         )
         self.add(LineBox(children=[self.__grid_switch]))
 
         self.__x_domain_switch = toga.Switch(
-            label="Custom x domain",
-            on_toggle=lambda _:self.x_domain_inputs_creator()
+            label="Custom x domain", on_toggle=lambda _: self.x_domain_switch_handler()
         )
         self.__x_min_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN),
-            on_change=self.x_domain_input_change
+            style=Pack(visibility=HIDDEN), on_change=self.x_domain_input_change
         )
         self.__x_max_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN),
-            on_change=self.x_domain_input_change
+            style=Pack(visibility=HIDDEN), on_change=self.x_domain_input_change
         )
-        self.add(LineBox(children=[self.__x_domain_switch, self.__x_min_input, self.__x_max_input]))
+        self.add(
+            LineBox(
+                children=[
+                    self.__x_domain_switch,
+                    self.__x_min_input,
+                    self.__x_max_input,
+                ]
+            )
+        )
 
     @property
     def plot_configuration(self):
@@ -121,11 +125,17 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             self.__xmin, self.__xmax = None, None
         else:
             self.__xcolumn, self.__ycolumn = fit_data.x_column, fit_data.y_column
-            self.__xmin_from_data, self.__xmax_from_data = PlotConfiguration.get_plot_borders(fit_data.x)
+            (
+                self.__xmin_from_data,
+                self.__xmax_from_data,
+            ) = PlotConfiguration.get_plot_borders(fit_data.x)
             if self.__x_min_input.style.visibility == HIDDEN:
                 self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
             else:
-                self.__xmin, self.__xmax = float(self.__x_min_input.value), float(self.__x_max_input.value)
+                self.__xmin, self.__xmax = (
+                    float(self.__x_min_input.value),
+                    float(self.__x_max_input.value),
+                )
                 print(self.__xmin, self.__xmax)
         self.reset_plot_configuration()
 
@@ -157,8 +167,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     def __add_column_option(self, label):
 
         text_input = toga.TextInput(
-            on_change=self.on_input_change,
-            style=Pack(width=LONG_INPUT_WIDTH),
+            on_change=self.on_input_change, style=Pack(width=LONG_INPUT_WIDTH),
         )
         line = LineBox(
             children=[
@@ -170,7 +179,10 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.add(line)
         return text_input
 
-    def x_domain_inputs_creator(self):
+    def x_domain_switch_handler(self):
+        """
+        Handler to run whenever the custom x domain toggle is switched.
+        """
         if self.__x_domain_switch.is_on:
             self.__x_min_input.style.visibility = VISIBLE
             self.__x_max_input.style.visibility = VISIBLE
@@ -180,12 +192,17 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
         self.reset_plot_configuration()
 
-    def x_domain_input_change(self, widget):
+    def x_domain_input_change(self, widget):  # pylint: disable=unused-argument
+        """
+        Handler to run whenever the x domain inputs change
+        """
         try:
-            if value_or_none(self.__x_min_input.value) and value_or_none(self.__x_max_input.value):
+            if value_or_none(self.__x_min_input.value) and value_or_none(
+                self.__x_max_input.value
+            ):
                 self.__xmin = float(self.__x_min_input.value)
                 self.__xmax = float(self.__x_max_input.value)
         except ValueError:
-            self.__xmin,self.__xmax = self.__xmin_from_data,self.__xmax_from_data
+            self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
 
         self.reset_plot_configuration()
