@@ -368,9 +368,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             )
         except EddingtonException as error:
             self.fit_result = None
-            self.main_window.error_dialog(
-                title="Fit result error", message=str(error),
-            )
+            self.main_window.error_dialog(title="Fit result error", message=str(error))
             raise error
 
     def select_default_sheet(self):
