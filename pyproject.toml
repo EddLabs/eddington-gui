@@ -19,8 +19,7 @@ requires = [
     '--pre',
     'toga-chart>=0.1.0',
     'openpyxl>=3.0.4',
-    'eddington>=0.0.14',
-    'eddington-matplotlib>=0.0.9'
+    'eddington>=0.0.16.dev0',
 ]
 
 

@@ -23,9 +23,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         data_box = toga.Box()
         self.__checkboxes = [
             toga.Switch(
-                label="",
-                is_on=fit_data.is_selected(i),
-                style=Pack(height=LINE_HEIGHT),
+                label="", is_on=fit_data.is_selected(i), style=Pack(height=LINE_HEIGHT),
             )
             for i in range(1, fit_data.length + 1)
         ]
