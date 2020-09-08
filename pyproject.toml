@@ -19,33 +19,32 @@ requires = [
     '--pre',
     'toga-chart>=0.1.0',
     'openpyxl>=3.0.4',
-    'eddington>=0.0.14',
-    'eddington-matplotlib>=0.0.9'
+    'eddington>=0.0.16',
 ]
 
 
 [tool.briefcase.app.eddington_gui.macOS]
 requires = [
-    'toga-cocoa>=0.3.0.dev18',
+    'toga-cocoa>=0.3.0.dev23',
 ]
 
 [tool.briefcase.app.eddington_gui.linux]
 requires = [
-    'toga-gtk>=0.3.0.dev18',
+    'toga-gtk>=0.3.0.dev23',
 ]
 
 [tool.briefcase.app.eddington_gui.windows]
 requires = [
-    'toga-winforms>=0.3.0.dev18',
+    'toga-winforms>=0.3.0.dev23',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.eddington_gui.iOS]
 requires = [
-    'toga-iOS>=0.3.0.dev18',
+    'toga-iOS>=0.3.0.dev23',
 ]
 
 [tool.briefcase.app.eddington_gui.android]
 requires = [
-    'toga-android>=0.3.0.dev18',
+    'toga-android>=0.3.0.dev23',
 ]
