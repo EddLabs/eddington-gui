@@ -240,18 +240,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             ):
                 self.show_nothing_to_plot()
                 return
+            self.show_figure_window(
+                self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.initial_guess_box.a0,
+                )
+            )
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot initial guess error", message=str(error)
             )
-            return
-        self.show_figure_window(
-            self.plot_configuration_box.plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                a=self.initial_guess_box.a0,
-            )
-        )
 
     def plot(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot fitting" button."""
@@ -259,15 +258,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fit_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            self.plot_configuration_box.plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.fit_result.a,
+                )
             )
-        )
+        except EddingtonException as error:
+            self.main_window.error_dialog(
+                title="Plot fitting error", message=str(error)
+            )
 
     def residuals(self, widget):  # pylint: disable=unused-argument
         """Handler for the "residuals" button."""
@@ -275,15 +276,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fit_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            self.plot_configuration_box.plot_residuals(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                self.plot_configuration_box.plot_residuals(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.fit_result.a,
+                )
             )
-        )
+        except EddingtonException as error:
+            self.main_window.error_dialog(
+                title="Plot residuals error", message=str(error)
+            )
 
     def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         """Open output directory choice dialog."""
