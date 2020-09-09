@@ -8,7 +8,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import BIG_PADDING, NO_VALUE, PARAMETER_WIDTH
+from eddington_gui.consts import BIG_PADDING, NO_VALUE
 
 
 class FittingFunctionBox(toga.Box):
