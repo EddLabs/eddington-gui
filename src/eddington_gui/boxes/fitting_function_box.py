@@ -8,7 +8,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import BIG_PADDING, NO_VALUE, PARAMETER_WIDTH
+from eddington_gui.consts import BIG_PADDING, NO_VALUE
 
 
 class FittingFunctionBox(toga.Box):
@@ -16,8 +16,6 @@ class FittingFunctionBox(toga.Box):
 
     fitting_function_selection: toga.Selection
     fitting_function_syntax: toga.TextInput
-    parameters_box: LineBox
-    parameter_inputs: toga.TextInput
     load_module_button: toga.Button
 
     __fit_function: FitFunction = None
@@ -43,16 +41,6 @@ class FittingFunctionBox(toga.Box):
         fit_function_box.add(self.load_module_button)
         self.add(fit_function_box)
 
-        self.parameters_box = LineBox()
-        self.parameters_box.add(toga.Label("Parameters:"))
-        self.parameter_inputs = toga.TextInput(
-            readonly=True,
-            style=Pack(width=PARAMETER_WIDTH),
-            on_change=lambda widget: self.reset_fit_function(),
-        )
-        self.parameters_box.add(self.parameter_inputs)
-        self.add(self.parameters_box)
-
         self.update_fitting_function_options()
 
     def add_handler(self, handler):
@@ -72,7 +60,8 @@ class FittingFunctionBox(toga.Box):
     def load_select_fit_function_name(self, widget):  # pylint: disable=unused-argument
         """Load the selection fitting function from the FitFunctionRegistry."""
         if self.fit_function_state == NO_VALUE:
-            self.reset_fit_function()
+            self.fit_function = None
+            self.fitting_function_syntax.value = ""
             return
         self.fit_function = FitFunctionsRegistry.load(self.fit_function_state)
         self.fitting_function_syntax.value = self.fit_function.syntax
@@ -93,10 +82,6 @@ class FittingFunctionBox(toga.Box):
         dummy_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(dummy_module)
         self.update_fitting_function_options()
-
-    def reset_fit_function(self):
-        """Set fit function to be None."""
-        self.fit_function = None
 
     @property
     def fit_function(self):
