@@ -2,7 +2,7 @@
 from typing import Union
 
 import toga
-from eddington import plot_data, plot_fitting, plot_residuals
+from eddington import EddingtonException, plot_data, plot_fitting, plot_residuals
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
@@ -19,12 +19,12 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     __ylabel_input: toga.TextInput
     __grid_switch: toga.Switch
     __x_domain_switch: toga.Switch
+    __x_min_title: toga.Label
     __x_min_input: toga.TextInput
+    __x_max_title: toga.Label
     __x_max_input: toga.TextInput
 
     __base_name: Union[str] = ""
-    __xmin: Union[float, None] = None
-    __xmax: Union[float, None] = None
     __xcolumn: Union[str, None] = None
     __ycolumn: Union[str, None] = None
 
@@ -41,39 +41,23 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.add(LineBox(children=[self.__grid_switch]))
 
         self.__x_domain_switch = toga.Switch(
-            label="Custom x domain", on_toggle=lambda _: self.x_domain_switch_handler()
+            label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
         )
-        self.__x_min_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN), on_change=self.x_domain_input_change
-        )
-        self.__x_max_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN), on_change=self.x_domain_input_change
-        )
+        self.__x_min_title = toga.Label("X minimum:", style=Pack(visibility=HIDDEN))
+        self.__x_min_input = toga.TextInput(style=Pack(visibility=HIDDEN))
+        self.__x_max_title = toga.Label("X maximum:", style=Pack(visibility=HIDDEN))
+        self.__x_max_input = toga.TextInput(style=Pack(visibility=HIDDEN))
         self.add(
             LineBox(
                 children=[
                     self.__x_domain_switch,
+                    self.__x_min_title,
                     self.__x_min_input,
+                    self.__x_max_title,
                     self.__x_max_input,
                 ]
             )
         )
-
-    @property
-    def plot_configuration(self):
-        """
-        Getter of the plot configuration.
-
-        If plot configuration is None, try to create one.
-        """
-        if self.__plot_configuration is None:
-            self.__build_plot_configuration()
-        return self.__plot_configuration
-
-    @plot_configuration.setter
-    def plot_configuration(self, plot_configuration):
-        """Setter of the plot configuration."""
-        self.__plot_configuration = plot_configuration
 
     @property
     def title(self):
@@ -123,6 +107,30 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         """Should or should not add grid lines to plots."""
         return self.__grid_switch.is_on
 
+    @property
+    def xmin(self):
+        """Get minimum value of X, if presented by user."""
+        if not self.__x_domain_switch.is_on or self.__x_min_input.value == "":
+            return None
+        try:
+            return float(self.__x_min_input.value)
+        except ValueError as error:
+            raise EddingtonException(
+                "X minimum value must a floating number"
+            ) from error
+
+    @property
+    def xmax(self):
+        """Get minimum value of X, if presented by user."""
+        if not self.__x_domain_switch.is_on or self.__x_max_input.value == "":
+            return None
+        try:
+            return float(self.__x_max_input.value)
+        except ValueError as error:
+            raise EddingtonException(
+                "X maximum value must a floating number"
+            ) from error
+
     def plot_data(self, data):
         """Create a data plot."""
         return plot_data(
@@ -143,6 +151,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             ylabel=self.ylabel,
             grid=self.grid,
             a=a,
+            xmin=self.xmin,
+            xmax=self.xmax,
         )
 
     def plot_residuals(self, func, data, a):  # pylint: disable=invalid-name
@@ -155,6 +165,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             ylabel=self.ylabel,
             grid=self.grid,
             a=a,
+            xmin=self.xmin,
+            xmax=self.xmax,
         )
 
     def on_fit_function_load(self, fit_function):
@@ -178,47 +190,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             self.__xcolumn, self.__ycolumn = None, None
         else:
             self.__xcolumn, self.__ycolumn = fit_data.x_column, fit_data.y_column
-            (
-                self.__xmin_from_data,
-                self.__xmax_from_data,
-            ) = PlotConfiguration.get_plot_borders(fit_data.x)
-            if self.__x_min_input.style.visibility == HIDDEN:
-                self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
-            else:
-                self.__xmin, self.__xmax = (
-                    float(self.__x_min_input.value),
-                    float(self.__x_max_input.value),
-                )
-                print(self.__xmin, self.__xmax)
-        self.reset_plot_configuration()
-
-    def reset_plot_configuration(self):
-        """Set plot configuration to be None."""
-        self.plot_configuration = None
-
-    def on_input_change(self, widget):  # pylint: disable=unused-argument
-        """Run whenever the selection widgets has been changed."""
-        self.reset_plot_configuration()
-
-    def __build_plot_configuration(self):
-        self.plot_configuration = PlotConfiguration.build(
-            base_name=self.__base_name,
-            xmin=self.__xmin,
-            xmax=self.__xmax,
-            xcolumn=self.__xcolumn,
-            ycolumn=self.__ycolumn,
-            title=self.title,
-            residuals_title=self.residuals_title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.__grid_switch.is_on,
-            plot_data=True,
-            plot_fitting=True,
-            plot_residuals=True,
-        )
 
     def __add_column_option(self, label):
-
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
         line = LineBox(
             children=[
@@ -233,23 +206,13 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     def x_domain_switch_handler(self):
         """Handler to run whenever the custom x domain toggle is switched."""
         if self.__x_domain_switch.is_on:
+            self.__x_min_title.style.visibility = VISIBLE
             self.__x_min_input.style.visibility = VISIBLE
+            self.__x_max_title.style.visibility = VISIBLE
             self.__x_max_input.style.visibility = VISIBLE
         else:
+            self.__x_min_input.value, self.__x_max_input.value = "", ""
+            self.__x_min_title.style.visibility = HIDDEN
             self.__x_min_input.style.visibility = HIDDEN
+            self.__x_max_title.style.visibility = HIDDEN
             self.__x_max_input.style.visibility = HIDDEN
-            self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
-        self.reset_plot_configuration()
-
-    def x_domain_input_change(self, widget):  # pylint: disable=unused-argument
-        """Handler to run whenever the x domain inputs change."""
-        try:
-            if value_or_none(self.__x_min_input.value) and value_or_none(
-                self.__x_max_input.value
-            ):
-                self.__xmin = float(self.__x_min_input.value)
-                self.__xmax = float(self.__x_max_input.value)
-        except ValueError:
-            self.__xmin, self.__xmax = self.__xmin_from_data, self.__xmax_from_data
-
-        self.reset_plot_configuration()
