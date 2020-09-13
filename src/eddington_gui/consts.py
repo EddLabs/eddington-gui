@@ -4,7 +4,7 @@ from toga.style.pack import MONOSPACE
 NO_VALUE = "----------"
 
 LOGO_SIZE = 192
-WINDOW_SIZE = (1100, 800)
+WINDOW_SIZE = (1450, 820)
 
 SMALL_PADDING = 2
 BIG_PADDING = 5

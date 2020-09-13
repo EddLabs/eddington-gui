@@ -3,13 +3,12 @@ from pathlib import Path
 
 import numpy as np
 import toga
-from eddington import EddingtonException, FitData, FitDataError, FitResult, fit_to_data
-from eddington_matplotlib import (
-    OutputConfiguration,
-    plot_all,
-    plot_data,
-    plot_fitting,
-    plot_residuals,
+from eddington import (
+    EddingtonException,
+    FittingData,
+    FittingDataError,
+    FittingResult,
+    fit,
 )
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
@@ -44,7 +43,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     main_window: toga.Window
 
     __a0: np.ndarray = None
-    __fit_result: FitResult = None
+    __fit_result: FittingResult = None
 
     def startup(self):
         """
@@ -182,7 +181,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_csv(filepath)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
             self.data_columns_box.fit_data = None
             self.input_file_box.file_path = None
@@ -198,7 +197,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_excel(filepath, sheet)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
             self.data_columns_box.fit_data = None
             self.input_file_box.selected_sheet = None
@@ -214,7 +213,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         window.show()
         self.reset_fit_result()
         self.initial_guess_box.reset_initial_guess()
-        self.plot_configuration_box.reset_plot_configuration()
 
     def fit(self, widget):  # pylint: disable=unused-argument
         """Handler for the "fit" button."""
@@ -234,9 +232,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.show_nothing_to_plot()
         else:
             self.show_figure_window(
-                plot_data(
-                    data=self.data_columns_box.fit_data,
-                    plot_configuration=self.plot_configuration_box.plot_configuration,
+                self.plot_configuration_box.plot_data(
+                    data=self.data_columns_box.fit_data
                 )
             )
 
@@ -249,19 +246,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             ):
                 self.show_nothing_to_plot()
                 return
+            self.show_figure_window(
+                self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.initial_guess_box.a0,
+                )
+            )
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot initial guess error", message=str(error)
             )
-            return
-        self.show_figure_window(
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.initial_guess_box.a0,
-            )
-        )
 
     def plot(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot fitting" button."""
@@ -269,16 +264,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fit_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.fit_result.a,
+                )
             )
-        )
+        except EddingtonException as error:
+            self.main_window.error_dialog(
+                title="Plot fitting error", message=str(error)
+            )
 
     def residuals(self, widget):  # pylint: disable=unused-argument
         """Handler for the "residuals" button."""
@@ -286,16 +282,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fit_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            plot_residuals(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                self.plot_configuration_box.plot_residuals(
+                    func=self.fitting_function_box.fit_function,
+                    data=self.data_columns_box.fit_data,
+                    a=self.fit_result.a,
+                )
             )
-        )
+        except EddingtonException as error:
+            self.main_window.error_dialog(
+                title="Plot residuals error", message=str(error)
+            )
 
     def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         """Open output directory choice dialog."""
@@ -325,16 +322,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         if not output_dir.exists():
             output_dir.mkdir()
         func_name = self.fitting_function_box.fit_function.name
-        output_configuration = OutputConfiguration.build(
-            base_name=func_name, output_dir=output_dir
-        )
-        plot_all(
+        self.fit_result.save_txt(output_dir / f"{func_name}_result.txt")
+        self.plot_configuration_box.plot_fitting(
             func=self.fitting_function_box.fit_function,
             data=self.data_columns_box.fit_data,
-            plot_configuration=self.plot_configuration_box.plot_configuration,
-            output_configuration=output_configuration,
-            result=self.fit_result,
-        )
+            a=self.fit_result.a,
+        ).savefig(output_dir / f"{func_name}_fitting.png")
+        self.plot_configuration_box.plot_residuals(
+            func=self.fitting_function_box.fit_function,
+            data=self.data_columns_box.fit_data,
+            a=self.fit_result.a,
+        ).savefig(output_dir / f"{func_name}_residuals.png")
         self.main_window.info_dialog(
             title="Save output", message="All plots have been saved successfully!"
         )
@@ -372,17 +370,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.fit_result = None
             return
         try:
-            self.fit_result = fit_to_data(
+            self.fit_result = fit(
                 data=self.data_columns_box.fit_data,
                 func=self.fitting_function_box.fit_function,
                 a0=self.initial_guess_box.a0,
             )
         except EddingtonException as error:
             self.fit_result = None
-            self.main_window.error_dialog(
-                title="Fit result error",
-                message=str(error),
-            )
+            self.main_window.error_dialog(title="Fit result error", message=str(error))
             raise error
 
     def select_default_sheet(self):
@@ -394,12 +389,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         for sheet in self.input_file_box.sheets_options:
             if sheet != NO_VALUE:
                 try:
-                    self.data_columns_box.fit_data = FitData.read_from_excel(
+                    self.data_columns_box.fit_data = FittingData.read_from_excel(
                         Path(self.input_file_box.file_path), sheet
                     )
                     self.input_file_box.selected_sheet = sheet
                     return
-                except FitDataError:
+                except FittingDataError:
                     pass
 
         if self.data_columns_box.fit_data is None:
