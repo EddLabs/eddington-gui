@@ -3,7 +3,13 @@ from pathlib import Path
 
 import numpy as np
 import toga
-from eddington import EddingtonException, FitData, FitDataError, FitResult, fit_to_data
+from eddington import (
+    EddingtonException,
+    FittingData,
+    FittingDataError,
+    FittingResult,
+    fit,
+)
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
@@ -37,7 +43,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     main_window: toga.Window
 
     __a0: np.ndarray = None
-    __fit_result: FitResult = None
+    __fit_result: FittingResult = None
 
     def startup(self):
         """
@@ -175,7 +181,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_csv(filepath)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
             self.data_columns_box.fit_data = None
             self.input_file_box.file_path = None
@@ -191,7 +197,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_excel(filepath, sheet)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
             self.data_columns_box.fit_data = None
             self.input_file_box.selected_sheet = None
@@ -364,7 +370,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.fit_result = None
             return
         try:
-            self.fit_result = fit_to_data(
+            self.fit_result = fit(
                 data=self.data_columns_box.fit_data,
                 func=self.fitting_function_box.fit_function,
                 a0=self.initial_guess_box.a0,
@@ -383,12 +389,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         for sheet in self.input_file_box.sheets_options:
             if sheet != NO_VALUE:
                 try:
-                    self.data_columns_box.fit_data = FitData.read_from_excel(
+                    self.data_columns_box.fit_data = FittingData.read_from_excel(
                         Path(self.input_file_box.file_path), sheet
                     )
                     self.input_file_box.selected_sheet = sheet
                     return
-                except FitDataError:
+                except FittingDataError:
                     pass
 
         if self.data_columns_box.fit_data is None:

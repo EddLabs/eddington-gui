@@ -3,7 +3,7 @@ import importlib.util
 from typing import Callable, List
 
 import toga
-from eddington import FitFunction, FitFunctionsRegistry
+from eddington import FittingFunction, FittingFunctionsRegistry
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
@@ -18,7 +18,7 @@ class FittingFunctionBox(toga.Box):
     fitting_function_syntax: toga.TextInput
     load_module_button: toga.Button
 
-    __fit_function: FitFunction = None
+    __fit_function: FittingFunction = None
     __handlers: List[Callable] = []
 
     def __init__(self, flex):
@@ -54,16 +54,16 @@ class FittingFunctionBox(toga.Box):
     def update_fitting_function_options(self):
         """Update the fitting functions options."""
         self.fitting_function_selection.items = [NO_VALUE] + list(
-            FitFunctionsRegistry.names()
+            FittingFunctionsRegistry.names()
         )
 
     def load_select_fit_function_name(self, widget):  # pylint: disable=unused-argument
-        """Load the selection fitting function from the FitFunctionRegistry."""
+        """Load the selection fitting function from the FittingFunctionRegistry."""
         if self.fit_function_state == NO_VALUE:
             self.fit_function = None
             self.fitting_function_syntax.value = ""
             return
-        self.fit_function = FitFunctionsRegistry.load(self.fit_function_state)
+        self.fit_function = FittingFunctionsRegistry.load(self.fit_function_state)
         self.fitting_function_syntax.value = self.fit_function.syntax
 
     def load_module(self, widget):  # pylint: disable=unused-argument

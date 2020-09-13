@@ -2,7 +2,7 @@
 from typing import Callable, List, Union
 
 import toga
-from eddington import FitData
+from eddington import FittingData
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
@@ -22,7 +22,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
     y_selection: toga.Selection
     yerr_selection: toga.Selection
 
-    __fit_data: Union[FitData] = None
+    __fit_data: Union[FittingData] = None
     __handlers: List[Callable] = []
 
     def __init__(self, flex):
@@ -48,7 +48,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         return self.__fit_data
 
     @fit_data.setter
-    def fit_data(self, fit_data: FitData):
+    def fit_data(self, fit_data: FittingData):
         """
         Fit data setter.
 
@@ -148,7 +148,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
         :param filepath: path of the csv file
         """
-        self.fit_data = FitData.read_from_csv(filepath)
+        self.fit_data = FittingData.read_from_csv(filepath)
 
     def read_excel(self, filepath, sheet):
         """
@@ -157,7 +157,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         :param filepath: path of the excel file
         :param sheet: sheet from which to read the data.
         """
-        self.fit_data = FitData.read_from_excel(filepath, sheet)
+        self.fit_data = FittingData.read_from_excel(filepath, sheet)
 
     def __add_column_option(self, label, on_select):
 
