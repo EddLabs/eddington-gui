@@ -20,7 +20,7 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
     def __init__(self, figure: Figure):
         """Initialize window."""
         self.figure = figure
-        super().__init__(size=(1, 1.05) * (figure.get_size_inches() * figure.get_dpi()))
+        super().__init__(size=(1, 1.35) * (figure.get_size_inches() * figure.get_dpi()))
         chart = Chart()
 
         save_button = toga.Button(label="Save", on_press=self.save_figure)
