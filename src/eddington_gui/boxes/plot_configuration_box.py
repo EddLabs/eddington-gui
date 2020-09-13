@@ -169,16 +169,16 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             xmax=self.xmax,
         )
 
-    def on_fit_function_load(self, fit_function):
+    def on_fitting_function_load(self, fitting_function):
         """
         Handler to run whenever the fit function is updated.
 
         Updates the basename and reset the plot configuration.
         """
-        if fit_function is None:
+        if fitting_function is None:
             self.__base_name = ""
         else:
-            self.__base_name = fit_function.title_name
+            self.__base_name = fitting_function.title_name
 
     def on_fit_data_load(self, fit_data):
         """

@@ -77,7 +77,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
         self.fitting_function_box.add_handler(
-            self.plot_configuration_box.on_fit_function_load
+            self.plot_configuration_box.on_fitting_function_load
         )
         self.data_columns_box.add_handler(self.plot_configuration_box.on_fit_data_load)
 
@@ -248,7 +248,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
             self.show_figure_window(
                 self.plot_configuration_box.plot_fitting(
-                    func=self.fitting_function_box.fit_function,
+                    func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fit_data,
                     a=self.initial_guess_box.a0,
                 )
@@ -266,7 +266,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
             self.show_figure_window(
                 self.plot_configuration_box.plot_fitting(
-                    func=self.fitting_function_box.fit_function,
+                    func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fit_data,
                     a=self.fit_result.a,
                 )
@@ -284,7 +284,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
             self.show_figure_window(
                 self.plot_configuration_box.plot_residuals(
-                    func=self.fitting_function_box.fit_function,
+                    func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fit_data,
                     a=self.fit_result.a,
                 )
@@ -321,15 +321,15 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         output_dir = Path(self.output_directory_input.value)
         if not output_dir.exists():
             output_dir.mkdir()
-        func_name = self.fitting_function_box.fit_function.name
+        func_name = self.fitting_function_box.fitting_function.name
         self.fit_result.save_txt(output_dir / f"{func_name}_result.txt")
         self.plot_configuration_box.plot_fitting(
-            func=self.fitting_function_box.fit_function,
+            func=self.fitting_function_box.fitting_function,
             data=self.data_columns_box.fit_data,
             a=self.fit_result.a,
         ).savefig(output_dir / f"{func_name}_fitting.png")
         self.plot_configuration_box.plot_residuals(
-            func=self.fitting_function_box.fit_function,
+            func=self.fitting_function_box.fitting_function,
             data=self.data_columns_box.fit_data,
             a=self.fit_result.a,
         ).savefig(output_dir / f"{func_name}_residuals.png")
@@ -365,14 +365,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     def __calculate_fit_result(self):
         if (
             self.data_columns_box.fit_data is None
-            or self.fitting_function_box.fit_function is None  # noqa: W503
+            or self.fitting_function_box.fitting_function is None  # noqa: W503
         ):
             self.fit_result = None
             return
         try:
             self.fit_result = fit(
                 data=self.data_columns_box.fit_data,
-                func=self.fitting_function_box.fit_function,
+                func=self.fitting_function_box.fitting_function,
                 a0=self.initial_guess_box.a0,
             )
         except EddingtonException as error:
