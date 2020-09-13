@@ -169,27 +169,30 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             xmax=self.xmax,
         )
 
-    def on_fit_function_load(self, fit_function):
+    def on_fitting_function_load(self, fitting_function):
         """
         Handler to run whenever the fit function is updated.
 
         Updates the basename and reset the plot configuration.
         """
-        if fit_function is None:
+        if fitting_function is None:
             self.__base_name = ""
         else:
-            self.__base_name = fit_function.title_name
+            self.__base_name = fitting_function.title_name
 
-    def on_fit_data_load(self, fit_data):
+    def on_fitting_data_load(self, fitting_data):
         """
         Handler to run whenever the fit function is updated.
 
         Updates the basename and reset the plot configuration.
         """
-        if fit_data is None:
+        if fitting_data is None:
             self.__xcolumn, self.__ycolumn = None, None
         else:
-            self.__xcolumn, self.__ycolumn = fit_data.x_column, fit_data.y_column
+            self.__xcolumn, self.__ycolumn = (
+                fitting_data.x_column,
+                fitting_data.y_column,
+            )
 
     def __add_column_option(self, label):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))

@@ -22,7 +22,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
     y_selection: toga.Selection
     yerr_selection: toga.Selection
 
-    __fit_data: Union[FittingData] = None
+    __fitting_data: Union[FittingData] = None
     __handlers: List[Callable] = []
 
     def __init__(self, flex):
@@ -43,23 +43,23 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         )
 
     @property
-    def fit_data(self):
+    def fitting_data(self):
         """Fit data getter."""
-        return self.__fit_data
+        return self.__fitting_data
 
-    @fit_data.setter
-    def fit_data(self, fit_data: FittingData):
+    @fitting_data.setter
+    def fitting_data(self, fitting_data: FittingData):
         """
         Fit data setter.
 
         If fit data is None, reset all selections
         """
-        self.__fit_data = fit_data
-        if fit_data is None:
+        self.__fitting_data = fitting_data
+        if fitting_data is None:
             self.clear_selections()
             return
-        items = list(fit_data.data.keys())
-        used_columns = self.fit_data.used_columns
+        items = list(fitting_data.data.keys())
+        used_columns = self.fitting_data.used_columns
         self.set_items(self.x_selection, items, used_columns.x)
         self.set_items(self.xerr_selection, items, used_columns.xerr)
         self.set_items(self.y_selection, items, used_columns.y)
@@ -131,16 +131,16 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         """Set columns of the fit data based on the selection of the user."""
         if not self.selection_enabled:
             return
-        self.fit_data.x_column = self.x_selection.value
-        self.fit_data.xerr_column = self.xerr_selection.value
-        self.fit_data.y_column = self.y_selection.value
-        self.fit_data.yerr_column = self.yerr_selection.value
+        self.fitting_data.x_column = self.x_selection.value
+        self.fitting_data.xerr_column = self.xerr_selection.value
+        self.fitting_data.y_column = self.y_selection.value
+        self.fitting_data.yerr_column = self.yerr_selection.value
         self.run_handlers()
 
     def run_handlers(self):
         """Whenever fit data is updated, run handlers to notify other components."""
         for handler in self.__handlers:
-            handler(self.fit_data)
+            handler(self.fitting_data)
 
     def read_csv(self, filepath):
         """
@@ -148,7 +148,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
         :param filepath: path of the csv file
         """
-        self.fit_data = FittingData.read_from_csv(filepath)
+        self.fitting_data = FittingData.read_from_csv(filepath)
 
     def read_excel(self, filepath, sheet):
         """
@@ -157,7 +157,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         :param filepath: path of the excel file
         :param sheet: sheet from which to read the data.
         """
-        self.fit_data = FittingData.read_from_excel(filepath, sheet)
+        self.fitting_data = FittingData.read_from_excel(filepath, sheet)
 
     def __add_column_option(self, label, on_select):
 

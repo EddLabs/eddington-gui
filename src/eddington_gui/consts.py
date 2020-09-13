@@ -2,6 +2,7 @@
 from toga.style.pack import MONOSPACE
 
 NO_VALUE = "----------"
+POLYNOMIAL = "polynomial"
 
 LOGO_SIZE = 192
 WINDOW_SIZE = (1450, 820)
