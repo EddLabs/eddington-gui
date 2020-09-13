@@ -61,7 +61,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
-        self.fitting_function_box.add_handler(lambda fit_func: self.reset_fitting_result())
+        self.fitting_function_box.add_handler(
+            lambda fit_func: self.reset_fitting_result()
+        )
         main_box.add(self.fitting_function_box)
 
         self.initial_guess_box = InitialGuessBox()
@@ -70,7 +72,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
-        self.data_columns_box.add_handler(lambda fitting_data: self.reset_fitting_result())
+        self.data_columns_box.add_handler(
+            lambda fitting_data: self.reset_fitting_result()
+        )
         self.input_file_box.on_csv_read = self.read_csv
         self.input_file_box.on_excel_read = self.read_excel
         self.input_file_box.on_select_file = self.select_default_sheet
@@ -79,7 +83,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.fitting_function_box.add_handler(
             self.plot_configuration_box.on_fitting_function_load
         )
-        self.data_columns_box.add_handler(self.plot_configuration_box.on_fitting_data_load)
+        self.data_columns_box.add_handler(
+            self.plot_configuration_box.on_fitting_data_load
+        )
 
         main_box.add(
             toga.Box(
@@ -224,7 +230,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 return
         except EddingtonException:
             return
-        self.main_window.info_dialog(title="Fit Result", message=str(self.fitting_result))
+        self.main_window.info_dialog(
+            title="Fit Result", message=str(self.fitting_result)
+        )
 
     def plot_data(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot data" button."""

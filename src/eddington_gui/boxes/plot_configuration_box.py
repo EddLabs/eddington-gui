@@ -189,7 +189,10 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         if fitting_data is None:
             self.__xcolumn, self.__ycolumn = None, None
         else:
-            self.__xcolumn, self.__ycolumn = fitting_data.x_column, fitting_data.y_column
+            self.__xcolumn, self.__ycolumn = (
+                fitting_data.x_column,
+                fitting_data.y_column,
+            )
 
     def __add_column_option(self, label):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
