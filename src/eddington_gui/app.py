@@ -27,6 +27,7 @@ from eddington_gui.consts import (
     NO_VALUE,
     SMALL_PADDING,
     WINDOW_SIZE,
+    SMALL_FONT_SIZE
 )
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
@@ -156,9 +157,43 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             )
         )
 
+        accessibility_group = toga.Group('Accessibility') 
+
+        fontSize = toga.Command(
+            self.change_font_size,
+            label='Text Size',
+            tooltip='Adds option to enlarge all text',
+            shortcut='A',
+            group=accessibility_group,
+        )
+
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
+        self.main_window.toolbar.add(fontSize)
         self.main_window.show()
+
+    # TODO: have fontSize call this function, 
+    # and this function will call change_font_size
+    # with the chosen size.
+    def font_size_slider(self, sender):
+        self.main_window.content.add(
+            toga.Slider(
+                default=SMALL_FONT_SIZE,
+                range=(SMALL_FONT_SIZE, 100),
+                tick_count=10,
+                on_slide=self.change_font_size
+            )
+        )
+
+    def change_font_size(self, sender):
+        for c in self.main_window.content.children:
+            self.rec_change_font_size(c)
+
+    def rec_change_font_size(self, container):
+        for c in container.children:
+            c.style.font_size = 20
+            self.rec_change_font_size(c)
+
 
     @property
     def fit_result(self):
