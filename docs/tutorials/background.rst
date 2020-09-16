@@ -3,9 +3,12 @@
 Background
 ===========
 
-.. video:: ../_static/background.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 Hello, My name is Sagi Shadur, and I’m the creator of the Eddington platform.
 Eddington helps you fit data according to theoretical models, with easy to use tools

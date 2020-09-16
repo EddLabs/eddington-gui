@@ -3,9 +3,12 @@
 Step 2 - Data Files
 =====================
 
-.. video:: ../_static/data_files.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/data_files.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 In this video, we’ll see how fitting data files should look like for Eddington to
 read them.

@@ -3,9 +3,12 @@
 Step 3 - Upload Data
 =====================
 
-.. video:: ../_static/upload_data.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/upload_data.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 In this video, we’ll see how to upload your fitting data to Eddington-GUI.
 

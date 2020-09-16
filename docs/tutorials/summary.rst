@@ -3,9 +3,12 @@
 Summary
 =======
 
-.. video:: ../_static/summary.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/summary.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 In these videos, we’ve scanned through the process of using Eddington-GUI as your data
 fitting platform. We’ve seen how to install it, how a data file should look like, and

@@ -3,9 +3,12 @@
 Step 6 - Costume Fitting Functions
 ===================================
 
-.. video:: ../_static/costume_fitting_functions.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/costume_fitting_functions.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 Sometimes, the default fitting functions presented by Eddington aren’t enough for your
 specific use-case and you may want to write your own fitting function instead.

@@ -3,9 +3,12 @@
 Step 4 - Fitting The Data
 ==========================
 
-.. video:: ../_static/fitting.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/fitting.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 In this video, we’ll see how to fit your data according to a fitting function.
 
