@@ -1,0 +1,4 @@
+toga >= 0.3.0.dev23
+toga-chart >= 0.1.0
+openpyxl >= 3.0.4
+eddington >= 0.0.17
