@@ -3,9 +3,12 @@
 Step 5 - Selecting Records
 ==========================
 
-.. video:: ../_static/select_records.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/select_records.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 Sometimes, for various reasons, you want to omit a record from the fitting process.
 You may want it in the case that a record is contaminated or you see that it is very

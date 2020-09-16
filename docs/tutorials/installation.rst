@@ -3,9 +3,12 @@
 Step 1 - Installation
 =====================
 
-.. video:: ../_static/installation.mp4
-   :width: 500
-   :height: 300
+.. raw:: html
+
+    <video width="500" height="300" controls>
+        <source src="../_static/installation.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
 In this video, we will learn how to install Eddington GUI on your computer.
 First, open your browser and enter the following address:
