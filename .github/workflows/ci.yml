@@ -7,19 +7,29 @@ on:
     branches: [ master ]
 
 jobs:
-  static_code_analysis:
-    name: Static Code analysis
-    runs-on: windows-latest
+  validations:
+    name: Post-Test Checks
+    needs: unit_tests
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        task:
+          - docs
+          - static
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
       - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v1
         with:
           python-version: 3.7
-      - name: Install depecndencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install tox
-      - name: Run static code analysis
+      - name: Install Latex
+        run: sudo apt-get install texlive-latex-extra dvipng
+        if: matrix.task == 'docs'
+      - name: Run Post-Test check
         run: |
-          tox -e static
+          tox -e ${{ matrix.task }}
