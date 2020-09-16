@@ -8,3 +8,4 @@ Tutorials
    :glob:
 
    Background <background>
+   Step 1 - Installation <installation>
