@@ -21,3 +21,4 @@ has an easy to use GUI.
    :titlesonly:
 
    community/index
+   tutorials/index
