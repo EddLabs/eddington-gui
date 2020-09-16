@@ -11,3 +11,4 @@ Tutorials
    Step 1 - Installation <installation>
    Step 2 - Data Files <data_files>
    Step 3 - Upload Data <upload_data>
+   Step 4 - Fitting The Data <fitting>
