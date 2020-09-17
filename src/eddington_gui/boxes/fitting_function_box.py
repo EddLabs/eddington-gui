@@ -1,6 +1,6 @@
 """Box for choosing a fitting function to use."""
 import importlib.util
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import toga
 from eddington import FittingFunction, FittingFunctionsRegistry, polynomial
@@ -21,8 +21,8 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
     polynomial_degree_input: toga.NumberInput
     load_module_button: toga.Button
 
-    __fitting_function: FittingFunction = None
-    __handlers: List[Callable] = []
+    __fitting_function: Optional[FittingFunction] = None
+    __on_fitting_function_load: Optional[Callable[[FittingFunction], None]] = None
     __polynomial_is_set: bool = False
 
     def __init__(self, flex):
@@ -55,13 +55,35 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
 
         self.update_fitting_function_options()
 
-    def add_handler(self, handler):
-        """
-        Add handler to run whenever the fitting function is updated.
+    @property
+    def fitting_function(self):
+        """Getter of the fitting function."""
+        return self.__fitting_function
 
-        :param handler: Callable
+    @fitting_function.setter
+    def fitting_function(self, fitting_function):
         """
-        self.__handlers.append(handler)
+        Setter of the fitting function.
+
+        After setting the fit function, run handlers in order to notify other
+        components of the change.
+        """
+        self.__fitting_function = fitting_function
+        if self.on_fitting_function_load is not None:
+            self.on_fitting_function_load(self.fitting_function)
+
+    @property
+    def fitting_function_state(self):
+        """Set fit function state."""
+        return self.fitting_function_selection.value
+
+    @property
+    def on_fitting_function_load(self):
+        return self.__on_fitting_function_load
+
+    @on_fitting_function_load.setter
+    def on_fitting_function_load(self, on_fitting_function_load):
+        self.__on_fitting_function_load = on_fitting_function_load
 
     def update_fitting_function_options(self):
         """Update the fitting functions options."""
@@ -119,25 +141,3 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
             self.fitting_function_syntax.value = "a[0] + a[1] * x + " + " + ".join(
                 [f"a[{i}] * x ^ {i}" for i in range(2, degree + 1)]
             )
-
-    @property
-    def fitting_function(self):
-        """Getter of the fitting function."""
-        return self.__fitting_function
-
-    @fitting_function.setter
-    def fitting_function(self, fitting_function):
-        """
-        Setter of the fitting function.
-
-        After setting the fit function, run handlers in order to notify other
-        components of the change.
-        """
-        self.__fitting_function = fitting_function
-        for handler in self.__handlers:
-            handler(self.fitting_function)
-
-    @property
-    def fitting_function_state(self):
-        """Set fit function state."""
-        return self.fitting_function_selection.value

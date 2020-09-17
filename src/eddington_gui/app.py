@@ -64,23 +64,19 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
-        self.fitting_function_box.add_handler(
-            lambda fit_func: self.reset_fitting_result()
+        self.fitting_function_box.on_fitting_function_load = (
+            self.on_fitting_function_load
         )
         main_box.add(self.fitting_function_box)
 
         self.initial_guess_box = InitialGuessBox()
         self.initial_guess_box.add_handler(lambda a0: self.reset_fitting_result())
-        self.fitting_function_box.add_handler(self.set_parameters_number)
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
         self.data_columns_box.on_columns_change = self.on_data_columns_change
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
-        self.fitting_function_box.add_handler(
-            self.plot_configuration_box.on_fitting_function_load
-        )
 
         main_box.add(
             toga.Box(
@@ -175,6 +171,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     def on_data_columns_change(self, fitting_data):
         self.reset_fitting_result()
         self.plot_configuration_box.on_fitting_data_load(fitting_data)
+
+    def on_fitting_function_load(self, fitting_function):
+        self.reset_fitting_result()
+        self.set_parameters_number(fitting_function)
+        self.plot_configuration_box.on_fitting_function_load(fitting_function)
 
     def read_csv(self, filepath):
         """
