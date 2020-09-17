@@ -1,6 +1,6 @@
 """Box for specifying initial guess for the fitting algorithm."""
 import re
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import numpy as np
 import toga
@@ -69,10 +69,12 @@ class InitialGuessBox(LineBox):
 
     @property
     def on_initial_guess_change(self):
+        """on_initial_guess_change getter."""
         return self.__on_initial_guess_change
 
     @on_initial_guess_change.setter
     def on_initial_guess_change(self, on_initial_guess_change):
+        """on_initial_guess_change setter."""
         self.__on_initial_guess_change = on_initial_guess_change
 
     def reset_initial_guess(self):

@@ -1,6 +1,6 @@
 """Box for choosing a fitting function to use."""
 import importlib.util
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import toga
 from eddington import FittingFunction, FittingFunctionsRegistry, polynomial
@@ -79,10 +79,12 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
 
     @property
     def on_fitting_function_load(self):
+        """on_fitting_function_load getter."""
         return self.__on_fitting_function_load
 
     @on_fitting_function_load.setter
     def on_fitting_function_load(self, on_fitting_function_load):
+        """on_fitting_function_load setter."""
         self.__on_fitting_function_load = on_fitting_function_load
 
     def update_fitting_function_options(self):

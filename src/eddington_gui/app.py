@@ -169,10 +169,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.__fitting_result = fitting_result
 
     def on_data_columns_change(self, fitting_data):
+        """Run those methods when data columns are changed."""
         self.reset_fitting_result()
         self.plot_configuration_box.on_fitting_data_load(fitting_data)
 
     def on_fitting_function_load(self, fitting_function):
+        """Run those methods when fitting function is changed."""
         self.reset_fitting_result()
         self.set_parameters_number(fitting_function)
         self.plot_configuration_box.on_fitting_function_load(fitting_function)

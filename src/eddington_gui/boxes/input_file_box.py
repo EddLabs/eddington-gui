@@ -1,6 +1,6 @@
 """Box for choosing from which file to load the input data."""
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import toga
 from openpyxl import load_workbook
@@ -81,10 +81,12 @@ class InputFileBox(toga.Box):
 
     @property
     def on_input_file_change(self):
+        """on_input_file_change getter."""
         return self.__on_input_file_change
 
     @on_input_file_change.setter
     def on_input_file_change(self, on_input_data_change):
+        """on_input_file_change setter."""
         self.__on_input_file_change = on_input_data_change
 
     def select_file(self, widget):  # pylint: disable=unused-argument

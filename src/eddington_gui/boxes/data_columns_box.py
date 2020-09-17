@@ -1,5 +1,5 @@
 """Box for choosing which columns to use in data dictionary."""
-from typing import Callable, List, Union, Optional
+from typing import Callable, List, Optional
 
 import toga
 from eddington import FittingData
@@ -70,10 +70,12 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
     @property
     def on_columns_change(self):
+        """on_columns_change getter."""
         return self.__on_columns_change
 
     @on_columns_change.setter
     def on_columns_change(self, on_columns_change):
+        """on_columns_change setter."""
         self.__on_columns_change = on_columns_change
 
     @property
@@ -143,6 +145,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         self.run_on_columns_change()
 
     def run_on_columns_change(self):
+        """If on_columns_change is not None, runs it."""
         if self.on_columns_change is not None:
             self.on_columns_change(self.fitting_data)
 
