@@ -70,7 +70,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box.add(self.fitting_function_box)
 
         self.initial_guess_box = InitialGuessBox()
-        self.initial_guess_box.add_handler(lambda a0: self.reset_fitting_result())
+        self.initial_guess_box.on_initial_guess_change = self.reset_fitting_result
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
