@@ -69,8 +69,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         )
         main_box.add(self.fitting_function_box)
 
-        self.initial_guess_box = InitialGuessBox()
-        self.initial_guess_box.on_initial_guess_change = self.reset_fitting_result
+        self.initial_guess_box = InitialGuessBox(
+            on_initial_guess_change=self.reset_fitting_result
+        )
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
@@ -220,7 +221,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         window = RecordsChoiceWindow(fitting_data=self.data_columns_box.fitting_data)
         window.show()
         self.reset_fitting_result()
-        self.initial_guess_box.reset_initial_guess()
 
     def fit(self, widget):  # pylint: disable=unused-argument
         """Handler for the "fit" button."""
