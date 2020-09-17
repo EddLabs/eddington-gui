@@ -1,6 +1,6 @@
 """Box for specifying initial guess for the fitting algorithm."""
 import re
-from typing import Callable, List, Union
+from typing import Callable, Optional
 
 import numpy as np
 import toga
@@ -15,9 +15,9 @@ class InitialGuessBox(LineBox):
     """Visual box for specifying initial guess."""
 
     initial_guess_input: toga.TextInput
-    __n: Union[int, None] = None
-    __a0: np.ndarray = None
-    __handlers: List[Callable] = []
+    __n: Optional[int] = None
+    __a0: Optional[np.ndarray] = None
+    __on_initial_guess_change: Optional[Callable[[], None]] = None
 
     def __init__(self):
         """Initial box."""
@@ -57,8 +57,8 @@ class InitialGuessBox(LineBox):
         components.
         """
         self.__a0 = a0
-        for handler in self.__handlers:
-            handler(a0)
+        if self.on_initial_guess_change is not None:
+            self.on_initial_guess_change()
 
     @property
     def initial_guess_string(self):
@@ -67,26 +67,27 @@ class InitialGuessBox(LineBox):
             return None
         return self.initial_guess_input.value
 
+    @property
+    def on_initial_guess_change(self):
+        """on_initial_guess_change getter."""
+        return self.__on_initial_guess_change
+
+    @on_initial_guess_change.setter
+    def on_initial_guess_change(self, on_initial_guess_change):
+        """on_initial_guess_change setter."""
+        self.__on_initial_guess_change = on_initial_guess_change
+
     def reset_initial_guess(self):
         """Reset the initial guess."""
         self.a0 = None  # pylint: disable=invalid-name
-
-    def add_handler(self, handler):
-        """
-        Add handler to the handlers list.
-
-        Handlers are running whenever the initial guess has changed.
-        """
-        self.__handlers.append(handler)
 
     def __calculate_a0(self):
         if self.initial_guess_string is None:
             self.a0 = None
             return
         a0_values = [
-            value.strip() for value in re.split(r",[ \n\t]?", self.initial_guess_string)
+            value.strip() for value in re.split(r",[ \n\t]*", self.initial_guess_string)
         ]
-        a0_values = [value for value in a0_values if value != ""]
         try:
             self.a0 = np.array(list(map(float, a0_values)))
         except ValueError as exc:

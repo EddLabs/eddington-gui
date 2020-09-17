@@ -1,6 +1,6 @@
 """Box for choosing from which file to load the input data."""
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 import toga
 from openpyxl import load_workbook
@@ -15,9 +15,9 @@ class InputFileBox(toga.Box):
     """Visual box instance for choosing input file."""
 
     __input_file_path: toga.TextInput
-    __select_file: toga.Button = None
-    __select_sheet: toga.Selection = None
-    __handlers: List[Callable] = []
+    __select_file: toga.Button
+    __select_sheet: toga.Selection
+    __on_input_file_change: Optional[Callable[[], None]] = None
 
     on_csv_read: Optional[Callable] = None
     on_excel_read: Optional[Callable] = None
@@ -61,8 +61,8 @@ class InputFileBox(toga.Box):
             self.__input_file_path.value = ""
         else:
             self.__input_file_path.value = str(file_path)
-        for handler in self.__handlers:
-            handler()
+        if self.on_input_file_change is not None:
+            self.on_input_file_change()
 
     @property
     def sheets_options(self):
@@ -79,13 +79,15 @@ class InputFileBox(toga.Box):
             self.__select_sheet.items = options
             self.__select_sheet.enabled = True
 
-    def add_handler(self, handler):
-        """
-        Add handler to run whenever the input file is changed.
+    @property
+    def on_input_file_change(self):
+        """on_input_file_change getter."""
+        return self.__on_input_file_change
 
-        :param handler: Callable
-        """
-        self.__handlers.append(handler)
+    @on_input_file_change.setter
+    def on_input_file_change(self, on_input_data_change):
+        """on_input_file_change setter."""
+        self.__on_input_file_change = on_input_data_change
 
     def select_file(self, widget):  # pylint: disable=unused-argument
         """Open file selection dialog."""

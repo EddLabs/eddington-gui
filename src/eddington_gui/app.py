@@ -57,35 +57,26 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box.add(HeaderBox())
 
         self.input_file_box = InputFileBox(flex=1)
-        self.input_file_box.add_handler(self.reset_fitting_data)
+        self.input_file_box.on_input_file_change = self.reset_fitting_data
+        self.input_file_box.on_csv_read = self.read_csv
+        self.input_file_box.on_excel_read = self.read_excel
+        self.input_file_box.on_select_file = self.select_default_sheet
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
-        self.fitting_function_box.add_handler(
-            lambda fit_func: self.reset_fitting_result()
+        self.fitting_function_box.on_fitting_function_load = (
+            self.on_fitting_function_load
         )
         main_box.add(self.fitting_function_box)
 
         self.initial_guess_box = InitialGuessBox()
-        self.initial_guess_box.add_handler(lambda a0: self.reset_fitting_result())
-        self.fitting_function_box.add_handler(self.set_parameters_number)
+        self.initial_guess_box.on_initial_guess_change = self.reset_fitting_result
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
-        self.data_columns_box.add_handler(
-            lambda fitting_data: self.reset_fitting_result()
-        )
-        self.input_file_box.on_csv_read = self.read_csv
-        self.input_file_box.on_excel_read = self.read_excel
-        self.input_file_box.on_select_file = self.select_default_sheet
+        self.data_columns_box.on_columns_change = self.on_data_columns_change
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
-        self.fitting_function_box.add_handler(
-            self.plot_configuration_box.on_fitting_function_load
-        )
-        self.data_columns_box.add_handler(
-            self.plot_configuration_box.on_fitting_data_load
-        )
 
         main_box.add(
             toga.Box(
@@ -176,6 +167,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     def fitting_result(self, fitting_result):
         """Setter of the fit result."""
         self.__fitting_result = fitting_result
+
+    def on_data_columns_change(self, fitting_data):
+        """Run those methods when data columns are changed."""
+        self.reset_fitting_result()
+        self.plot_configuration_box.on_fitting_data_load(fitting_data)
+
+    def on_fitting_function_load(self, fitting_function):
+        """Run those methods when fitting function is changed."""
+        self.reset_fitting_result()
+        self.set_parameters_number(fitting_function)
+        self.plot_configuration_box.on_fitting_function_load(fitting_function)
 
     def read_csv(self, filepath):
         """
