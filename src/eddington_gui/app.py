@@ -52,11 +52,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box = toga.Box(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
 
-        self.input_file_box = InputFileBox(flex=1)
+        self.input_file_box = InputFileBox()
         self.input_file_box.on_input_file_change = self.reset_fitting_data
         self.input_file_box.on_csv_read = self.read_csv
         self.input_file_box.on_excel_read = self.read_excel
-        self.input_file_box.on_select_file = self.select_default_sheet
+        self.input_file_box.on_select_excel_file = self.select_default_sheet
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
