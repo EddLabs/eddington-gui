@@ -7,10 +7,10 @@ from openpyxl import load_workbook
 from toga.style import Pack
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import BIG_PADDING, NO_VALUE, SMALL_PADDING
+from eddington_gui.consts import NO_VALUE, SMALL_PADDING
 
 
-class InputFileBox(LineBox):
+class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box instance for choosing input file."""
 
     __input_file_path: toga.TextInput
@@ -86,10 +86,12 @@ class InputFileBox(LineBox):
 
     @property
     def sheet_selection_enabled(self):
+        """Whether sheet selection is enabled or not."""
         return self.__sheet_selection_enabled
 
     @sheet_selection_enabled.setter
     def sheet_selection_enabled(self, sheet_selection_enabled):
+        """Set/unset sheet selection."""
         old_enabled = self.__sheet_selection_enabled
         self.__sheet_selection_enabled = sheet_selection_enabled
         if old_enabled and not sheet_selection_enabled:
