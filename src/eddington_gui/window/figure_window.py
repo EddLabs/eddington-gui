@@ -17,10 +17,12 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
 
     figure: Figure
 
-    def __init__(self, figure: Figure):
+    def __init__(self, figure: Figure, title: str, app: toga.App):
         """Initialize window."""
         self.figure = figure
-        super().__init__(size=(1, 1.35) * (figure.get_size_inches() * figure.get_dpi()))
+        super().__init__(
+            title=title, size=(1, 1.35) * (figure.get_size_inches() * figure.get_dpi())
+        )
         chart = Chart()
 
         save_button = toga.Button(label="Save", on_press=self.save_figure)
@@ -34,6 +36,7 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
         )
         self.content = main_box
         chart.draw(figure)
+        self.app = app
 
     def save_figure(self, widget):  # pylint: disable=unused-argument
         """Save file dialog."""

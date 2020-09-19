@@ -254,9 +254,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.show_nothing_to_plot()
         else:
             self.show_figure_window(
-                self.plot_configuration_box.plot_data(
+                fig=self.plot_configuration_box.plot_data(
                     data=self.data_columns_box.fitting_data
-                )
+                ),
+                title="Data Plot",
             )
 
     def plot_initial_guess(self, widget):  # pylint: disable=unused-argument
@@ -269,11 +270,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 self.show_nothing_to_plot()
                 return
             self.show_figure_window(
-                self.plot_configuration_box.plot_fitting(
+                fig=self.plot_configuration_box.plot_fitting(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
                     a=self.initial_guess_box.a0,
-                )
+                ),
+                title="Initial Guess Fitting",
             )
         except EddingtonException as error:
             self.main_window.error_dialog(
@@ -287,11 +289,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 self.show_nothing_to_plot()
                 return
             self.show_figure_window(
-                self.plot_configuration_box.plot_fitting(
+                fig=self.plot_configuration_box.plot_fitting(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
                     a=self.fitting_result.a,
-                )
+                ),
+                title="Fitting Plot",
             )
         except EddingtonException as error:
             self.main_window.error_dialog(
@@ -305,11 +308,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 self.show_nothing_to_plot()
                 return
             self.show_figure_window(
-                self.plot_configuration_box.plot_residuals(
+                fig=self.plot_configuration_box.plot_residuals(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
                     a=self.fitting_result.a,
-                )
+                ),
+                title="Residuals Plot",
             )
         except EddingtonException as error:
             self.main_window.error_dialog(
@@ -320,10 +324,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """Show dialog indicating that there is nothing to plot yet."""
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    @staticmethod
-    def show_figure_window(fig):
+    def show_figure_window(self, fig, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(fig)
+        figure_window = FigureWindow(figure=fig, title=title, app=self)
         figure_window.show()
 
     def reset_fitting_data(self):
