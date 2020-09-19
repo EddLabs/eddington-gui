@@ -16,8 +16,7 @@ class InitialGuessBox(LineBox):
     main_label: toga.Label
     initial_guess_labels: List[toga.Label] = []
     initial_guess_inputs: List[toga.TextInput] = []
-    __n: Optional[int] = None
-    __n_in_use: int = 0
+    __n: int = 0
     __a0: Optional[np.ndarray] = None
     __on_initial_guess_change: Optional[Callable[[], None]] = None
 
@@ -27,7 +26,6 @@ class InitialGuessBox(LineBox):
         self.on_initial_guess_change = on_initial_guess_change
         self.main_label = toga.Label(text="Initial Guess:")
         self.add(self.main_label)
-        self.reset_box()
 
     @property
     def n(self):  # pylint: disable=invalid-name
@@ -37,9 +35,24 @@ class InitialGuessBox(LineBox):
     @n.setter
     def n(self, n):  # pylint: disable=invalid-name
         """Setter of the expected number of parameters."""
-        self.__n = n
         self.reset_initial_guess()
-        self.reset_box()
+        old_n = 0 if self.__n is None else self.__n
+        self.__n = n
+        if self.n > len(self.initial_guess_inputs):
+            for i in range(len(self.initial_guess_inputs), self.n):
+                self.initial_guess_labels.append(toga.Label(f"a[{i}]:"))
+                self.initial_guess_inputs.append(
+                    toga.TextInput(
+                        style=Pack(width=SMALL_INPUT_WIDTH),
+                        on_change=lambda widget: self.reset_initial_guess(),
+                    )
+                )
+        if old_n < self.n:
+            for i in range(old_n, self.n):
+                self.add(self.initial_guess_labels[i], self.initial_guess_inputs[i])
+        if self.n < old_n:
+            for i in range(self.n, old_n):
+                self.remove(self.initial_guess_labels[i], self.initial_guess_inputs[i])
 
     @property
     def a0(self):  # pylint: disable=invalid-name
@@ -69,27 +82,6 @@ class InitialGuessBox(LineBox):
     def on_initial_guess_change(self, on_initial_guess_change):
         """on_initial_guess_change setter."""
         self.__on_initial_guess_change = on_initial_guess_change
-
-    def reset_box(self):
-        """Reset initial guess box based on ``n`` value."""
-        if self.n is None:
-            return
-        if self.n > len(self.initial_guess_inputs):
-            for i in range(len(self.initial_guess_inputs), self.n):
-                self.initial_guess_labels.append(toga.Label(f"a[{i}]:"))
-                self.initial_guess_inputs.append(
-                    toga.TextInput(
-                        style=Pack(width=SMALL_INPUT_WIDTH),
-                        on_change=lambda widget: self.reset_initial_guess(),
-                    )
-                )
-        if self.__n_in_use < self.n:
-            for i in range(self.__n_in_use, self.n):
-                self.add(self.initial_guess_labels[i], self.initial_guess_inputs[i])
-        if self.n < self.__n_in_use:
-            for i in range(self.n, self.__n_in_use):
-                self.remove(self.initial_guess_labels[i], self.initial_guess_inputs[i])
-        self.__n_in_use = self.n
 
     def reset_initial_guess(self):
         """Reset the initial guess."""
