@@ -174,17 +174,26 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         if not output_dir.exists():
             output_dir.mkdir()
         func_name = self.fitting_function_box.fitting_function.name
-        self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
-        self.plot_configuration_box.plot_fitting(
-            func=self.fitting_function_box.fitting_function,
-            data=self.data_columns_box.fitting_data,
-            a=self.fitting_result.a,
-        ).savefig(output_dir / f"{func_name}_fitting.png")
-        self.plot_configuration_box.plot_residuals(
-            func=self.fitting_function_box.fitting_function,
-            data=self.data_columns_box.fitting_data,
-            a=self.fitting_result.a,
-        ).savefig(output_dir / f"{func_name}_residuals.png")
+        if self.output_box.export_data_plot:
+            self.plot_configuration_box.plot_data(
+                data=self.data_columns_box.fitting_data
+            ).savefig(output_dir / f"{func_name}_data.png")
+        if self.output_box.export_fitting_plot:
+            self.plot_configuration_box.plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_fitting.png")
+        if self.output_box.export_residuals_plot:
+            self.plot_configuration_box.plot_residuals(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_residuals.png")
+        if self.output_box.export_result_as_text:
+            self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
+        if self.output_box.export_result_as_json:
+            self.fitting_result.save_json(output_dir / f"{func_name}_result.json")
         self.main_window.info_dialog(
             title="Save output", message="All plots have been saved successfully!"
         )
