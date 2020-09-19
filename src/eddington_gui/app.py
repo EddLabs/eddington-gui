@@ -342,10 +342,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     def set_parameters_number(self, func):
         """Set number of parameters."""
-        if func is None:
-            self.initial_guess_box.n = None
-        else:
-            self.initial_guess_box.n = func.n
+        self.initial_guess_box.n = 0 if func is None else func.n
 
     def __calculate_fitting_result(self):
         if (
