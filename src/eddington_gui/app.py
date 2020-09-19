@@ -92,7 +92,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ]
             )
         )
-        main_box.add(toga.Box(style=Pack(flex=1)))
         main_box.add(
             LineBox(
                 children=[
