@@ -19,14 +19,9 @@ from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import (
-    BIG_PADDING,
-    MAIN_BOTTOM_PADDING,
-    NO_VALUE,
-    SMALL_PADDING,
-    WINDOW_SIZE,
-)
+from eddington_gui.consts import BIG_PADDING, NO_VALUE, WINDOW_SIZE
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
@@ -39,7 +34,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     initial_guess_box: InitialGuessBox
     plot_configuration_box: PlotConfigurationBox
     data_columns_box: DataColumnsBox
-    output_directory_input: toga.TextInput
+    output_box: OutputBox
+
     main_window: toga.Window
 
     __a0: np.ndarray = None
@@ -130,28 +126,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ],
             )
         )
-        self.output_directory_input = toga.TextInput(style=Pack(flex=1))
-        main_box.add(
-            LineBox(
-                padding_bottom=MAIN_BOTTOM_PADDING,
-                children=[
-                    toga.Label(text="Output directory:"),
-                    self.output_directory_input,
-                    toga.Button(
-                        label="Choose directory",
-                        on_press=self.choose_output_dir,
-                        style=Pack(padding_left=SMALL_PADDING),
-                    ),
-                    toga.Button(
-                        label="Save",
-                        on_press=self.save_to_output_dir,
-                        style=Pack(
-                            padding_left=SMALL_PADDING, padding_right=SMALL_PADDING
-                        ),
-                    ),
-                ],
-            )
-        )
+        self.output_box = OutputBox(on_save_output=self.on_save_output)
+        main_box.add(self.output_box)
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
@@ -179,6 +155,48 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.reset_fitting_result()
         self.set_parameters_number(fitting_function)
         self.plot_configuration_box.on_fitting_function_load(fitting_function)
+
+    def on_save_output(self, widget):  # pylint: disable=unused-argument
+        """Handler for the "save to output directory" button."""
+        try:
+            if self.fitting_result is None:
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException:
+            return
+        if self.output_box.output_directory is None:
+            self.main_window.error_dialog(
+                title="Results output save error",
+                message="No output directory was chosen",
+            )
+            return
+        output_dir = Path(self.output_box.output_directory)
+        if not output_dir.exists():
+            output_dir.mkdir()
+        func_name = self.fitting_function_box.fitting_function.name
+        if self.output_box.export_data_plot:
+            self.plot_configuration_box.plot_data(
+                data=self.data_columns_box.fitting_data
+            ).savefig(output_dir / f"{func_name}_data.png")
+        if self.output_box.export_fitting_plot:
+            self.plot_configuration_box.plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_fitting.png")
+        if self.output_box.export_residuals_plot:
+            self.plot_configuration_box.plot_residuals(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_residuals.png")
+        if self.output_box.export_result_as_text:
+            self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
+        if self.output_box.export_result_as_json:
+            self.fitting_result.save_json(output_dir / f"{func_name}_result.json")
+        self.main_window.info_dialog(
+            title="Save output", message="All plots have been saved successfully!"
+        )
 
     def read_csv(self, filepath):
         """
@@ -303,49 +321,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.main_window.error_dialog(
                 title="Plot residuals error", message=str(error)
             )
-
-    def choose_output_dir(self, widget):  # pylint: disable=unused-argument
-        """Open output directory choice dialog."""
-        try:
-            folder_path = self.main_window.select_folder_dialog(
-                title="Output directory"
-            )
-        except ValueError:
-            return
-        self.output_directory_input.value = folder_path[0]
-
-    def save_to_output_dir(self, widget):  # pylint: disable=unused-argument
-        """Handler for the "save to output directory" button."""
-        try:
-            if self.fitting_result is None:
-                self.show_nothing_to_plot()
-                return
-        except EddingtonException:
-            return
-        if self.output_directory_input.value == "":
-            self.main_window.error_dialog(
-                title="Results output save error",
-                message="No output directory was chosen",
-            )
-            return
-        output_dir = Path(self.output_directory_input.value)
-        if not output_dir.exists():
-            output_dir.mkdir()
-        func_name = self.fitting_function_box.fitting_function.name
-        self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
-        self.plot_configuration_box.plot_fitting(
-            func=self.fitting_function_box.fitting_function,
-            data=self.data_columns_box.fitting_data,
-            a=self.fitting_result.a,
-        ).savefig(output_dir / f"{func_name}_fitting.png")
-        self.plot_configuration_box.plot_residuals(
-            func=self.fitting_function_box.fitting_function,
-            data=self.data_columns_box.fitting_data,
-            a=self.fitting_result.a,
-        ).savefig(output_dir / f"{func_name}_residuals.png")
-        self.main_window.info_dialog(
-            title="Save output", message="All plots have been saved successfully!"
-        )
 
     def show_nothing_to_plot(self):
         """Show dialog indicating that there is nothing to plot yet."""
