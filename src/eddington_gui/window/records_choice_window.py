@@ -16,9 +16,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
     __save_action: Callable
     __checkboxes: List[toga.Switch]
 
-    def __init__(self, fitting_data: FittingData):
+    def __init__(self, fitting_data: FittingData, app: toga.App):
         """Initialize window."""
-        super().__init__(size=RECORD_WINDOW_SIZE)
+        super().__init__(title="Choose Records", size=RECORD_WINDOW_SIZE)
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         self.__checkboxes = [
@@ -67,6 +67,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         )
         scroller = toga.ScrollContainer(content=main_box)
         self.content = scroller
+        self.app = app
 
     def save_action(self, fitting_data: FittingData):
         """Save selected records to fit data."""

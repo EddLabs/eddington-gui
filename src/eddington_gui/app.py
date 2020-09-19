@@ -228,7 +228,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 title="Choose Records", message="No data been given yet"
             )
             return
-        window = RecordsChoiceWindow(fitting_data=self.data_columns_box.fitting_data)
+        window = RecordsChoiceWindow(
+            fitting_data=self.data_columns_box.fitting_data, app=self
+        )
         window.show()
         self.reset_fitting_result()
 
