@@ -5,44 +5,48 @@ from typing import Callable, Optional
 import toga
 from openpyxl import load_workbook
 from toga.style import Pack
-from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import BIG_PADDING, NO_VALUE
+from eddington_gui.consts import NO_VALUE, SMALL_PADDING
 
 
-class InputFileBox(toga.Box):
+class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box instance for choosing input file."""
 
     __input_file_path: toga.TextInput
-    __select_file: toga.Button
-    __select_sheet: toga.Selection
+    __select_file_button: toga.Button
+    __sheet_label: toga.Label
+    __sheet_selection: toga.Selection
+
+    __sheet_selection_enabled: bool = False
     __on_input_file_change: Optional[Callable[[], None]] = None
 
     on_csv_read: Optional[Callable] = None
     on_excel_read: Optional[Callable] = None
-    on_select_file: Optional[Callable] = None
+    on_select_excel_file: Optional[Callable] = None
 
-    def __init__(self, flex):
+    def __init__(self, on_choose_record):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN, flex=flex))
-        self.__input_file_path = toga.TextInput(
-            readonly=True,
-            style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
+        super().__init__()
+        self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1))
+        self.__select_file_button = toga.Button(
+            label="Choose file",
+            on_press=self.select_file,
+            style=Pack(padding_left=SMALL_PADDING),
         )
-        self.__select_file = toga.Button(label="Choose file", on_press=self.select_file)
         self.add(
-            LineBox(
-                children=[
-                    toga.Label(text="Input file:"),
-                    self.__input_file_path,
-                    self.__select_file,
-                ]
-            )
+            toga.Label(text="Input file:"),
+            self.__input_file_path,
+            self.__select_file_button,
+            toga.Button(
+                label="Choose Records",
+                on_press=on_choose_record,
+                style=Pack(padding_left=SMALL_PADDING),
+            ),
         )
 
-        self.__select_sheet = toga.Selection(enabled=False, on_select=self.select_sheet)
-        self.add(LineBox(children=[toga.Label(text="Sheet:"), self.__select_sheet]))
+        self.__sheet_label = toga.Label(text="Sheet:")
+        self.__sheet_selection = toga.Selection(on_select=self.select_sheet)
 
     @property
     def file_path(self):
@@ -67,17 +71,34 @@ class InputFileBox(toga.Box):
     @property
     def sheets_options(self):
         """Sheets options getter. Relevant for excel files."""
-        return self.__select_sheet.items
+        return self.__sheet_selection.items
 
     @sheets_options.setter
     def sheets_options(self, options):
         """Sheets options setter. Relevant for excel files."""
         if options is None:
-            self.__select_sheet.items = []
-            self.__select_sheet.enabled = False
+            self.__sheet_selection.items = []
+            self.sheet_selection_enabled = False
+
         else:
-            self.__select_sheet.items = options
-            self.__select_sheet.enabled = True
+            self.__sheet_selection.items = options
+            self.sheet_selection_enabled = True
+
+    @property
+    def sheet_selection_enabled(self):
+        """Whether sheet selection is enabled or not."""
+        return self.__sheet_selection_enabled
+
+    @sheet_selection_enabled.setter
+    def sheet_selection_enabled(self, sheet_selection_enabled):
+        """Set/unset sheet selection."""
+        old_enabled = self.__sheet_selection_enabled
+        self.__sheet_selection_enabled = sheet_selection_enabled
+        if old_enabled and not sheet_selection_enabled:
+            self.remove(self.__sheet_label, self.__sheet_selection)
+        if not old_enabled and sheet_selection_enabled:
+            self.insert(2, self.__sheet_label)
+            self.insert(3, self.__sheet_selection)
 
     @property
     def on_input_file_change(self):
@@ -104,8 +125,8 @@ class InputFileBox(toga.Box):
         if suffix in [".xlsx", ".xls"]:
             excel_file = load_workbook(input_file_path)
             self.sheets_options = [NO_VALUE] + excel_file.sheetnames
-            if self.on_select_file is not None:
-                self.on_select_file()  # pylint: disable=not-callable
+            if self.on_select_excel_file is not None:
+                self.on_select_excel_file()  # pylint: disable=not-callable
 
             return
         self.sheets_options = None
@@ -113,6 +134,7 @@ class InputFileBox(toga.Box):
             if self.on_csv_read is not None:
                 self.on_csv_read(input_file_path)  # pylint: disable=not-callable
             return
+        self.file_path = None
         self.window.error_dialog(
             title="Invalid Input Source",
             message=f"Cannot process file with suffix {suffix}",
@@ -121,15 +143,15 @@ class InputFileBox(toga.Box):
     @property
     def selected_sheet(self):
         """Getter for the chosen sheet."""
-        return self.__select_sheet.value
+        return self.__sheet_selection.value
 
     @selected_sheet.setter
     def selected_sheet(self, selected_sheet):
         """Setter for the chosen sheet."""
         if selected_sheet is None:
-            self.__select_sheet.value = NO_VALUE
+            self.__sheet_selection.value = NO_VALUE
         else:
-            self.__select_sheet.value = selected_sheet
+            self.__sheet_selection.value = selected_sheet
 
     def select_sheet(self, widget):  # pylint: disable=unused-argument
         """Select sheet to read data from. Relevant for excel files."""
