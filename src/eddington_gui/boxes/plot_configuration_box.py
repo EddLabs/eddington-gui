@@ -18,6 +18,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     __xlabel_input: toga.TextInput
     __ylabel_input: toga.TextInput
     __grid_switch: toga.Switch
+    __legend_switch: toga.Switch
     __x_domain_switch: toga.Switch
     __x_min_title: toga.Label
     __x_min_input: toga.TextInput
@@ -38,7 +39,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.__ylabel_input = self.__add_column_option("Y label:")
 
         self.__grid_switch = toga.Switch(label="Grid")
-        self.add(LineBox(children=[self.__grid_switch]))
+        self.__legend_switch = toga.Switch(label="Legend")
+        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch]))
 
         self.__x_domain_switch = toga.Switch(
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
@@ -108,6 +110,11 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         return self.__grid_switch.is_on
 
     @property
+    def legend(self):
+        """Should or should not add legend to plots."""
+        return self.__legend_switch.is_on
+
+    @property
     def xmin(self):
         """Get minimum value of X, if presented by user."""
         if not self.__x_domain_switch.is_on or self.__x_min_input.value == "":
@@ -150,6 +157,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             xlabel=self.xlabel,
             ylabel=self.ylabel,
             grid=self.grid,
+            legend=self.legend,
             a=a,
             xmin=self.xmin,
             xmax=self.xmax,
@@ -211,6 +219,10 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     def toggle_grid_switch(self, widget):  # pylint: disable=unused-argument
         """Set/unset the grid switch."""
         self.__grid_switch.is_on = not self.__grid_switch.is_on
+
+    def toggle_legend_switch(self, widget):  # pylint: disable=unused-argument
+        """Set/unset the grid switch."""
+        self.__legend_switch.is_on = not self.__legend_switch.is_on
 
     def __add_column_option(self, label):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
