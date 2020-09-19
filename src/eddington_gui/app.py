@@ -52,7 +52,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box = toga.Box(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
 
-        self.input_file_box = InputFileBox()
+        self.input_file_box = InputFileBox(on_choose_record=self.choose_records)
         self.input_file_box.on_input_file_change = self.reset_fitting_data
         self.input_file_box.on_csv_read = self.read_csv
         self.input_file_box.on_excel_read = self.read_excel
@@ -83,13 +83,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                     toga.Box(style=Pack(flex=2)),
                     self.plot_configuration_box,
                 ],
-            )
-        )
-        main_box.add(
-            LineBox(
-                children=[
-                    toga.Button(label="Choose Records", on_press=self.choose_records)
-                ]
             )
         )
         main_box.add(

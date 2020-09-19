@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 from toga.style import Pack
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import BIG_PADDING, NO_VALUE
+from eddington_gui.consts import BIG_PADDING, NO_VALUE, SMALL_PADDING
 
 
 class InputFileBox(LineBox):
@@ -16,27 +16,33 @@ class InputFileBox(LineBox):
     __input_file_path: toga.TextInput
     __select_file_button: toga.Button
     __sheet_label: toga.Label
-    __sheet_selection_enabled: bool = False
     __sheet_selection: toga.Selection
+
+    __sheet_selection_enabled: bool = False
     __on_input_file_change: Optional[Callable[[], None]] = None
 
     on_csv_read: Optional[Callable] = None
     on_excel_read: Optional[Callable] = None
     on_select_excel_file: Optional[Callable] = None
 
-    def __init__(self):
+    def __init__(self, on_choose_record):
         """Initialize box."""
         super().__init__()
         self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1))
         self.__select_file_button = toga.Button(
             label="Choose file",
             on_press=self.select_file,
-            style=Pack(padding_left=BIG_PADDING),
+            style=Pack(padding_left=SMALL_PADDING),
         )
         self.add(
             toga.Label(text="Input file:"),
             self.__input_file_path,
             self.__select_file_button,
+            toga.Button(
+                label="Choose Records",
+                on_press=on_choose_record,
+                style=Pack(padding_left=SMALL_PADDING),
+            ),
         )
 
         self.__sheet_label = toga.Label(text="Sheet:")
