@@ -25,6 +25,8 @@ from eddington_gui.consts import BIG_PADDING, NO_VALUE, WINDOW_SIZE
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
+PLOT_GROUP = toga.Group("Plot", order=2)
+
 
 class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     """Main app instance."""
@@ -124,6 +126,75 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
         self.main_window.show()
+
+        self.commands.add(
+            toga.Command(
+                self.input_file_box.select_file,
+                label="Upload data file",
+                shortcut=toga.Key.MOD_1 + "u",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.output_box.choose_output_dir,
+                label="Choose output directory",
+                shortcut=toga.Key.MOD_1 + "o",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.on_save_output,
+                label="Save plots and results",
+                shortcut=toga.Key.MOD_1 + "s",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.choose_records,
+                label="Choose records",
+                shortcut=toga.Key.MOD_1 + "c",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.fitting_function_box.load_module,
+                label="Load module",
+                shortcut=toga.Key.MOD_1 + "l",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.plot_data,
+                label="Plot data points",
+                shortcut=toga.Key.MOD_1 + "d",
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.fit,
+                label="Fit result",
+                shortcut=toga.Key.MOD_1 + "f",
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot_configuration_box.toggle_grid_switch,
+                label="Add/remove grid lines",
+                shortcut=toga.Key.MOD_1 + "g",
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot_initial_guess,
+                label="Plot initial guess fitting",
+                shortcut=toga.Key.MOD_1 + "i",
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot,
+                label="Plot fitting",
+                shortcut=toga.Key.MOD_1 + "p",
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.residuals,
+                label="Plot residuals",
+                shortcut=toga.Key.MOD_1 + "r",
+                group=PLOT_GROUP,
+            ),
+        )
 
     @property
     def fitting_result(self):

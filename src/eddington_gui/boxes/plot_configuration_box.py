@@ -194,18 +194,6 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
                 fitting_data.y_column,
             )
 
-    def __add_column_option(self, label):
-        text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
-        line = LineBox(
-            children=[
-                toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
-                text_input,
-            ],
-        )
-
-        self.add(line)
-        return text_input
-
     def x_domain_switch_handler(self):
         """Handler to run whenever the custom x domain toggle is switched."""
         if self.__x_domain_switch.is_on:
@@ -219,3 +207,19 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             self.__x_min_input.style.visibility = HIDDEN
             self.__x_max_title.style.visibility = HIDDEN
             self.__x_max_input.style.visibility = HIDDEN
+
+    def toggle_grid_switch(self, widget):  # pylint: disable=unused-argument
+        """Set/unset the grid switch."""
+        self.__grid_switch.is_on = not self.__grid_switch.is_on
+
+    def __add_column_option(self, label):
+        text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
+        line = LineBox(
+            children=[
+                toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
+                text_input,
+            ],
+        )
+
+        self.add(line)
+        return text_input
