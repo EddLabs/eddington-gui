@@ -1,8 +1,8 @@
 """Box for choosing which columns to use in data dictionary."""
-from typing import Callable, List, Union
+from typing import Callable, List, Optional
 
 import toga
-from eddington import FitData
+from eddington import FittingData
 from toga.style import Pack
 from toga.style.pack import COLUMN, LEFT
 
@@ -22,7 +22,8 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
     y_selection: toga.Selection
     yerr_selection: toga.Selection
 
-    __fit_data: Union[FitData] = None
+    __fitting_data: Optional[FittingData] = None
+    __on_columns_change: Optional[Callable[[FittingData], None]] = None
     __handlers: List[Callable] = []
 
     def __init__(self, flex):
@@ -30,64 +31,52 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         super().__init__(style=Pack(direction=COLUMN, flex=flex))
 
         self.x_selection = self.__add_column_option(
-            label="X column:", on_select=self.set_columns
+            label="X column:", on_select=lambda widget: self.set_columns()
         )
         self.xerr_selection = self.__add_column_option(
-            label="X error column:", on_select=self.set_columns
+            label="X error column:", on_select=lambda widget: self.set_columns()
         )
         self.y_selection = self.__add_column_option(
-            label="Y column:", on_select=self.set_columns
+            label="Y column:", on_select=lambda widget: self.set_columns()
         )
         self.yerr_selection = self.__add_column_option(
-            label="Y error column:", on_select=self.set_columns
+            label="Y error column:", on_select=lambda widget: self.set_columns()
         )
 
     @property
-    def fit_data(self):
+    def fitting_data(self):
         """Fit data getter."""
-        return self.__fit_data
+        return self.__fitting_data
 
-    @fit_data.setter
-    def fit_data(self, fit_data: FitData):
+    @fitting_data.setter
+    def fitting_data(self, fitting_data: FittingData):
         """
         Fit data setter.
 
         If fit data is None, reset all selections
         """
-        self.__fit_data = fit_data
-        if fit_data is None:
+        self.__fitting_data = fitting_data
+        if fitting_data is None:
             self.clear_selections()
             return
-        items = list(fit_data.data.keys())
-        used_columns = self.fit_data.used_columns
+        items = list(fitting_data.data.keys())
+        used_columns = self.fitting_data.used_columns
         self.set_items(self.x_selection, items, used_columns.x)
         self.set_items(self.xerr_selection, items, used_columns.xerr)
         self.set_items(self.y_selection, items, used_columns.y)
         self.set_items(self.yerr_selection, items, used_columns.yerr)
         self.selection_enabled = True
-        self.set_columns(None)
+        self.set_columns()
 
-    @staticmethod
-    def set_items(selection, items, value):
-        """
-        Set items and value in selection widget.
+    @property
+    def on_columns_change(self):
+        """on_columns_change getter."""
+        return self.__on_columns_change
 
-        :param selection: Selection widget
-        :param items: list of options for the widget
-        :param value: selected value
-        """
-        selection.items = items
-        if value is not None:
-            selection.value = value
-
-    def clear_selections(self):
-        """Clear all selections."""
-        self.selection_enabled = False
-        self.set_items(self.x_selection, [], None)
-        self.set_items(self.xerr_selection, [], None)
-        self.set_items(self.y_selection, [], None)
-        self.set_items(self.yerr_selection, [], None)
-        self.run_handlers()
+    @on_columns_change.setter
+    def on_columns_change(self, on_columns_change):
+        """on_columns_change setter."""
+        self.__on_columns_change = on_columns_change
 
     @property
     def x_column(self):
@@ -123,24 +112,42 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         self.y_selection.enabled = selection_enabled
         self.yerr_selection.enabled = selection_enabled
 
-    def add_handler(self, handler):
-        """Add handler for fit data update."""
-        self.__handlers.append(handler)
+    @staticmethod
+    def set_items(selection, items, value):
+        """
+        Set items and value in selection widget.
 
-    def set_columns(self, widget):  # pylint: disable=unused-argument
+        :param selection: Selection widget
+        :param items: list of options for the widget
+        :param value: selected value
+        """
+        selection.items = items
+        if value is not None:
+            selection.value = value
+
+    def clear_selections(self):
+        """Clear all selections."""
+        self.selection_enabled = False
+        self.set_items(self.x_selection, [], None)
+        self.set_items(self.xerr_selection, [], None)
+        self.set_items(self.y_selection, [], None)
+        self.set_items(self.yerr_selection, [], None)
+        self.run_on_columns_change()
+
+    def set_columns(self):  # pylint: disable=unused-argument
         """Set columns of the fit data based on the selection of the user."""
         if not self.selection_enabled:
             return
-        self.fit_data.x_column = self.x_selection.value
-        self.fit_data.xerr_column = self.xerr_selection.value
-        self.fit_data.y_column = self.y_selection.value
-        self.fit_data.yerr_column = self.yerr_selection.value
-        self.run_handlers()
+        self.fitting_data.x_column = self.x_selection.value
+        self.fitting_data.xerr_column = self.xerr_selection.value
+        self.fitting_data.y_column = self.y_selection.value
+        self.fitting_data.yerr_column = self.yerr_selection.value
+        self.run_on_columns_change()
 
-    def run_handlers(self):
-        """Whenever fit data is updated, run handlers to notify other components."""
-        for handler in self.__handlers:
-            handler(self.fit_data)
+    def run_on_columns_change(self):
+        """If on_columns_change is not None, runs it."""
+        if self.on_columns_change is not None:
+            self.on_columns_change(self.fitting_data)
 
     def read_csv(self, filepath):
         """
@@ -148,7 +155,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
         :param filepath: path of the csv file
         """
-        self.fit_data = FitData.read_from_csv(filepath)
+        self.fitting_data = FittingData.read_from_csv(filepath)
 
     def read_excel(self, filepath, sheet):
         """
@@ -157,7 +164,7 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
         :param filepath: path of the excel file
         :param sheet: sheet from which to read the data.
         """
-        self.fit_data = FitData.read_from_excel(filepath, sheet)
+        self.fitting_data = FittingData.read_from_excel(filepath, sheet)
 
     def __add_column_option(self, label, on_select):
 

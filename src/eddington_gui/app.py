@@ -3,13 +3,12 @@ from pathlib import Path
 
 import numpy as np
 import toga
-from eddington import EddingtonException, FitData, FitDataError, FitResult, fit_to_data
-from eddington_matplotlib import (
-    OutputConfiguration,
-    plot_all,
-    plot_data,
-    plot_fitting,
-    plot_residuals,
+from eddington import (
+    EddingtonException,
+    FittingData,
+    FittingDataError,
+    FittingResult,
+    fit,
 )
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
@@ -20,17 +19,14 @@ from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.line_box import LineBox
+from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import (
-    BIG_PADDING,
-    MAIN_BOTTOM_PADDING,
-    NO_VALUE,
-    SMALL_PADDING,
-    WINDOW_SIZE,
-    SMALL_FONT_SIZE
-)
+
+from eddington_gui.consts import BIG_PADDING, NO_VALUE, WINDOW_SIZE
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
+
+PLOT_GROUP = toga.Group("Plot", order=2)
 
 
 class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
@@ -41,11 +37,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     initial_guess_box: InitialGuessBox
     plot_configuration_box: PlotConfigurationBox
     data_columns_box: DataColumnsBox
-    output_directory_input: toga.TextInput
+    output_box: OutputBox
+
     main_window: toga.Window
 
     __a0: np.ndarray = None
-    __fit_result: FitResult = None
+    __fitting_result: FittingResult = None
 
     def startup(self):
         """
@@ -58,30 +55,28 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         main_box = toga.Box(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
 
-        self.input_file_box = InputFileBox(flex=1)
-        self.input_file_box.add_handler(self.reset_fit_data)
+        self.input_file_box = InputFileBox(on_choose_record=self.choose_records)
+        self.input_file_box.on_input_file_change = self.reset_fitting_data
+        self.input_file_box.on_csv_read = self.read_csv
+        self.input_file_box.on_excel_read = self.read_excel
+        self.input_file_box.on_select_excel_file = self.select_default_sheet
         main_box.add(self.input_file_box)
 
         self.fitting_function_box = FittingFunctionBox(flex=1)
-        self.fitting_function_box.add_handler(lambda fit_func: self.reset_fit_result())
+        self.fitting_function_box.on_fitting_function_load = (
+            self.on_fitting_function_load
+        )
         main_box.add(self.fitting_function_box)
 
-        self.initial_guess_box = InitialGuessBox()
-        self.initial_guess_box.add_handler(lambda a0: self.reset_fit_result())
-        self.fitting_function_box.add_handler(self.set_parameters_number)
+        self.initial_guess_box = InitialGuessBox(
+            on_initial_guess_change=self.reset_fitting_result
+        )
         main_box.add(self.initial_guess_box)
 
         self.data_columns_box = DataColumnsBox(flex=5)
-        self.data_columns_box.add_handler(lambda fit_data: self.reset_fit_result())
-        self.input_file_box.on_csv_read = self.read_csv
-        self.input_file_box.on_excel_read = self.read_excel
-        self.input_file_box.on_select_file = self.select_default_sheet
+        self.data_columns_box.on_columns_change = self.on_data_columns_change
 
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
-        self.fitting_function_box.add_handler(
-            self.plot_configuration_box.on_fit_function_load
-        )
-        self.data_columns_box.add_handler(self.plot_configuration_box.on_fit_data_load)
 
         main_box.add(
             toga.Box(
@@ -93,14 +88,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ],
             )
         )
-        main_box.add(
-            LineBox(
-                children=[
-                    toga.Button(label="Choose Records", on_press=self.choose_records)
-                ]
-            )
-        )
-        main_box.add(toga.Box(style=Pack(flex=1)))
         main_box.add(
             LineBox(
                 children=[
@@ -134,28 +121,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ],
             )
         )
-        self.output_directory_input = toga.TextInput(style=Pack(flex=1))
-        main_box.add(
-            LineBox(
-                padding_bottom=MAIN_BOTTOM_PADDING,
-                children=[
-                    toga.Label(text="Output directory:"),
-                    self.output_directory_input,
-                    toga.Button(
-                        label="Choose directory",
-                        on_press=self.choose_output_dir,
-                        style=Pack(padding_left=SMALL_PADDING),
-                    ),
-                    toga.Button(
-                        label="Save",
-                        on_press=self.save_to_output_dir,
-                        style=Pack(
-                            padding_left=SMALL_PADDING, padding_right=SMALL_PADDING
-                        ),
-                    ),
-                ],
-            )
-        )
+        self.output_box = OutputBox(on_save_output=self.on_save_output)
+        main_box.add(self.output_box)
 
         accessibility_group = toga.Group('Accessibility') 
 
@@ -172,6 +139,88 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.main_window.toolbar.add(fontSize)
         self.main_window.show()
 
+        self.commands.add(
+            toga.Command(
+                self.input_file_box.select_file,
+                label="Upload data file",
+                shortcut=toga.Key.MOD_1 + "u",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.output_box.choose_output_dir,
+                label="Choose output directory",
+                shortcut=toga.Key.MOD_1 + "o",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.on_save_output,
+                label="Save plots and results",
+                shortcut=toga.Key.MOD_1 + "s",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.choose_records,
+                label="Choose records",
+                shortcut=toga.Key.MOD_1 + "c",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.fitting_function_box.load_module,
+                label="Load module",
+                shortcut=toga.Key.MOD_1 + "m",
+                group=toga.Group.FILE,
+            ),
+            toga.Command(
+                self.plot_configuration_box.toggle_grid_switch,
+                label="Add/remove grid lines",
+                shortcut=toga.Key.MOD_1 + "g",
+                section=1,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot_configuration_box.toggle_legend_switch,
+                label="Add/remove legend",
+                shortcut=toga.Key.MOD_1 + "l",
+                section=1,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot_data,
+                label="Plot data points",
+                shortcut=toga.Key.MOD_1 + "d",
+                section=2,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.fit,
+                label="Fit result",
+                shortcut=toga.Key.MOD_1 + "f",
+                section=2,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot_initial_guess,
+                label="Plot initial guess fitting",
+                shortcut=toga.Key.MOD_1 + "i",
+                section=2,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.plot,
+                label="Plot fitting",
+                shortcut=toga.Key.MOD_1 + "p",
+                section=2,
+                group=PLOT_GROUP,
+            ),
+            toga.Command(
+                self.residuals,
+                label="Plot residuals",
+                shortcut=toga.Key.MOD_1 + "r",
+                section=2,
+                group=PLOT_GROUP,
+            ),
+        )
+        
     # TODO: have fontSize call this function, 
     # and this function will call change_font_size
     # with the chosen size.
@@ -194,18 +243,70 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             c.style.font_size = 20
             self.rec_change_font_size(c)
 
-
     @property
-    def fit_result(self):
+    def fitting_result(self):
         """Getter of the fit result."""
-        if self.__fit_result is None:
-            self.__calculate_fit_result()
-        return self.__fit_result
+        if self.__fitting_result is None:
+            self.__calculate_fitting_result()
+        return self.__fitting_result
 
-    @fit_result.setter
-    def fit_result(self, fit_result):
+    @fitting_result.setter
+    def fitting_result(self, fitting_result):
         """Setter of the fit result."""
-        self.__fit_result = fit_result
+        self.__fitting_result = fitting_result
+
+    def on_data_columns_change(self, fitting_data):
+        """Run those methods when data columns are changed."""
+        self.reset_fitting_result()
+        self.plot_configuration_box.on_fitting_data_load(fitting_data)
+
+    def on_fitting_function_load(self, fitting_function):
+        """Run those methods when fitting function is changed."""
+        self.reset_fitting_result()
+        self.set_parameters_number(fitting_function)
+        self.plot_configuration_box.on_fitting_function_load(fitting_function)
+
+    def on_save_output(self, widget):  # pylint: disable=unused-argument
+        """Handler for the "save to output directory" button."""
+        try:
+            if self.fitting_result is None:
+                self.show_nothing_to_plot()
+                return
+        except EddingtonException:
+            return
+        if self.output_box.output_directory is None:
+            self.main_window.error_dialog(
+                title="Results output save error",
+                message="No output directory was chosen",
+            )
+            return
+        output_dir = Path(self.output_box.output_directory)
+        if not output_dir.exists():
+            output_dir.mkdir()
+        func_name = self.fitting_function_box.fitting_function.name
+        if self.output_box.export_data_plot:
+            self.plot_configuration_box.plot_data(
+                data=self.data_columns_box.fitting_data
+            ).savefig(output_dir / f"{func_name}_data.png")
+        if self.output_box.export_fitting_plot:
+            self.plot_configuration_box.plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_fitting.png")
+        if self.output_box.export_residuals_plot:
+            self.plot_configuration_box.plot_residuals(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ).savefig(output_dir / f"{func_name}_residuals.png")
+        if self.output_box.export_result_as_text:
+            self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
+        if self.output_box.export_result_as_json:
+            self.fitting_result.save_json(output_dir / f"{func_name}_result.json")
+        self.main_window.info_dialog(
+            title="Save output", message="All plots have been saved successfully!"
+        )
 
     def read_csv(self, filepath):
         """
@@ -217,9 +318,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_csv(filepath)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
-            self.data_columns_box.fit_data = None
+            self.data_columns_box.fitting_data = None
             self.input_file_box.file_path = None
 
     def read_excel(self, filepath, sheet):
@@ -233,191 +334,147 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """
         try:
             self.data_columns_box.read_excel(filepath, sheet)
-        except FitDataError as error:
+        except FittingDataError as error:
             self.main_window.error_dialog(title="Input data error", message=str(error))
-            self.data_columns_box.fit_data = None
+            self.data_columns_box.fitting_data = None
             self.input_file_box.selected_sheet = None
 
     def choose_records(self, widget):  # pylint: disable=unused-argument
         """Open the choose records window."""
-        if self.data_columns_box.fit_data is None:
+        if self.data_columns_box.fitting_data is None:
             self.main_window.info_dialog(
                 title="Choose Records", message="No data been given yet"
             )
             return
-        window = RecordsChoiceWindow(fit_data=self.data_columns_box.fit_data)
+        window = RecordsChoiceWindow(
+            fitting_data=self.data_columns_box.fitting_data, app=self
+        )
         window.show()
-        self.reset_fit_result()
-        self.initial_guess_box.reset_initial_guess()
-        self.plot_configuration_box.reset_plot_configuration()
+        self.reset_fitting_result()
 
     def fit(self, widget):  # pylint: disable=unused-argument
         """Handler for the "fit" button."""
         try:
-            if self.fit_result is None:
+            if self.fitting_result is None:
                 self.main_window.info_dialog(
                     title="Fit Result", message="Nothing to fit yet"
                 )
                 return
         except EddingtonException:
             return
-        self.main_window.info_dialog(title="Fit Result", message=str(self.fit_result))
+        self.main_window.info_dialog(
+            title="Fit Result", message=str(self.fitting_result)
+        )
 
     def plot_data(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot data" button."""
-        if self.data_columns_box.fit_data is None:
+        if self.data_columns_box.fitting_data is None:
             self.show_nothing_to_plot()
         else:
             self.show_figure_window(
-                plot_data(
-                    data=self.data_columns_box.fit_data,
-                    plot_configuration=self.plot_configuration_box.plot_configuration,
-                )
+                fig=self.plot_configuration_box.plot_data(
+                    data=self.data_columns_box.fitting_data
+                ),
+                title="Data Plot",
             )
 
     def plot_initial_guess(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot initial guess" button."""
         try:
             if (
-                self.data_columns_box.fit_data is None
+                self.data_columns_box.fitting_data is None
                 or self.initial_guess_box.a0 is None  # noqa: W503
             ):
                 self.show_nothing_to_plot()
                 return
+            self.show_figure_window(
+                fig=self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fitting_function,
+                    data=self.data_columns_box.fitting_data,
+                    a=self.initial_guess_box.a0,
+                ),
+                title="Initial Guess Fitting",
+            )
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot initial guess error", message=str(error)
             )
-            return
-        self.show_figure_window(
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.initial_guess_box.a0,
-            )
-        )
 
     def plot(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot fitting" button."""
         try:
-            if self.fit_result is None:
+            if self.fitting_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            plot_fitting(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                fig=self.plot_configuration_box.plot_fitting(
+                    func=self.fitting_function_box.fitting_function,
+                    data=self.data_columns_box.fitting_data,
+                    a=self.fitting_result.a,
+                ),
+                title="Fitting Plot",
             )
-        )
+        except EddingtonException as error:
+            self.main_window.error_dialog(
+                title="Plot fitting error", message=str(error)
+            )
 
     def residuals(self, widget):  # pylint: disable=unused-argument
         """Handler for the "residuals" button."""
         try:
-            if self.fit_result is None:
+            if self.fitting_result is None:
                 self.show_nothing_to_plot()
                 return
-        except EddingtonException:
-            return
-        self.show_figure_window(
-            plot_residuals(
-                func=self.fitting_function_box.fit_function,
-                data=self.data_columns_box.fit_data,
-                plot_configuration=self.plot_configuration_box.plot_configuration,
-                a=self.fit_result.a,
+            self.show_figure_window(
+                fig=self.plot_configuration_box.plot_residuals(
+                    func=self.fitting_function_box.fitting_function,
+                    data=self.data_columns_box.fitting_data,
+                    a=self.fitting_result.a,
+                ),
+                title="Residuals Plot",
             )
-        )
-
-    def choose_output_dir(self, widget):  # pylint: disable=unused-argument
-        """Open output directory choice dialog."""
-        try:
-            folder_path = self.main_window.select_folder_dialog(
-                title="Output directory"
-            )
-        except ValueError:
-            return
-        self.output_directory_input.value = folder_path[0]
-
-    def save_to_output_dir(self, widget):  # pylint: disable=unused-argument
-        """Handler for the "save to output directory" button."""
-        try:
-            if self.fit_result is None:
-                self.show_nothing_to_plot()
-                return
-        except EddingtonException:
-            return
-        if self.output_directory_input.value == "":
+        except EddingtonException as error:
             self.main_window.error_dialog(
-                title="Results output save error",
-                message="No output directory was chosen",
+                title="Plot residuals error", message=str(error)
             )
-            return
-        output_dir = Path(self.output_directory_input.value)
-        if not output_dir.exists():
-            output_dir.mkdir()
-        func_name = self.fitting_function_box.fit_function.name
-        output_configuration = OutputConfiguration.build(
-            base_name=func_name, output_dir=output_dir
-        )
-        plot_all(
-            func=self.fitting_function_box.fit_function,
-            data=self.data_columns_box.fit_data,
-            plot_configuration=self.plot_configuration_box.plot_configuration,
-            output_configuration=output_configuration,
-            result=self.fit_result,
-        )
-        self.main_window.info_dialog(
-            title="Save output", message="All plots have been saved successfully!"
-        )
 
     def show_nothing_to_plot(self):
         """Show dialog indicating that there is nothing to plot yet."""
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    @staticmethod
-    def show_figure_window(fig):
+    def show_figure_window(self, fig, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(fig)
+        figure_window = FigureWindow(figure=fig, title=title, app=self)
         figure_window.show()
 
-    def reset_fit_data(self):
+    def reset_fitting_data(self):
         """Set fit data to None."""
-        self.data_columns_box.fit_data = None
+        self.data_columns_box.fitting_data = None
 
-    def reset_fit_result(self):
+    def reset_fitting_result(self):
         """Set fit result to None."""
-        self.fit_result = None
+        self.fitting_result = None
 
     def set_parameters_number(self, func):
         """Set number of parameters."""
-        if func is None:
-            self.initial_guess_box.n = None
-        else:
-            self.initial_guess_box.n = func.n
+        self.initial_guess_box.n = 0 if func is None else func.n
 
-    def __calculate_fit_result(self):
+    def __calculate_fitting_result(self):
         if (
-            self.data_columns_box.fit_data is None
-            or self.fitting_function_box.fit_function is None  # noqa: W503
+            self.data_columns_box.fitting_data is None
+            or self.fitting_function_box.fitting_function is None  # noqa: W503
         ):
-            self.fit_result = None
+            self.fitting_result = None
             return
         try:
-            self.fit_result = fit_to_data(
-                data=self.data_columns_box.fit_data,
-                func=self.fitting_function_box.fit_function,
+            self.fitting_result = fit(
+                data=self.data_columns_box.fitting_data,
+                func=self.fitting_function_box.fitting_function,
                 a0=self.initial_guess_box.a0,
             )
         except EddingtonException as error:
-            self.fit_result = None
-            self.main_window.error_dialog(
-                title="Fit result error",
-                message=str(error),
-            )
+            self.fitting_result = None
+            self.main_window.error_dialog(title="Fit result error", message=str(error))
             raise error
 
     def select_default_sheet(self):
@@ -429,15 +486,15 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         for sheet in self.input_file_box.sheets_options:
             if sheet != NO_VALUE:
                 try:
-                    self.data_columns_box.fit_data = FitData.read_from_excel(
+                    self.data_columns_box.fitting_data = FittingData.read_from_excel(
                         Path(self.input_file_box.file_path), sheet
                     )
                     self.input_file_box.selected_sheet = sheet
                     return
-                except FitDataError:
+                except FittingDataError:
                     pass
 
-        if self.data_columns_box.fit_data is None:
+        if self.data_columns_box.fitting_data is None:
             self.main_window.error_dialog(
                 title="Input data error",
                 message=(
