@@ -44,6 +44,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     __a0: np.ndarray = None
     __fitting_result: FittingResult = None
 
+    accessibility_mode = False
+
     def startup(self):
         """
         Construct and show the Toga application.
@@ -130,7 +132,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.change_font_size,
             label='Text Size',
             tooltip='Adds option to enlarge all text',
-            shortcut='A',
+            shortcut=toga.Key.MOD_1 + 'a',  #a for accessibility
             group=accessibility_group,
         )
 
@@ -224,24 +226,35 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     # TODO: have fontSize call this function, 
     # and this function will call change_font_size
     # with the chosen size.
-    def font_size_slider(self, sender):
-        self.main_window.content.add(
-            toga.Slider(
-                default=SMALL_FONT_SIZE,
-                range=(SMALL_FONT_SIZE, 100),
-                tick_count=10,
-                on_slide=self.change_font_size
-            )
-        )
+    # TODO: Get rid of the constant numbers
+    #def font_size_slider(self, sender):
+    #    self.main_window.content.add(
+    #        toga.Slider(
+    #            default=10,
+    #            range=(10, 100),
+    #            tick_count=10,
+    #            on_slide=self.change_font_size
+    #        )
+    #    )
 
     def change_font_size(self, sender):
+        self.accessibility_mode = True
         for c in self.main_window.content.children:
-            self.rec_change_font_size(c)
+            try:
+                c.change_font_size()
+            except AttributeError:
+                print(c)
+                self.rec_change_font_size(c)
 
     def rec_change_font_size(self, container):
         for c in container.children:
-            c.style.font_size = 20
-            self.rec_change_font_size(c)
+            c.style.update(font_size=20, flex=1)
+            c.refresh()
+        try:
+            container.style.update(font_size=20, flex=1)
+            container.refresh()
+        except AttributeError as e:
+            print(e)
 
     @property
     def fitting_result(self):
