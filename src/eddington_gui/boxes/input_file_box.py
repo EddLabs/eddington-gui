@@ -48,6 +48,14 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.__sheet_label = toga.Label(text="Sheet:")
         self.__sheet_selection = toga.Selection(on_select=self.select_sheet)
 
+    def change_font_size(self):
+        for container in self.children:
+            container.style.update(font_size=20, flex=1)
+            for c in container.children:
+                print(c)
+                c.set_font(font_size=20, flex=1)
+
+
     @property
     def file_path(self):
         """Getter for the chosen file path."""
