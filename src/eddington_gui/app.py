@@ -352,15 +352,16 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.data_columns_box.fitting_data = None
             self.input_file_box.selected_sheet = None
 
-    def choose_records(self, widget):  # pylint: disable=unused-argument
+    def choose_records(self, widget, accessibility_mode):  # pylint: disable=unused-argument
         """Open the choose records window."""
+        size = 10 if accessibility_mode == 0 else 20
         if self.data_columns_box.fitting_data is None:
             self.main_window.info_dialog(
-                title="Choose Records", message="No data been given yet"
+                title="Choose Records", message="No data been given yet", style=Pcak(font_size=size)
             )
             return
         window = RecordsChoiceWindow(
-            fitting_data=self.data_columns_box.fitting_data, app=self
+            fitting_data=self.data_columns_box.fitting_data, app=self, style=Pcak(font_size=size)
         )
         window.show()
         self.reset_fitting_result()
