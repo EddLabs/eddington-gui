@@ -28,6 +28,7 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
     def __init__(self, flex):
         """Initialize box."""
         super().__init__(style=Pack(direction=COLUMN, flex=flex))
+        self.boxes = []
         self.fitting_function_box = LineBox()
         self.fitting_function_box.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
@@ -54,6 +55,21 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
         )
 
         self.update_fitting_function_options()
+        self.boxes.append(self.fitting_function_box)
+        self.boxes.append(self.fitting_function_selection)
+        self.boxes.append(self.polynomial_degree_title)
+        self.boxes.append(self.polynomial_degree_input)
+        self.boxes.append(self.load_module_button)
+    
+    def change_font_size(self):
+        self.set_font(font_size=20, flex=1)
+        self.refresh()
+        for container in self.boxes:
+            container.style.update(font_size=20, flex=1)
+            for c in container.children:
+                print(c)
+                c.set_font(font_size=20, flex=1)
+                c.refresh()
 
     @property
     def fitting_function(self):
