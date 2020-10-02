@@ -15,6 +15,7 @@ from toga.style.pack import COLUMN, ROW
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
+from eddington_gui.boxes.footer_box import FooterBox
 from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
@@ -122,6 +123,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         )
         self.output_box = OutputBox(on_save_output=self.on_save_output)
         main_box.add(self.output_box)
+
+        main_box.add(FooterBox())
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
