@@ -3,6 +3,6 @@ import matplotlib
 
 matplotlib.use("agg")
 
-__version__ = "0.0.6"
+__version__ = "0.0.7.dev0"
 __author__ = "Sagi Shadur"
 __year__ = "2020"
