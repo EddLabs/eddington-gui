@@ -1,12 +1,12 @@
-.. _costume_fitting_functions:
+.. _custom_fitting_functions:
 
-Step 6 - Costume Fitting Functions
+Step 6 - Custom Fitting Functions
 ===================================
 
 .. raw:: html
 
     <video width="500" height="300" controls>
-        <source src="../_static/costume_fitting_functions.mp4" type="video/mp4">
+        <source src="../_static/custom_fitting_functions.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
