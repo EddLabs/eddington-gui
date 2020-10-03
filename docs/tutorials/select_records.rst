@@ -21,5 +21,5 @@ to use, press “Save” and refit your data.
 
 Pay attention, your selection won’t take any effect unless you press “Save”.
 
-Thank you for watching. In the next video, we will demonstrate how to use costume
+Thank you for watching. In the next video, we will demonstrate how to use custom
 fitting functions, differently from default ones.

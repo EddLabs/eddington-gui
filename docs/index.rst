@@ -15,6 +15,18 @@ open-source libraries such as *numpy*, *scipy*, and *matplotlib*.
 *Eddington* can be integrated with python code as a library, can be used as a CLI and
 has an easy to use GUI.
 
+.. note::
+
+   This is the Eddington user interface documentation. In order to read about the Eddington
+   python library go `here <https://eddington.readthedocs.io/en/latest>`_.
+
+Installation
+------------
+
+In order to install Eddington-GUI go to the
+`latest release page <https://github.com/EddLabs/eddington-gui/releases/latest>`_
+and download the appropriate installation file.
+
 .. toctree::
    :maxdepth: 2
    :hidden:

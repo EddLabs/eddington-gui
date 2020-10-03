@@ -13,5 +13,5 @@ Tutorials
    Step 3 - Upload Data <upload_data>
    Step 4 - Fitting The Data <fitting>
    Step 5 - Selecting Records <select_records>
-   Step 6 - Costume Fitting Functions <costume_fitting_functions>
+   Step 6 - Custom Fitting Functions <custom_fitting_functions>
    Summary <summary>
