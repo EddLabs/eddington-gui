@@ -4,10 +4,10 @@ from pathlib import Path
 import toga
 from toga.style import Pack
 from toga.style.pack import TOP
+from travertino.constants import CENTER
 
-from eddington_gui import __author__, __version__
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import HEADER_FONT_FAMILY, LOGO_SIZE, SMALL_FONT_SIZE
+from eddington_gui.consts import LOGO_SIZE
 
 
 class HeaderBox(LineBox):  # pylint: disable=too-few-public-methods
@@ -24,22 +24,11 @@ class HeaderBox(LineBox):  # pylint: disable=too-few-public-methods
         super().__init__(
             alignment=TOP,
             children=[
-                toga.Label(
-                    text=f"Version: {__version__}",
-                    style=Pack(
-                        font_size=SMALL_FONT_SIZE, font_family=HEADER_FONT_FAMILY
-                    ),
-                ),
                 toga.Box(style=Pack(flex=1)),
                 toga.ImageView(
-                    image=logo, style=Pack(height=LOGO_SIZE, width=LOGO_SIZE)
+                    image=logo,
+                    style=Pack(height=LOGO_SIZE, width=LOGO_SIZE, alignment=CENTER),
                 ),
                 toga.Box(style=Pack(flex=1)),
-                toga.Label(
-                    text=f"Author: {__author__}",
-                    style=Pack(
-                        font_size=SMALL_FONT_SIZE, font_family=HEADER_FONT_FAMILY
-                    ),
-                ),
             ],
         )

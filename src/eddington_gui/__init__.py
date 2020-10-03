@@ -5,3 +5,4 @@ matplotlib.use("agg")
 
 __version__ = "0.0.6"
 __author__ = "Sagi Shadur"
+__year__ = "2020"

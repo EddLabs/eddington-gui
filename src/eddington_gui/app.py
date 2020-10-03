@@ -15,6 +15,7 @@ from toga.style.pack import COLUMN, ROW
 
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
+from eddington_gui.boxes.footer_box import FooterBox
 from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
@@ -123,54 +124,75 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.output_box = OutputBox(on_save_output=self.on_save_output)
         main_box.add(self.output_box)
 
+        main_box.add(FooterBox())
+
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
         self.main_window.show()
 
         self.commands.add(
+            # File group
             toga.Command(
                 self.input_file_box.select_file,
                 label="Upload data file",
-                shortcut=toga.Key.MOD_1 + "u",
+                shortcut=toga.Key.MOD_1 + "f",
                 group=toga.Group.FILE,
-            ),
-            toga.Command(
-                self.output_box.choose_output_dir,
-                label="Choose output directory",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-            ),
-            toga.Command(
-                self.on_save_output,
-                label="Save plots and results",
-                shortcut=toga.Key.MOD_1 + "s",
-                group=toga.Group.FILE,
-            ),
-            toga.Command(
-                self.choose_records,
-                label="Choose records",
-                shortcut=toga.Key.MOD_1 + "c",
-                group=toga.Group.FILE,
+                order=1,
             ),
             toga.Command(
                 self.fitting_function_box.load_module,
                 label="Load module",
                 shortcut=toga.Key.MOD_1 + "m",
                 group=toga.Group.FILE,
+                order=2,
             ),
+            toga.Command(
+                self.choose_records,
+                label="Choose records",
+                shortcut=toga.Key.MOD_1 + "c",
+                group=toga.Group.FILE,
+                order=3,
+            ),
+            toga.Command(
+                self.output_box.choose_output_dir,
+                label="Choose output directory",
+                shortcut=toga.Key.MOD_1 + "o",
+                group=toga.Group.FILE,
+                order=4,
+            ),
+            toga.Command(
+                self.on_save_output,
+                label="Save plots and results",
+                shortcut=toga.Key.MOD_1 + "s",
+                group=toga.Group.FILE,
+                order=5,
+            ),
+            # Plot group
+            #   Section 1
             toga.Command(
                 self.plot_configuration_box.toggle_grid_switch,
                 label="Add/remove grid lines",
                 shortcut=toga.Key.MOD_1 + "g",
-                section=1,
                 group=PLOT_GROUP,
+                section=1,
+                order=1,
             ),
             toga.Command(
                 self.plot_configuration_box.toggle_legend_switch,
                 label="Add/remove legend",
                 shortcut=toga.Key.MOD_1 + "l",
-                section=1,
                 group=PLOT_GROUP,
+                section=1,
+                order=2,
+            ),
+            #   Section 2
+            toga.Command(
+                self.fit,
+                label="Fit result",
+                shortcut=toga.Key.MOD_1 + "e",
+                group=PLOT_GROUP,
+                section=2,
+                order=1,
             ),
             toga.Command(
                 self.plot_data,
@@ -178,13 +200,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 shortcut=toga.Key.MOD_1 + "d",
                 section=2,
                 group=PLOT_GROUP,
-            ),
-            toga.Command(
-                self.fit,
-                label="Fit result",
-                shortcut=toga.Key.MOD_1 + "f",
-                section=2,
-                group=PLOT_GROUP,
+                order=2,
             ),
             toga.Command(
                 self.plot_initial_guess,
@@ -192,6 +208,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 shortcut=toga.Key.MOD_1 + "i",
                 section=2,
                 group=PLOT_GROUP,
+                order=3,
             ),
             toga.Command(
                 self.plot,
@@ -199,6 +216,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 shortcut=toga.Key.MOD_1 + "p",
                 section=2,
                 group=PLOT_GROUP,
+                order=4,
             ),
             toga.Command(
                 self.residuals,
@@ -206,6 +224,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 shortcut=toga.Key.MOD_1 + "r",
                 section=2,
                 group=PLOT_GROUP,
+                order=5,
             ),
         )
 
