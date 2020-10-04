@@ -6,9 +6,9 @@
 .. figure:: _static/eddington_logo.png
     :width: 500
 
-=========
-Eddington
-=========
+=============
+Eddington-GUI
+=============
 
 *Eddington* is a user-friendly data fitting platform for common uses, based on
 open-source libraries such as *numpy*, *scipy*, and *matplotlib*.
