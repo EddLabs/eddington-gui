@@ -24,6 +24,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     __x_min_input: toga.TextInput
     __x_max_title: toga.Label
     __x_max_input: toga.TextInput
+    __x_log_scale: toga.Switch
+    __y_log_scale: toga.Switch
 
     __base_name: Union[str] = ""
     __xcolumn: Union[str, None] = None
@@ -40,7 +42,9 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
         self.__grid_switch = toga.Switch(label="Grid")
         self.__legend_switch = toga.Switch(label="Legend")
-        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch]))
+        self.__x_log_scale = toga.Switch(label="X log scale")
+        self.__y_log_scale = toga.Switch(label="Y log scale")
+        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch, self.__x_log_scale, self.__y_log_scale]))
 
         self.__x_domain_switch = toga.Switch(
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
@@ -115,6 +119,14 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         return self.__legend_switch.is_on
 
     @property
+    def x_log_scale(self):
+        return self.__x_log_scale.is_on
+
+    @property
+    def y_log_scale(self):
+        return self.__y_log_scale.is_on
+
+    @property
     def xmin(self):
         """Get minimum value of X, if presented by user."""
         if not self.__x_domain_switch.is_on or self.__x_min_input.value == "":
@@ -146,6 +158,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             xlabel=self.xlabel,
             ylabel=self.ylabel,
             grid=self.grid,
+            x_log_scale=self.x_log_scale,
+            y_log_scale=self.y_log_scale,
         )
 
     def plot_fitting(self, func, data, a):  # pylint: disable=invalid-name
@@ -158,6 +172,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             ylabel=self.ylabel,
             grid=self.grid,
             legend=self.legend,
+            x_log_scale=self.x_log_scale,
+            y_log_scale=self.y_log_scale,
             a=a,
             xmin=self.xmin,
             xmax=self.xmax,
@@ -172,6 +188,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             xlabel=self.xlabel,
             ylabel=self.ylabel,
             grid=self.grid,
+            x_log_scale=self.x_log_scale,
+            y_log_scale=self.y_log_scale,
             a=a,
             xmin=self.xmin,
             xmax=self.xmax,
@@ -223,6 +241,14 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     def toggle_legend_switch(self, widget):  # pylint: disable=unused-argument
         """Set/unset the grid switch."""
         self.__legend_switch.is_on = not self.__legend_switch.is_on
+
+    def toggle_x_log_scale(self, widget):
+        "Set/unset the x log scale switch."
+        self.__x_log_scale.is_on = not self.__x_log_scale.is_on
+
+    def toggle_y_log_scale(self, widget):
+        "Set/unset the y log scale switch"
+        self.__y_log_scale.is_on = not self.__y_log_scale.is_on
 
     def __add_column_option(self, label):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
