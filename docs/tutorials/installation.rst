@@ -22,9 +22,17 @@ the MSI file.
 Once you downloaded the installation file, run it, and follow the instructions.
 It may raise an error that the software is not authorized. Please ignore this error
 message and download it without any worries.
+*We're working on a solution to that problem.*
 
 Once you’ve finished installing, search for Eddington in your toolbar search box,
 and you’ll see it there. Now you can use the Eddington GUI.
 
 Thank you for watching this video. Next, I’ll show you how a fitting data file
 should look.
+
+.. note::
+
+    If you're using **Mac**, please install the DMG file, extract the APP file and open it
+    following the instructions described
+    `here <https://support.apple.com/en-il/guide/mac-help/mh40616/mac>`_. This is
+    required only on first opening.
