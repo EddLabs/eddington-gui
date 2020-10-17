@@ -492,4 +492,4 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
 def main():
     """Main function."""
-    return EddingtonGUI()
+    return EddingtonGUI(formal_name="EddingtonGUI", app_id="eddington.gui")
