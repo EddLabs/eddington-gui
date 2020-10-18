@@ -23,6 +23,16 @@ Installation
 In order to install Eddington-GUI go to the `latest release page`_ and download the
 appropriate installation file.
 
+Development
+-----------
+
+In order to run Eddington-GUI in development mode follow the following steps:
+
+1. Clone Eddington-GUI repository from `here <https://github.com/EddLabs/eddington-gui>`_
+2. Go to the repository main directory
+3. Install `Briefcase`_ using ``pip install -U briefcase``
+4. Run Eddington-GUI with ``briefcase dev -d``
+
 Documentation
 -------------
 
@@ -38,11 +48,13 @@ Contributing
 
 If you experience problems with Eddington, `log them on GitHub`_.
 
-If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you want to contribute code, please
+`fork the code <https://github.com/EddLabs/eddington-gui>`_ and
+`submit a pull request`_.
 
 .. _latest release page: https://github.com/EddLabs/eddington-gui/releases/latest
+.. _Briefcase: https://github.com/beeware/briefcase
 .. _Read The Docs: https://eddington-gui.readthedocs.io
 .. _EddLabs/developers: https://gitter.im/EddLabs/developers
 .. _log them on Github: https://github.com/EddLabs/eddington-gui/issues
-.. _fork the code: https://github.com/EddLabs/eddington-gui
 .. _submit a pull request: https://github.com/EddLabs/eddington-gui/pulls
