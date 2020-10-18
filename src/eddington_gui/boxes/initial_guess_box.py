@@ -6,6 +6,7 @@ import toga
 from eddington import EddingtonException
 from toga.style import Pack
 
+from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import SMALL_INPUT_WIDTH
 
@@ -45,6 +46,7 @@ class InitialGuessBox(LineBox):
                     toga.TextInput(
                         style=Pack(width=SMALL_INPUT_WIDTH),
                         on_change=lambda widget: self.reset_initial_guess(),
+                        validator=validators.number(),
                     )
                 )
         if old_n < self.n:
