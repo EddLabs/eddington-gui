@@ -12,7 +12,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
 # TODO: replace this formatter with eddington.to_precise_string
-# or remove it once is https://github.com/beeware/toga-chart/issues/11 fixed
+# or remove it once https://github.com/beeware/toga-chart/issues/11 is fixed
 EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: "{:.16g}".format(y))
 
 
