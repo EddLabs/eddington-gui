@@ -185,6 +185,22 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 section=1,
                 order=2,
             ),
+            toga.Command(
+                self.plot_configuration_box.toggle_x_log_scale,
+                label="Set/unset x log scale",
+                shortcut=toga.Key.MOD_1 + "x",
+                group=PLOT_GROUP,
+                section=1,
+                order=3,
+            ),
+            toga.Command(
+                self.plot_configuration_box.toggle_y_log_scale,
+                label="Set/unset y log scale",
+                shortcut=toga.Key.MOD_1 + "y",
+                group=PLOT_GROUP,
+                section=1,
+                order=3,
+            ),
             #   Section 2
             toga.Command(
                 self.fit,

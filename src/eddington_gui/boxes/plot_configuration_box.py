@@ -3,15 +3,20 @@ from typing import Union
 
 import toga
 from eddington import EddingtonException, plot_data, plot_fitting, plot_residuals
+from matplotlib.ticker import FuncFormatter
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
 from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH
+from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
+
+# TODO: replace this formatter with eddington.to_precise_string  # pylint: disable=fixme
+# or remove it once https://github.com/beeware/toga-chart/issues/11 is fixed
+EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: "{:.16g}".format(y))
 
 
-class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attributes
+class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
     """Visual box to create plot configuration."""
 
     __title_input: toga.TextInput
@@ -25,6 +30,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
     __x_min_input: toga.TextInput
     __x_max_title: toga.Label
     __x_max_input: toga.TextInput
+    __x_log_scale: toga.Switch
+    __y_log_scale: toga.Switch
 
     __base_name: Union[str] = ""
     __xcolumn: Union[str, None] = None
@@ -36,8 +43,14 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
         self.__title_input = self.__add_column_option("Title:")
         self.__residuals_title_input = self.__add_column_option("Residuals title:")
-        self.__xlabel_input = self.__add_column_option("X label:")
-        self.__ylabel_input = self.__add_column_option("Y label:")
+        self.__x_log_scale = toga.Switch(
+            label="X log scale", style=Pack(padding_left=SMALL_PADDING)
+        )
+        self.__y_log_scale = toga.Switch(
+            label="Y log scale", style=Pack(padding_left=SMALL_PADDING)
+        )
+        self.__xlabel_input = self.__add_column_option("X label:", self.__x_log_scale)
+        self.__ylabel_input = self.__add_column_option("Y label:", self.__y_log_scale)
 
         self.__grid_switch = toga.Switch(label="Grid")
         self.__legend_switch = toga.Switch(label="Legend")
@@ -120,6 +133,16 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         return self.__legend_switch.is_on
 
     @property
+    def x_log_scale(self):
+        """Is x axis log scale on or off."""
+        return self.__x_log_scale.is_on
+
+    @property
+    def y_log_scale(self):
+        """Is y axis log scale on or off."""
+        return self.__y_log_scale.is_on
+
+    @property
     def xmin(self):
         """Get minimum value of X, if presented by user."""
         if not self.__x_domain_switch.is_on or self.__x_min_input.value == "":
@@ -145,42 +168,62 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
     def plot_data(self, data):
         """Create a data plot."""
-        return plot_data(
-            data=data,
-            title_name=self.data_title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
+        return self.set_scale(
+            plot_data(
+                data=data,
+                title_name=self.data_title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+            )
         )
 
     def plot_fitting(self, func, data, a):  # pylint: disable=invalid-name
         """Create a fitting plot."""
-        return plot_fitting(
-            func=func,
-            data=data,
-            title_name=self.title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            legend=self.legend,
-            a=a,
-            xmin=self.xmin,
-            xmax=self.xmax,
+        return self.set_scale(
+            plot_fitting(
+                func=func,
+                data=data,
+                title_name=self.title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                legend=self.legend,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+                a=a,
+                xmin=self.xmin,
+                xmax=self.xmax,
+            )
         )
 
     def plot_residuals(self, func, data, a):  # pylint: disable=invalid-name
         """Create residuals plot."""
-        return plot_residuals(
-            func=func,
-            data=data,
-            title_name=self.residuals_title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            a=a,
-            xmin=self.xmin,
-            xmax=self.xmax,
+        return self.set_scale(
+            plot_residuals(
+                func=func,
+                data=data,
+                title_name=self.residuals_title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+                a=a,
+                xmin=self.xmin,
+                xmax=self.xmax,
+            )
         )
+
+    def set_scale(self, figure):
+        """Set ticks of figure if in log scale."""
+        if self.x_log_scale:
+            figure.get_axes()[0].xaxis.set_major_formatter(EDDINGTON_FORMATTER)
+        if self.y_log_scale:
+            figure.get_axes()[0].yaxis.set_major_formatter(EDDINGTON_FORMATTER)
+        return figure
 
     def on_fitting_function_load(self, fitting_function):
         """
@@ -229,12 +272,21 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         """Set/unset the grid switch."""
         self.__legend_switch.toggle()
 
-    def __add_column_option(self, label):
+    def toggle_x_log_scale(self, widget):  # pylint: disable=unused-argument
+        """Set/unset the x log scale switch."""
+        self.__x_log_scale.toggle()
+
+    def toggle_y_log_scale(self, widget):  # pylint: disable=unused-argument
+        """Set/unset the y log scale switch."""
+        self.__y_log_scale.toggle()
+
+    def __add_column_option(self, label, *additional_widgets):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
         line = LineBox(
             children=[
                 toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
                 text_input,
+                *additional_widgets,
             ],
         )
 
