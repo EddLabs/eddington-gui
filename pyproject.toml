@@ -5,7 +5,7 @@ requires = ["briefcase"]
 project_name = "EddingtonGUI"
 bundle = "com.eddington_gui"
 version = "0.0.7.dev0"
-url = "https://eddington_gui.com/eddington_gui"
+url = "https://github.com/EddLabs/eddington-gui"
 license = "Apache Software License"
 author = 'Sagi Shadur'
 author_email = "saroad2@gmail.com"
@@ -16,7 +16,6 @@ description = "A gui library wrapping Eddington"
 icon = "src/eddington_gui/resources/eddington_gui"
 sources = ['src/eddington_gui']
 requires = [
-    '--pre',
     'toga-chart>=0.1.0',
     'openpyxl>=3.0.5',
     'eddington>=0.0.17',
@@ -25,26 +24,26 @@ requires = [
 
 [tool.briefcase.app.eddington_gui.macOS]
 requires = [
-    'toga-cocoa>=0.3.0.dev23',
+    'toga-cocoa>=0.3.0.dev24',
 ]
 
 [tool.briefcase.app.eddington_gui.linux]
 requires = [
-    'toga-gtk>=0.3.0.dev23',
+    'toga-gtk>=0.3.0.dev24',
 ]
 
 [tool.briefcase.app.eddington_gui.windows]
 requires = [
-    'toga-winforms>=0.3.0.dev23',
+    'toga-winforms>=0.3.0.dev24',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.eddington_gui.iOS]
 requires = [
-    'toga-iOS>=0.3.0.dev23',
+    'toga-iOS>=0.3.0.dev24',
 ]
 
 [tool.briefcase.app.eddington_gui.android]
 requires = [
-    'toga-android>=0.3.0.dev23',
+    'toga-android>=0.3.0.dev24',
 ]
