@@ -3,12 +3,17 @@ from typing import Union
 
 import toga
 from eddington import EddingtonException, plot_data, plot_fitting, plot_residuals
+from matplotlib.ticker import FuncFormatter
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
 from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
+
+# TODO: replace this formatter with eddington.to_precise_string
+# or remove it once is https://github.com/beeware/toga-chart/issues/11 fixed
+EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: "{:.16g}".format(y))
 
 
 class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attributes
@@ -161,48 +166,61 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
     def plot_data(self, data):
         """Create a data plot."""
-        return plot_data(
-            data=data,
-            title_name=self.data_title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            x_log_scale=self.x_log_scale,
-            y_log_scale=self.y_log_scale,
+        return self.set_scale(
+            plot_data(
+                data=data,
+                title_name=self.data_title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+            )
         )
 
     def plot_fitting(self, func, data, a):  # pylint: disable=invalid-name
         """Create a fitting plot."""
-        return plot_fitting(
-            func=func,
-            data=data,
-            title_name=self.title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            legend=self.legend,
-            x_log_scale=self.x_log_scale,
-            y_log_scale=self.y_log_scale,
-            a=a,
-            xmin=self.xmin,
-            xmax=self.xmax,
+        return self.set_scale(
+            plot_fitting(
+                func=func,
+                data=data,
+                title_name=self.title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                legend=self.legend,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+                a=a,
+                xmin=self.xmin,
+                xmax=self.xmax,
+            )
         )
 
     def plot_residuals(self, func, data, a):  # pylint: disable=invalid-name
         """Create residuals plot."""
-        return plot_residuals(
-            func=func,
-            data=data,
-            title_name=self.residuals_title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            x_log_scale=self.x_log_scale,
-            y_log_scale=self.y_log_scale,
-            a=a,
-            xmin=self.xmin,
-            xmax=self.xmax,
+        return self.set_scale(
+            plot_residuals(
+                func=func,
+                data=data,
+                title_name=self.residuals_title,
+                xlabel=self.xlabel,
+                ylabel=self.ylabel,
+                grid=self.grid,
+                x_log_scale=self.x_log_scale,
+                y_log_scale=self.y_log_scale,
+                a=a,
+                xmin=self.xmin,
+                xmax=self.xmax,
+            )
         )
+
+    def set_scale(self, figure):
+        if self.__x_log_scale.is_on:
+            figure.get_axes()[0].xaxis.set_major_formatter(EDDINGTON_FORMATTER)
+        if self.__y_log_scale.is_on:
+            figure.get_axes()[0].yaxis.set_major_formatter(EDDINGTON_FORMATTER)
+        return figure
 
     def on_fitting_function_load(self, fitting_function):
         """
