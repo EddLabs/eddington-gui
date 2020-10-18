@@ -13,9 +13,10 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        task:
-          - docs
-          - static
+        task: [docs, static]
+        include:
+          - task: static
+            posargs: --no-cache -o ./statue-report.json
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python 3.8
@@ -28,4 +29,9 @@ jobs:
           pip install tox
       - name: Run Post-Test check
         run: |
-          tox -e ${{ matrix.task }}
+          tox -e ${{ matrix.task }} -- ${{ matrix.posargs }}
+      - uses: actions/upload-artifact@v2
+        if: matrix.task == 'static'
+        with:
+          name: statue-report
+          path: ./statue-report.json
