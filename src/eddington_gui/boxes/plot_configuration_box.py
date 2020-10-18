@@ -218,11 +218,11 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
     def toggle_grid_switch(self, widget):  # pylint: disable=unused-argument
         """Set/unset the grid switch."""
-        self.__grid_switch.is_on = not self.__grid_switch.is_on
+        self.__grid_switch.toggle()
 
     def toggle_legend_switch(self, widget):  # pylint: disable=unused-argument
         """Set/unset the grid switch."""
-        self.__legend_switch.is_on = not self.__legend_switch.is_on
+        self.__legend_switch.toggle()
 
     def __add_column_option(self, label):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
