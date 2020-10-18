@@ -270,12 +270,12 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.__legend_switch.toggle()
 
     def toggle_x_log_scale(self, widget):
-        "Set/unset the x log scale switch."
-        self.__x_log_scale.is_on = not self.__x_log_scale.is_on
+        """Set/unset the x log scale switch."""
+        self.__x_log_scale.toggle()
 
     def toggle_y_log_scale(self, widget):
-        "Set/unset the y log scale switch"
-        self.__y_log_scale.is_on = not self.__y_log_scale.is_on
+        """Set/unset the y log scale switch"""
+        self.__y_log_scale.toggle()
 
     def __add_column_option(self, label, *additional_widgets):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
