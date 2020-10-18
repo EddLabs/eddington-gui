@@ -8,7 +8,7 @@ from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
 from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH
+from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
 
 class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attributes
@@ -38,23 +38,18 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
         self.__title_input = self.__add_column_option("Title:")
         self.__residuals_title_input = self.__add_column_option("Residuals title:")
-        self.__xlabel_input = self.__add_column_option("X label:")
-        self.__ylabel_input = self.__add_column_option("Y label:")
+        self.__x_log_scale = toga.Switch(
+            label="X log scale", style=Pack(padding_left=SMALL_PADDING)
+        )
+        self.__y_log_scale = toga.Switch(
+            label="Y log scale", style=Pack(padding_left=SMALL_PADDING)
+        )
+        self.__xlabel_input = self.__add_column_option("X label:", self.__x_log_scale)
+        self.__ylabel_input = self.__add_column_option("Y label:", self.__y_log_scale)
 
         self.__grid_switch = toga.Switch(label="Grid")
         self.__legend_switch = toga.Switch(label="Legend")
-        self.__x_log_scale = toga.Switch(label="X log scale")
-        self.__y_log_scale = toga.Switch(label="Y log scale")
-        self.add(
-            LineBox(
-                children=[
-                    self.__grid_switch,
-                    self.__legend_switch,
-                    self.__x_log_scale,
-                    self.__y_log_scale,
-                ]
-            )
-        )
+        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch]))
 
         self.__x_domain_switch = toga.Switch(
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
@@ -264,12 +259,13 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         "Set/unset the y log scale switch"
         self.__y_log_scale.is_on = not self.__y_log_scale.is_on
 
-    def __add_column_option(self, label):
+    def __add_column_option(self, label, *additional_widgets):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
         line = LineBox(
             children=[
                 toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
                 text_input,
+                *additional_widgets,
             ],
         )
 
