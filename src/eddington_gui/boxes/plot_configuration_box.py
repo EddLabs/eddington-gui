@@ -11,12 +11,12 @@ from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
-# TODO: replace this formatter with eddington.to_precise_string
+# TODO: replace this formatter with eddington.to_precise_string  # pylint: disable=fixme
 # or remove it once https://github.com/beeware/toga-chart/issues/11 is fixed
 EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: "{:.16g}".format(y))
 
 
-class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attributes
+class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
     """Visual box to create plot configuration."""
 
     __title_input: toga.TextInput
@@ -134,10 +134,12 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
 
     @property
     def x_log_scale(self):
+        """Is x axis log scale on or off."""
         return self.__x_log_scale.is_on
 
     @property
     def y_log_scale(self):
+        """Is y axis log scale on or off."""
         return self.__y_log_scale.is_on
 
     @property
@@ -216,9 +218,10 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         )
 
     def set_scale(self, figure):
-        if self.__x_log_scale.is_on:
+        """Set ticks of figure if in log scale."""
+        if self.x_log_scale:
             figure.get_axes()[0].xaxis.set_major_formatter(EDDINGTON_FORMATTER)
-        if self.__y_log_scale.is_on:
+        if self.y_log_scale:
             figure.get_axes()[0].yaxis.set_major_formatter(EDDINGTON_FORMATTER)
         return figure
 
@@ -269,12 +272,12 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         """Set/unset the grid switch."""
         self.__legend_switch.toggle()
 
-    def toggle_x_log_scale(self, widget):
+    def toggle_x_log_scale(self, widget):  # pylint: disable=unused-argument
         """Set/unset the x log scale switch."""
         self.__x_log_scale.toggle()
 
-    def toggle_y_log_scale(self, widget):
-        """Set/unset the y log scale switch"""
+    def toggle_y_log_scale(self, widget):  # pylint: disable=unused-argument
+        """Set/unset the y log scale switch."""
         self.__y_log_scale.toggle()
 
     def __add_column_option(self, label, *additional_widgets):
