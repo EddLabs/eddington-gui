@@ -9,6 +9,8 @@ NUMBER_REGEX = r"^[-]?(\d+|\d*\.\d+|\d+.\d*)$"
 
 
 def number(allow_empty=True):
+    """Validate string is a number."""
+
     def validator(input_string):
         if allow_empty and input_string == "":
             return None
