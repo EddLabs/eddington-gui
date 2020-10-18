@@ -45,7 +45,16 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
         self.__legend_switch = toga.Switch(label="Legend")
         self.__x_log_scale = toga.Switch(label="X log scale")
         self.__y_log_scale = toga.Switch(label="Y log scale")
-        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch, self.__x_log_scale, self.__y_log_scale]))
+        self.add(
+            LineBox(
+                children=[
+                    self.__grid_switch,
+                    self.__legend_switch,
+                    self.__x_log_scale,
+                    self.__y_log_scale,
+                ]
+            )
+        )
 
         self.__x_domain_switch = toga.Switch(
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
