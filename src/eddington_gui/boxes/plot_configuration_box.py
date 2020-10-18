@@ -6,6 +6,7 @@ from eddington import EddingtonException, plot_data, plot_fitting, plot_residual
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
+from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH
 
@@ -46,9 +47,13 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=too-many-instance-attri
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
         )
         self.__x_min_title = toga.Label("X minimum:", style=Pack(visibility=HIDDEN))
-        self.__x_min_input = toga.TextInput(style=Pack(visibility=HIDDEN))
+        self.__x_min_input = toga.TextInput(
+            style=Pack(visibility=HIDDEN), validator=validators.number()
+        )
         self.__x_max_title = toga.Label("X maximum:", style=Pack(visibility=HIDDEN))
-        self.__x_max_input = toga.TextInput(style=Pack(visibility=HIDDEN))
+        self.__x_max_input = toga.TextInput(
+            style=Pack(visibility=HIDDEN), validator=validators.number()
+        )
         self.add(
             LineBox(
                 children=[
