@@ -2,8 +2,14 @@
 from typing import Union
 
 import toga
-from eddington import EddingtonException, plot_data, plot_fitting, plot_residuals
-from matplotlib.ticker import FuncFormatter
+from eddington import (
+    EddingtonException,
+    plot_data,
+    plot_fitting,
+    plot_residuals,
+    to_precise_string,
+)
+from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 
@@ -11,9 +17,9 @@ from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
-# TODO: replace this formatter with eddington.to_precise_string  # pylint: disable=fixme
-# or remove it once https://github.com/beeware/toga-chart/issues/11 is fixed
-EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: "{:.16g}".format(y))
+# TODO: remove once https://github.com/beeware/toga-chart/issues/11 is fixed  # pylint: disable=fixme # noqa
+EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_precise_string(y))
+NULL_LOCATOR = NullLocator()
 
 
 class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
@@ -222,10 +228,10 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
         axes = figure.get_axes()[0]
         if self.x_log_scale:
             axes.xaxis.set_major_formatter(EDDINGTON_FORMATTER)
-            axes.xaxis.set_minor_formatter(EDDINGTON_FORMATTER)
+            axes.xaxis.set_minor_locator(NULL_LOCATOR)
         if self.y_log_scale:
             axes.yaxis.set_major_formatter(EDDINGTON_FORMATTER)
-            axes.yaxis.set_minor_formatter(EDDINGTON_FORMATTER)
+            axes.yaxis.set_minor_locator(NULL_LOCATOR)
         return figure
 
     def on_fitting_function_load(self, fitting_function):
