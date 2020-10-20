@@ -286,21 +286,24 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             output_dir.mkdir()
         func_name = self.fitting_function_box.fitting_function.name
         if self.output_box.export_data_plot:
-            self.plot_configuration_box.plot_data(
+            with self.plot_configuration_box.plot_data(
                 data=self.data_columns_box.fitting_data
-            ).savefig(output_dir / f"{func_name}_data.png")
+            ) as fig:
+                fig.savefig(output_dir / f"{func_name}_data.png")
         if self.output_box.export_fitting_plot:
-            self.plot_configuration_box.plot_fitting(
+            with self.plot_configuration_box.plot_fitting(
                 func=self.fitting_function_box.fitting_function,
                 data=self.data_columns_box.fitting_data,
                 a=self.fitting_result.a,
-            ).savefig(output_dir / f"{func_name}_fitting.png")
+            ) as fig:
+                fig.savefig(output_dir / f"{func_name}_fitting.png")
         if self.output_box.export_residuals_plot:
-            self.plot_configuration_box.plot_residuals(
+            with self.plot_configuration_box.plot_residuals(
                 func=self.fitting_function_box.fitting_function,
                 data=self.data_columns_box.fitting_data,
                 a=self.fitting_result.a,
-            ).savefig(output_dir / f"{func_name}_residuals.png")
+            ) as fig:
+                fig.savefig(output_dir / f"{func_name}_residuals.png")
         if self.output_box.export_result_as_text:
             self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
         if self.output_box.export_result_as_json:
@@ -372,12 +375,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         if self.data_columns_box.fitting_data is None:
             self.show_nothing_to_plot()
         else:
-            self.show_figure_window(
-                fig=self.plot_configuration_box.plot_data(
-                    data=self.data_columns_box.fitting_data
-                ),
-                title="Data Plot",
-            )
+            with self.plot_configuration_box.plot_data(
+                data=self.data_columns_box.fitting_data
+            ) as fig:
+                self.show_figure_window(fig=fig, title="Data Plot")
 
     def plot_initial_guess(self, widget):  # pylint: disable=unused-argument
         """Handler for the "plot initial guess" button."""
@@ -388,14 +389,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             ):
                 self.show_nothing_to_plot()
                 return
-            self.show_figure_window(
-                fig=self.plot_configuration_box.plot_fitting(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.initial_guess_box.a0,
-                ),
-                title="Initial Guess Fitting",
-            )
+            with self.plot_configuration_box.plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.initial_guess_box.a0,
+            ) as fig:
+                self.show_figure_window(fig=fig, title="Initial Guess Fitting")
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot initial guess error", message=str(error)
@@ -407,14 +406,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fitting_result is None:
                 self.show_nothing_to_plot()
                 return
-            self.show_figure_window(
-                fig=self.plot_configuration_box.plot_fitting(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.fitting_result.a,
-                ),
-                title="Fitting Plot",
-            )
+            with self.plot_configuration_box.plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ) as fig:
+                self.show_figure_window(fig=fig, title="Fitting Plot")
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot fitting error", message=str(error)
@@ -426,14 +423,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             if self.fitting_result is None:
                 self.show_nothing_to_plot()
                 return
-            self.show_figure_window(
-                fig=self.plot_configuration_box.plot_residuals(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.fitting_result.a,
-                ),
-                title="Residuals Plot",
-            )
+            with self.plot_configuration_box.plot_residuals(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+            ) as fig:
+                self.show_figure_window(fig=fig, title="Residuals Plot")
         except EddingtonException as error:
             self.main_window.error_dialog(
                 title="Plot residuals error", message=str(error)
