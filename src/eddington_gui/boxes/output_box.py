@@ -1,13 +1,13 @@
 """Box for exporting results to files."""
 import toga
-from toga.style.pack import COLUMN, Pack
+from toga.style.pack import Pack
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import SMALL_PADDING
 from eddington_gui.util import value_or_none
 
 
-class OutputBox(toga.Box):
+class OutputBox(LineBox):
     """Visual box for choosing output directory."""
 
     output_directory_input: toga.TextInput
@@ -20,44 +20,21 @@ class OutputBox(toga.Box):
 
     def __init__(self, on_save_output):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN))
+        super().__init__()
         self.output_directory_input = toga.TextInput(style=Pack(flex=1))
         self.add(
-            LineBox(
-                children=[
-                    toga.Label(text="Output directory:"),
-                    self.output_directory_input,
-                    toga.Button(
-                        label="Choose directory",
-                        on_press=self.choose_output_dir,
-                        style=Pack(padding_left=SMALL_PADDING),
-                    ),
-                    toga.Button(
-                        label="Save",
-                        on_press=on_save_output,
-                        style=Pack(
-                            padding_left=SMALL_PADDING, padding_right=SMALL_PADDING
-                        ),
-                    ),
-                ]
-            )
-        )
-
-        self.plot_data_checkbox = toga.Switch(label="Data", is_on=False)
-        self.plot_fitting_checkbox = toga.Switch(label="Fitting", is_on=True)
-        self.plot_residuals_checkbox = toga.Switch(label="Residuals", is_on=True)
-        self.result_text_checkbox = toga.Switch(label="Result text", is_on=True)
-        self.result_json_checkbox = toga.Switch(label="Result json", is_on=False)
-        self.add(
-            LineBox(
-                children=[
-                    self.plot_data_checkbox,
-                    self.plot_fitting_checkbox,
-                    self.plot_residuals_checkbox,
-                    self.result_text_checkbox,
-                    self.result_json_checkbox,
-                ]
-            )
+            toga.Label(text="Output directory:"),
+            self.output_directory_input,
+            toga.Button(
+                label="Choose directory",
+                on_press=self.choose_output_dir,
+                style=Pack(padding_left=SMALL_PADDING),
+            ),
+            toga.Button(
+                label="Save",
+                on_press=on_save_output,
+                style=Pack(padding_left=SMALL_PADDING, padding_right=SMALL_PADDING),
+            ),
         )
 
     @property

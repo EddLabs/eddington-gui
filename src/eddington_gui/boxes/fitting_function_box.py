@@ -5,16 +5,14 @@ from typing import Callable, Optional
 import toga
 from eddington import FittingFunction, FittingFunctionsRegistry, polynomial
 from toga.style import Pack
-from toga.style.pack import COLUMN
 
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import BIG_PADDING, NO_VALUE, POLYNOMIAL
 
 
-class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attributes
+class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box instance for choosing a fitting function."""
 
-    fitting_function_box: LineBox
     fitting_function_selection: toga.Selection
     fitting_function_syntax: toga.TextInput
     polynomial_degree_title: toga.Label
@@ -25,25 +23,23 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
     __on_fitting_function_load: Optional[Callable[[FittingFunction], None]] = None
     __polynomial_is_set: bool = False
 
-    def __init__(self, flex):
+    def __init__(self, on_fit):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN, flex=flex))
-        self.fitting_function_box = LineBox()
-        self.fitting_function_box.add(toga.Label(text="Fitting function:"))
+        super().__init__()
+        self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
             on_select=self.load_select_fitting_function_name,
         )
-        self.fitting_function_box.add(self.fitting_function_selection)
         self.fitting_function_syntax = toga.TextInput(
             readonly=True,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
-        self.fitting_function_box.add(self.fitting_function_syntax)
-        self.load_module_button = toga.Button(
-            label="Load module", on_press=self.load_module
+        self.add(
+            self.fitting_function_selection,
+            self.fitting_function_syntax,
+            toga.Button(label="Fit", on_press=on_fit),
+            toga.Button(label="Load module", on_press=self.load_module),
         )
-        self.fitting_function_box.add(self.load_module_button)
-        self.add(self.fitting_function_box)
 
         self.polynomial_degree_title = toga.Label("Degree:")
         self.polynomial_degree_input = toga.NumberInput(
@@ -98,14 +94,14 @@ class FittingFunctionBox(toga.Box):  # pylint: disable=too-many-instance-attribu
     ):  # pylint: disable=unused-argument
         """Load the selection fitting function from the FittingFunctionRegistry."""
         if self.fitting_function_state == POLYNOMIAL and not self.__polynomial_is_set:
-            self.fitting_function_box.insert(2, self.polynomial_degree_title)
-            self.fitting_function_box.insert(3, self.polynomial_degree_input)
+            self.insert(2, self.polynomial_degree_title)
+            self.insert(3, self.polynomial_degree_input)
             self.set_polynomial_degree()
             self.__polynomial_is_set = True
             return
         if self.fitting_function_state != POLYNOMIAL and self.__polynomial_is_set:
-            self.fitting_function_box.remove(self.polynomial_degree_title)
-            self.fitting_function_box.remove(self.polynomial_degree_input)
+            self.remove(self.polynomial_degree_title)
+            self.remove(self.polynomial_degree_input)
             self.__polynomial_is_set = False
         if self.fitting_function_state == NO_VALUE:
             self.fitting_function = None

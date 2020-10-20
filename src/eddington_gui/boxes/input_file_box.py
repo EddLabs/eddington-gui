@@ -39,7 +39,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.__input_file_path,
             self.__select_file_button,
             toga.Button(
-                label="Choose Records",
+                label="Choose records",
                 on_press=on_choose_record,
                 style=Pack(padding_left=SMALL_PADDING),
             ),
@@ -127,7 +127,6 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.sheets_options = [NO_VALUE] + excel_file.sheetnames
             if self.on_select_excel_file is not None:
                 self.on_select_excel_file()  # pylint: disable=not-callable
-
             return
         self.sheets_options = None
         if suffix == ".csv":

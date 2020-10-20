@@ -1,14 +1,8 @@
 """Box for setting up plot configuration for the output graphs."""
-from typing import Union
+from typing import Optional
 
 import toga
-from eddington import (
-    EddingtonException,
-    plot_data,
-    plot_fitting,
-    plot_residuals,
-    to_precise_string,
-)
+from eddington import EddingtonException, FittingFunction, to_precise_string
 from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
@@ -39,16 +33,22 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
     __x_log_scale: toga.Switch
     __y_log_scale: toga.Switch
 
-    __base_name: Union[str] = ""
-    __xcolumn: Union[str, None] = None
-    __ycolumn: Union[str, None] = None
+    __has_legend: bool
+    __fitting_function: Optional[FittingFunction] = None
+    __base_name: Optional[str] = None
+    __xcolumn: Optional[str] = None
+    __ycolumn: Optional[str] = None
 
-    def __init__(self, flex):
+    def __init__(  # pylint: disable=too-many-arguments
+        self, plot_label, plot_method, suffix, can_plot, has_legend=True
+    ):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN, flex=flex))
+        super().__init__(style=Pack(direction=COLUMN))
 
+        self.plot_method = plot_method
+        self.suffix = suffix
+        self.can_plot = can_plot
         self.__title_input = self.__add_column_option("Title:")
-        self.__residuals_title_input = self.__add_column_option("Residuals title:")
         self.__x_log_scale = toga.Switch(
             label="X log scale", style=Pack(padding_left=SMALL_PADDING)
         )
@@ -59,8 +59,12 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
         self.__ylabel_input = self.__add_column_option("Y label:", self.__y_log_scale)
 
         self.__grid_switch = toga.Switch(label="Grid")
-        self.__legend_switch = toga.Switch(label="Legend")
-        self.add(LineBox(children=[self.__grid_switch, self.__legend_switch]))
+        switches = [self.__grid_switch]
+        self.__has_legend = has_legend
+        if has_legend:
+            self.__legend_switch = toga.Switch(label="Legend")
+            switches.append(self.__legend_switch)
+        self.add(LineBox(children=switches))
 
         self.__x_domain_switch = toga.Switch(
             label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
@@ -82,7 +86,8 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
                     self.__x_max_title,
                     self.__x_max_input,
                 ]
-            )
+            ),
+            toga.Button(label=plot_label, on_press=self.on_plot),
         )
 
     @property
@@ -91,24 +96,18 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
         if self.__title_input.value != "":
             return self.__title_input.value
         if self.__base_name is not None:
-            return self.__base_name
-        return None
+            return f"{self.__base_name} - {self.suffix.title()}"
+        return self.suffix
 
     @property
-    def data_title(self):
-        """Getter of the data graph title."""
+    def file_name(self):
+        """Getter of the fitting graph title."""
         if self.__base_name is not None:
-            return f"{self.__base_name} - Data"
-        return None
-
-    @property
-    def residuals_title(self):
-        """Getter of the residuals graph title."""
-        if self.__residuals_title_input.value != "":
-            return self.__residuals_title_input.value
-        if self.__base_name is not None:
-            return f"{self.__base_name} - Residuals"
-        return None
+            return (
+                f"{self.__base_name.replace(' ','_')}"
+                f"_{self.suffix.replace(' ','_')}.png"
+            )
+        return f"{self.suffix.replace(' ','_')}.png"
 
     @property
     def xlabel(self):
@@ -172,56 +171,35 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
                 "X maximum value must a floating number"
             ) from error
 
-    def plot_data(self, data):
-        """Create a data plot."""
+    def plot(self):
+        """Create a plot."""
+        extra_kwargs = {}
+        if self.__has_legend:
+            extra_kwargs["legend"] = self.legend
         return self.set_scale(
-            plot_data(
-                data=data,
-                title_name=self.data_title,
-                xlabel=self.xlabel,
-                ylabel=self.ylabel,
-                grid=self.grid,
-                x_log_scale=self.x_log_scale,
-                y_log_scale=self.y_log_scale,
-            )
-        )
-
-    def plot_fitting(self, func, data, a):  # pylint: disable=invalid-name
-        """Create a fitting plot."""
-        return self.set_scale(
-            plot_fitting(
-                func=func,
-                data=data,
+            self.plot_method(
                 title_name=self.title,
                 xlabel=self.xlabel,
                 ylabel=self.ylabel,
                 grid=self.grid,
-                legend=self.legend,
                 x_log_scale=self.x_log_scale,
                 y_log_scale=self.y_log_scale,
-                a=a,
                 xmin=self.xmin,
                 xmax=self.xmax,
+                **extra_kwargs,
             )
         )
 
-    def plot_residuals(self, func, data, a):  # pylint: disable=invalid-name
-        """Create residuals plot."""
-        return self.set_scale(
-            plot_residuals(
-                func=func,
-                data=data,
-                title_name=self.residuals_title,
-                xlabel=self.xlabel,
-                ylabel=self.ylabel,
-                grid=self.grid,
-                x_log_scale=self.x_log_scale,
-                y_log_scale=self.y_log_scale,
-                a=a,
-                xmin=self.xmin,
-                xmax=self.xmax,
-            )
-        )
+    def on_plot(self, widget):  # pylint: disable=unused-argument
+        """Run when plot button is pressed."""
+        if not self.can_plot():
+            self.app.show_nothing_to_plot()
+            return
+        try:
+            with self.plot() as fig:
+                self.app.show_figure_window(fig=fig, title="Initial Guess Fitting")
+        except EddingtonException as error:
+            self.window.error_dialog(title="Plot error", message=str(error))
 
     def set_scale(self, figure):
         """Set ticks of figure if in log scale."""
@@ -240,10 +218,9 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
 
         Updates the basename and reset the plot configuration.
         """
-        if fitting_function is None:
-            self.__base_name = ""
-        else:
-            self.__base_name = fitting_function.title_name
+        self.__base_name = (
+            None if fitting_function is None else fitting_function.title_name
+        )
 
     def on_fitting_data_load(self, fitting_data):
         """
