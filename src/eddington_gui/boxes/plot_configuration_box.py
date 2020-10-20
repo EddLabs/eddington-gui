@@ -219,10 +219,13 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
 
     def set_scale(self, figure):
         """Set ticks of figure if in log scale."""
+        axes = figure.get_axes()[0]
         if self.x_log_scale:
-            figure.get_axes()[0].xaxis.set_major_formatter(EDDINGTON_FORMATTER)
+            axes.xaxis.set_major_formatter(EDDINGTON_FORMATTER)
+            axes.xaxis.set_minor_formatter(EDDINGTON_FORMATTER)
         if self.y_log_scale:
-            figure.get_axes()[0].yaxis.set_major_formatter(EDDINGTON_FORMATTER)
+            axes.yaxis.set_major_formatter(EDDINGTON_FORMATTER)
+            axes.yaxis.set_minor_formatter(EDDINGTON_FORMATTER)
         return figure
 
     def on_fitting_function_load(self, fitting_function):
