@@ -173,3 +173,6 @@ windows/
 android/
 linux/
 django/
+
+# Memory profile
+mprofile_*.dat
