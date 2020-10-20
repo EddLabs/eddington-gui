@@ -4,14 +4,13 @@ from typing import Callable, List, Optional
 import toga
 from eddington import FittingData
 from toga.style import Pack
-from toga.style.pack import COLUMN, LEFT
+from toga.style.pack import LEFT
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LABEL_WIDTH, SELECTION_WIDTH
 from eddington_gui.util import value_or_none
 
 
-class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
+class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box instance for choosing columns."""
 
     __items: List[str] = []
@@ -26,9 +25,9 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
     __on_columns_change: Optional[Callable[[FittingData], None]] = None
     __handlers: List[Callable] = []
 
-    def __init__(self, flex):
+    def __init__(self):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN, flex=flex))
+        super().__init__()
 
         self.x_selection = self.__add_column_option(
             label="X column:", on_select=lambda widget: self.set_columns()
@@ -168,18 +167,11 @@ class DataColumnsBox(toga.Box):  # pylint: disable=too-many-instance-attributes
 
     def __add_column_option(self, label, on_select):
 
+        self.add(toga.Label(text=label))
         selection = toga.Selection(
             enabled=self.selection_enabled,
             on_select=on_select,
-            style=Pack(alignment=LEFT, width=SELECTION_WIDTH),
+            style=Pack(alignment=LEFT),
         )
-        line = LineBox(
-            alignment=LEFT,
-            children=[
-                toga.Label(text=label, style=Pack(width=LABEL_WIDTH)),
-                selection,
-            ],
-        )
-
-        self.add(line)
+        self.add(selection)
         return selection

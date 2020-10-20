@@ -62,6 +62,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.input_file_box.on_select_excel_file = self.select_default_sheet
         main_box.add(self.input_file_box)
 
+        self.data_columns_box = DataColumnsBox()
+        self.data_columns_box.on_columns_change = self.on_data_columns_change
+        main_box.add(self.data_columns_box)
+
         self.fitting_function_box = FittingFunctionBox(flex=1)
         self.fitting_function_box.on_fitting_function_load = (
             self.on_fitting_function_load
@@ -73,21 +77,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         )
         main_box.add(self.initial_guess_box)
 
-        self.data_columns_box = DataColumnsBox(flex=5)
-        self.data_columns_box.on_columns_change = self.on_data_columns_change
-
         self.plot_configuration_box = PlotConfigurationBox(flex=5)
 
-        main_box.add(
-            toga.Box(
-                style=Pack(direction=ROW, padding_top=BIG_PADDING, flex=1),
-                children=[
-                    self.data_columns_box,
-                    toga.Box(style=Pack(flex=2)),
-                    self.plot_configuration_box,
-                ],
-            )
-        )
+        main_box.add(self.plot_configuration_box)
         main_box.add(
             LineBox(
                 children=[
@@ -102,7 +94,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                         label="Plot data", on_press=self.plot_data, style=Pack(flex=1)
                     ),
                     toga.Button(
-                        label="Plot Initial Guess",
+                        label="Plot initial Guess",
                         on_press=self.plot_initial_guess,
                         style=Pack(flex=1),
                     ),
