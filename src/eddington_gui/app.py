@@ -113,7 +113,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 suffix="Fitting",
                 can_plot=self.can_plot_fit,
             ),
-            "Residauls": PlotConfigurationBox(
+            "Residuals": PlotConfigurationBox(
                 "Plot residuals",
                 plot_method=lambda **kwargs: plot_residuals(
                     func=self.fitting_function_box.fitting_function,
