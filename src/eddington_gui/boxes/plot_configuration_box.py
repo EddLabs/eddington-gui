@@ -103,11 +103,13 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
     def file_name(self):
         """Getter of the fitting graph title."""
         if self.__base_name is not None:
-            return (
-                f"{self.__base_name.replace(' ','_')}"
-                f"_{self.suffix.replace(' ','_')}.png"
+            name = (
+                f"{self.__base_name.replace(' ', '_')}"
+                f"_{self.suffix.replace(' ', '_')}.png"
             )
-        return f"{self.suffix.replace(' ','_')}.png"
+        else:
+            name = f"{self.suffix.replace(' ', '_')}.png"
+        return name.lower()
 
     @property
     def xlabel(self):

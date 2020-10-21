@@ -13,6 +13,7 @@ from eddington import (
     plot_data,
     plot_fitting,
     plot_residuals,
+    show_or_export,
 )
 from toga.style import Pack
 from toga.style.pack import COLUMN
@@ -122,6 +123,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ),
                 suffix="Residuals",
                 can_plot=self.can_plot_fit,
+                has_legend=False,
             ),
         }
         self.plot_options_container = toga.OptionContainer(style=Pack(flex=5))
@@ -214,12 +216,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     def on_save_output(self, widget):  # pylint: disable=unused-argument
         """Handler for the "save to output directory" button."""
-        try:
-            if self.fitting_result is None:
-                self.show_nothing_to_plot()
-                return
-        except EddingtonException:
-            return
         if self.output_box.output_directory is None:
             self.main_window.error_dialog(
                 title="Results output save error",
@@ -229,10 +225,13 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         output_dir = Path(self.output_box.output_directory)
         if not output_dir.exists():
             output_dir.mkdir()
-        func_name = self.fitting_function_box.fitting_function.name
-        if self.output_box.export_result_as_text:
+        for plot_box in self.plot_boxes.values():
+            if plot_box.can_plot():
+                with plot_box.plot() as fig:
+                    show_or_export(fig, output_dir / plot_box.file_name)
+        if self.fitting_function_box.fitting_function is not None:
+            func_name = self.fitting_function_box.fitting_function.name
             self.fitting_result.save_txt(output_dir / f"{func_name}_result.txt")
-        if self.output_box.export_result_as_json:
             self.fitting_result.save_json(output_dir / f"{func_name}_result.json")
         self.main_window.info_dialog(
             title="Save output", message="All plots have been saved successfully!"

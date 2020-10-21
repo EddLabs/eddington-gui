@@ -12,12 +12,6 @@ class OutputBox(LineBox):
 
     output_directory_input: toga.TextInput
 
-    plot_data_checkbox: toga.Switch
-    plot_fitting_checkbox: toga.Switch
-    plot_residuals_checkbox: toga.Switch
-    result_text_checkbox: toga.Switch
-    result_json_checkbox: toga.Switch
-
     def __init__(self, on_save_output):
         """Initialize box."""
         super().__init__()
@@ -46,31 +40,6 @@ class OutputBox(LineBox):
     def output_directory(self, output_directory):
         """Setter of the output directory."""
         self.output_directory_input.value = output_directory
-
-    @property
-    def export_data_plot(self):
-        """Should export data plot."""
-        return self.plot_data_checkbox.is_on
-
-    @property
-    def export_fitting_plot(self):
-        """Should export fitting plot."""
-        return self.plot_fitting_checkbox.is_on
-
-    @property
-    def export_residuals_plot(self):
-        """Should export residuals plot."""
-        return self.plot_residuals_checkbox.is_on
-
-    @property
-    def export_result_as_text(self):
-        """Should export result as text."""
-        return self.result_text_checkbox.is_on
-
-    @property
-    def export_result_as_json(self):
-        """Should export result as json."""
-        return self.result_json_checkbox.is_on
 
     def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         """Open output directory choice dialog."""
