@@ -198,8 +198,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
             self.app.show_nothing_to_plot()
             return
         try:
-            with self.plot() as fig:
-                self.app.show_figure_window(fig=fig, title=self.suffix)
+            self.app.show_figure_window(plot_method=self.plot, title=self.suffix)
         except EddingtonException as error:
             self.window.error_dialog(title="Plot error", message=str(error))
 

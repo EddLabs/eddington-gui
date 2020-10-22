@@ -319,9 +319,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         """Show dialog indicating that there is nothing to plot yet."""
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    def show_figure_window(self, fig, title):
+    def show_figure_window(self, plot_method, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(figure=fig, title=title, app=self)
+        figure_window = FigureWindow(plot_method=plot_method, title=title, app=self)
         figure_window.show()
 
     def reset_fitting_data(self):
