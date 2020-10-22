@@ -199,7 +199,7 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
             return
         try:
             with self.plot() as fig:
-                self.app.show_figure_window(fig=fig, title="Initial Guess Fitting")
+                self.app.show_figure_window(fig=fig, title=self.suffix)
         except EddingtonException as error:
             self.window.error_dialog(title="Plot error", message=str(error))
 
