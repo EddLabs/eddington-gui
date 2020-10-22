@@ -1,5 +1,4 @@
 """Box for choosing a fitting function to use."""
-import importlib.util
 from typing import Callable, Optional
 
 import toga
@@ -23,7 +22,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
     __on_fitting_function_load: Optional[Callable[[FittingFunction], None]]
     __polynomial_is_set: bool
 
-    def __init__(self, on_fit):
+    def __init__(self, on_fitting_function_load):
         """Initialize box."""
         super().__init__()
         self.__fitting_function = None
@@ -38,12 +37,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
             readonly=True,
             style=Pack(flex=1, padding_left=BIG_PADDING, padding_right=BIG_PADDING),
         )
-        self.add(
-            self.fitting_function_selection,
-            self.fitting_function_syntax,
-            toga.Button(label="Fit", on_press=on_fit),
-            toga.Button(label="Load module", on_press=self.load_module),
-        )
+        self.add(self.fitting_function_selection, self.fitting_function_syntax)
 
         self.polynomial_degree_title = toga.Label("Degree:")
         self.polynomial_degree_input = toga.NumberInput(
@@ -54,6 +48,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         )
 
         self.update_fitting_function_options()
+        self.on_fitting_function_load = on_fitting_function_load
 
     @property
     def fitting_function(self):
@@ -117,23 +112,6 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
             self.fitting_function_state
         )
         self.fitting_function_syntax.value = self.fitting_function.syntax
-
-    def load_module(self, widget):  # pylint: disable=unused-argument
-        """
-        Open a file dialog in order to load user module.
-
-        This is done in order to add costume fitting functions.
-        """
-        try:
-            file_path = self.window.open_file_dialog(
-                title="Choose module file", multiselect=False
-            )
-        except ValueError:
-            return
-        spec = importlib.util.spec_from_file_location("eddington.dummy", file_path)
-        dummy_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(dummy_module)
-        self.update_fitting_function_options()
 
     def set_polynomial_degree(self):
         """Set fitting function to be polynomial based on given degree."""

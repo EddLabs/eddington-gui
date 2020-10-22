@@ -1,4 +1,5 @@
 """Main app."""
+import importlib
 import webbrowser
 from pathlib import Path
 from typing import Dict, Optional
@@ -85,9 +86,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         self.data_columns_box.on_columns_change = self.on_data_columns_change
         main_box.add(self.data_columns_box)
 
-        self.fitting_function_box = FittingFunctionBox(on_fit=self.fit)
-        self.fitting_function_box.on_fitting_function_load = (
-            self.on_fitting_function_load
+        self.fitting_function_box = FittingFunctionBox(
+            on_fitting_function_load=self.on_fitting_function_load
+        )
+        self.fitting_function_box.add(
+            toga.Button(label="Fit", on_press=self.fit),
+            toga.Button(label="Load module", on_press=self.load_module),
         )
         main_box.add(self.fitting_function_box)
 
@@ -169,7 +173,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 order=1,
             ),
             toga.Command(
-                self.fitting_function_box.load_module,
+                self.load_module,
                 label="Load module",
                 shortcut=toga.Key.MOD_1 + "m",
                 group=toga.Group.FILE,
@@ -396,6 +400,23 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         self.main_window.info_dialog(
             title="Fit Result", message=str(self.fitting_result)
         )
+
+    def load_module(self, widget):  # pylint: disable=unused-argument
+        """
+        Open a file dialog in order to load user module.
+
+        This is done in order to add costume fitting functions.
+        """
+        try:
+            file_path = self.main_window.open_file_dialog(
+                title="Choose module file", multiselect=False, file_types=["py"]
+            )
+        except ValueError:
+            return
+        spec = importlib.util.spec_from_file_location("eddington.dummy", file_path)
+        dummy_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(dummy_module)
+        self.fitting_function_box.update_fitting_function_options()
 
     def show_nothing_to_plot(self):
         """Show dialog indicating that there is nothing to plot yet."""
