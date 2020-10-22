@@ -28,9 +28,9 @@ from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.footer_box import FooterBox
 from eddington_gui.boxes.header_box import HeaderBox
-from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
+from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.consts import GITHUB_USER_NAME, NO_VALUE, WINDOW_SIZE, FontSize
 from eddington_gui.window.figure_window import FigureWindow
@@ -44,7 +44,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
     input_file_box: InputFileBox
     fitting_function_box: FittingFunctionBox
-    initial_guess_box: InitialGuessBox
+    initial_guess_box: ParametersBox
     data_columns_box: DataColumnsBox
     plot_options_container: toga.OptionContainer
     output_box: OutputBox
@@ -85,9 +85,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         )
         main_box.add(self.fitting_function_box)
 
-        self.initial_guess_box = InitialGuessBox(
-            on_initial_guess_change=self.reset_fitting_result
+        self.initial_guess_box = ParametersBox(
+            on_parameters_change=self.reset_fitting_result
         )
+        self.initial_guess_box.add(toga.Label(text="Initial Guess:"))
         main_box.add(self.initial_guess_box)
         self.plot_boxes = {
             "Data": PlotConfigurationBox(
