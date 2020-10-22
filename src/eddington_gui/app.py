@@ -25,6 +25,7 @@ from toga.style.pack import COLUMN
 from eddington_gui import __version__, has_matplotlib
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.eddington_box import EddingtonBox
+from eddington_gui.boxes.figure_box import FigureBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.footer_box import FooterBox
 from eddington_gui.boxes.header_box import HeaderBox
@@ -32,8 +33,13 @@ from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import GITHUB_USER_NAME, NO_VALUE, WINDOW_SIZE, FontSize
-from eddington_gui.window.figure_window import FigureWindow
+from eddington_gui.consts import (
+    FIGURE_WINDOW_SIZE,
+    GITHUB_USER_NAME,
+    MAIN_WINDOW_SIZE,
+    NO_VALUE,
+    FontSize,
+)
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 PLOT_GROUP = toga.Group("Plot", order=2)
@@ -147,7 +153,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
         main_box.add(FooterBox())
 
-        self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
+        self.main_window = toga.MainWindow(
+            title=self.formal_name, size=MAIN_WINDOW_SIZE
+        )
         self.main_window.content = main_box
 
         self.check_latest_version()
@@ -395,9 +403,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
     def show_figure_window(self, plot_method, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(
-            plot_method=plot_method, title=title, app=self, font_size=self.__font_size
-        )
+        figure_window = toga.Window(title=title, size=FIGURE_WINDOW_SIZE)
+        figure_window.content = FigureBox(plot_method=plot_method)
+        figure_window.app = self
+        figure_window.content.set_font_size(self.__font_size)
+        figure_window.content.draw()
         figure_window.show()
 
     def reset_fitting_data(self):
