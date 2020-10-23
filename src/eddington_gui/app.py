@@ -39,8 +39,10 @@ from eddington_gui.consts import (
     GITHUB_USER_NAME,
     MAIN_WINDOW_SIZE,
     NO_VALUE,
+    SMALL_PADDING,
     FontSize,
 )
+from eddington_gui.window.explore_window import ExploreWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 PLOT_GROUP = toga.Group("Plot", order=2)
@@ -82,8 +84,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         self.input_file_box.on_select_excel_file = self.select_default_sheet
         main_box.add(self.input_file_box)
 
-        self.data_columns_box = DataColumnsBox()
-        self.data_columns_box.on_columns_change = self.on_data_columns_change
+        self.data_columns_box = DataColumnsBox(
+            on_columns_change=self.on_data_columns_change
+        )
+        self.data_columns_box.add(
+            toga.Button(
+                "Explore", on_press=self.explore, style=Pack(padding_left=SMALL_PADDING)
+            )
+        )
         main_box.add(self.data_columns_box)
 
         self.fitting_function_box = FittingFunctionBox(
@@ -100,6 +108,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         )
         self.initial_guess_box.add(toga.Label(text="Initial Guess:"))
         main_box.add(self.initial_guess_box)
+
         self.plot_boxes = {
             "Data": PlotConfigurationBox(
                 "Plot data",
@@ -386,6 +395,16 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             and self.fitting_function_box.fitting_function is not None  # noqa: W503
             and self.data_columns_box.fitting_data is not None  # noqa: W503
         )
+
+    def explore(self, widget):  # pylint: disable=unused-argument
+        """Explore different fitting functions and parameters to fit the data."""
+        if self.data_columns_box.fitting_data is None:
+            self.main_window.info_dialog(
+                title="Explore", message="No data has been loaded yet"
+            )
+            return
+        window = ExploreWindow(data=self.data_columns_box.fitting_data, app=self)
+        window.show()
 
     def fit(self, widget):  # pylint: disable=unused-argument
         """Handler for the "fit" button."""

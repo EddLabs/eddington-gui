@@ -25,7 +25,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __on_columns_change: Optional[Callable[[FittingData], None]]
     __handlers: List[Callable]
 
-    def __init__(self):
+    def __init__(self, on_columns_change):
         """Initialize box."""
         super().__init__()
         self.__fitting_data = None
@@ -44,6 +44,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.yerr_selection = self.__add_column_option(
             label="Y error column:", on_select=lambda widget: self.set_columns()
         )
+        self.on_columns_change = on_columns_change
 
     @property
     def fitting_data(self):
