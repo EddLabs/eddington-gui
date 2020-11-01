@@ -3,7 +3,6 @@ import webbrowser
 from pathlib import Path
 from typing import Dict
 
-from lastversion.lastversion import latest
 import numpy as np
 import toga
 from eddington import (
@@ -17,6 +16,7 @@ from eddington import (
     plot_residuals,
     show_or_export,
 )
+from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
 from toga.style import Pack
 from toga.style.pack import COLUMN
@@ -30,10 +30,9 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import NO_VALUE, WINDOW_SIZE, GITHUB_USER_NAME
+from eddington_gui.consts import GITHUB_USER_NAME, NO_VALUE, WINDOW_SIZE
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
-
 
 PLOT_GROUP = toga.Group("Plot", order=2)
 
@@ -211,14 +210,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     @property
     def has_newer_version(self):
+        """Get whether Eddington-GUI has a newer version."""
         return self.__has_newer_version
 
     @has_newer_version.setter
     def has_newer_version(self, has_newer_version):
+        """Set whether Eddington-GUI has a newer version."""
         self.__has_newer_version = has_newer_version
 
     @property
     def latest_version_url(self):
+        """Get URL of latest version."""
         return f"https://github.com/{GITHUB_USER_NAME}/{self.app_name}/releases/latest"
 
     @property
