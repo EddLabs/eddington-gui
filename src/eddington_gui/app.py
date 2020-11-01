@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 import numpy as np
+import requests
 import toga
 from eddington import (
     EddingtonException,
@@ -16,10 +17,12 @@ from eddington import (
     plot_residuals,
     show_or_export,
 )
+from lastversion.lastversion import latest
+from packaging.version import parse as parse_version
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
-from eddington_gui import has_matplotlib
+from eddington_gui import __version__, has_matplotlib
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
@@ -29,14 +32,14 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import NO_VALUE, WINDOW_SIZE, FontSize
+from eddington_gui.consts import GITHUB_USER_NAME, NO_VALUE, WINDOW_SIZE, FontSize
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 PLOT_GROUP = toga.Group("Plot", order=2)
 
 
-class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
+class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     """Main app instance."""
 
     input_file_box: InputFileBox
@@ -52,6 +55,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     __a0: Optional[np.ndarray] = None
     __fitting_result: Optional[FittingResult] = None
     __font_size: Optional[FontSize] = None
+    __has_newer_version: bool = False
 
     def startup(self):
         """
@@ -144,8 +148,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
-        self.main_window.show()
 
+        self.check_latest_version()
         self.commands.add(
             # File group
             toga.Command(
@@ -184,6 +188,13 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 order=5,
             ),
             toga.Command(
+                lambda widget: self.open_latest_version_webpage(),
+                label="Install Eddington-GUI latest version",
+                group=toga.Group.FILE,
+                order=6,
+                enabled=self.has_newer_version,
+            ),
+            toga.Command(
                 self.fit,
                 label="Fit result",
                 shortcut=toga.Key.MOD_1 + "e",
@@ -218,6 +229,32 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ),
             )
             webbrowser.open(self.faq_url)
+
+        self.main_window.show()
+
+        if self.has_newer_version and self.main_window.question_dialog(
+            "Update is available",
+            (
+                f"A new version of {self.formal_name} is available! "
+                "would you like to download it?"
+            ),
+        ):
+            self.open_latest_version_webpage()
+
+    @property
+    def has_newer_version(self):
+        """Get whether Eddington-GUI has a newer version."""
+        return self.__has_newer_version
+
+    @has_newer_version.setter
+    def has_newer_version(self, has_newer_version):
+        """Set whether Eddington-GUI has a newer version."""
+        self.__has_newer_version = has_newer_version
+
+    @property
+    def latest_version_url(self):
+        """Get URL of latest version."""
+        return f"https://github.com/{GITHUB_USER_NAME}/{self.app_name}/releases/latest"
 
     @property
     def faq_url(self):
@@ -426,6 +463,20 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         for plot_box in self.plot_boxes.values():
             plot_box.set_font_size(font_size)
         self.main_window.content.refresh()
+
+    def check_latest_version(self):
+        """Checker whether a new version of Eddington-GUI is available or not."""
+        try:
+            eddington_latest_version = str(latest(self.app_name))
+            self.has_newer_version = parse_version(
+                eddington_latest_version
+            ) > parse_version(__version__)
+        except requests.exceptions.ConnectionError:
+            self.has_newer_version = False
+
+    def open_latest_version_webpage(self):
+        """Open latest version webpage."""
+        webbrowser.open(self.latest_version_url)
 
 
 def main():

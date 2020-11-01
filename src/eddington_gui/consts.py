@@ -3,6 +3,8 @@ from enum import IntEnum
 
 from toga.style.pack import MONOSPACE
 
+GITHUB_USER_NAME = "EddLabs"
+
 NO_VALUE = "----------"
 POLYNOMIAL = "polynomial"
 
