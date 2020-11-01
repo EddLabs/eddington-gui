@@ -1,7 +1,9 @@
 """Main app."""
+import webbrowser
 from pathlib import Path
 from typing import Dict
 
+from lastversion.lastversion import latest
 import numpy as np
 import toga
 from eddington import (
@@ -15,9 +17,11 @@ from eddington import (
     plot_residuals,
     show_or_export,
 )
+from packaging.version import parse as parse_version
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
+from eddington_gui import __version__
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.footer_box import FooterBox
@@ -26,9 +30,10 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import NO_VALUE, WINDOW_SIZE
+from eddington_gui.consts import NO_VALUE, WINDOW_SIZE, GITHUB_USER_NAME
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
+
 
 PLOT_GROUP = toga.Group("Plot", order=2)
 
@@ -48,6 +53,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     __a0: np.ndarray = None
     __fitting_result: FittingResult = None
+    __has_newer_version: bool = False
 
     def startup(self):
         """
@@ -140,7 +146,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=WINDOW_SIZE)
         self.main_window.content = main_box
-        self.main_window.show()
+        eddington_latest_version = str(latest(self.app_name))
+        self.has_newer_version = parse_version(
+            eddington_latest_version
+        ) > parse_version(__version__)
 
         self.commands.add(
             # File group
@@ -188,6 +197,29 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 group=PLOT_GROUP,
             ),
         )
+
+        self.main_window.show()
+
+        if self.has_newer_version and self.main_window.question_dialog(
+            "Update is available",
+            (
+                f"A new version of {self.formal_name} is available! "
+                "would you like to download it?"
+            ),
+        ):
+            webbrowser.open(self.latest_version_url)
+
+    @property
+    def has_newer_version(self):
+        return self.__has_newer_version
+
+    @has_newer_version.setter
+    def has_newer_version(self, has_newer_version):
+        self.__has_newer_version = has_newer_version
+
+    @property
+    def latest_version_url(self):
+        return f"https://github.com/{GITHUB_USER_NAME}/{self.app_name}/releases/latest"
 
     @property
     def fitting_result(self):
