@@ -15,3 +15,4 @@ Tutorials
    Step 5 - Selecting Records <select_records>
    Step 6 - Custom Fitting Functions <custom_fitting_functions>
    Summary <summary>
+   Frequently Asked Questions (FAQ) <faq>
