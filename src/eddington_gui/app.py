@@ -1,4 +1,5 @@
 """Main app."""
+import webbrowser
 from pathlib import Path
 from typing import Dict
 
@@ -18,6 +19,7 @@ from eddington import (
 from toga.style import Pack
 from toga.style.pack import COLUMN
 
+from eddington_gui import has_matplotlib
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.footer_box import FooterBox
@@ -188,6 +190,20 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 group=PLOT_GROUP,
             ),
         )
+        if not has_matplotlib:
+            self.main_window.info_dialog(
+                "Error",
+                (
+                    f"Error loading matplotlib.\nPlease go to {self.faq_url}"
+                    " and see how to solve this problem"
+                ),
+            )
+            webbrowser.open(self.faq_url)
+
+    @property
+    def faq_url(self):
+        """URL for frequently asked questions."""
+        return f"https://{self.app_name}.readthedocs.io/en/latest/tutorials/faq.html"
 
     @property
     def fitting_result(self):

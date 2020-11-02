@@ -1,7 +1,13 @@
 """A gui library wrapping Eddington."""
-import matplotlib
 
-matplotlib.use("agg")
+has_matplotlib = False  # pylint: disable=invalid-name
+try:
+    import matplotlib
+
+    matplotlib.use("agg")
+    has_matplotlib = True  # pylint: disable=invalid-name
+except ImportError:
+    pass
 
 __version__ = "0.0.7"
 __author__ = "Sagi Shadur"
