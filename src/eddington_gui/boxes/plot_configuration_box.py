@@ -2,7 +2,7 @@
 from typing import Optional
 
 import toga
-from eddington import EddingtonException, FittingFunction, to_precise_string
+from eddington import EddingtonException, FittingFunction, to_relevant_precision_string
 from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
@@ -12,7 +12,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
 # TODO: remove once https://github.com/beeware/toga-chart/issues/11 is fixed  # pylint: disable=fixme # noqa
-EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_precise_string(y))
+EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_relevant_precision_string(y))
 NULL_LOCATOR = NullLocator()
 
 
