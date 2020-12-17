@@ -293,7 +293,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             fitting_data=self.data_columns_box.fitting_data, app=self
         )
         window.show()
-        self.reset_fitting_result()
 
     def can_plot_fit(self):
         """Can plot a fitting plot."""
