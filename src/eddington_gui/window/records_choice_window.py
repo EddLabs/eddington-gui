@@ -27,6 +27,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.__fitting_data = fitting_data
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
+        statistics_box = toga.Box()
         self.__statistics_labels = {
             (column, parameter): toga.Label(
                 text=getattr(
@@ -58,13 +59,6 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 children=[
                     toga.Box(style=Pack(height=LINE_HEIGHT)),
                     *self.__checkboxes,
-                    *[
-                        toga.Label(
-                            text=parameter.replace("_", " ").title(),
-                            style=Pack(height=LINE_HEIGHT, font_weight=BOLD),
-                        )
-                        for parameter in Statistics.parameters()
-                    ]
                  ]
             )
         )
@@ -85,15 +79,45 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                         *[
                             toga.Label(text=element, style=Pack(height=LINE_HEIGHT))
                             for element in column
-                        ],
-                        *[
-                            self.__statistics_labels[(header, parameter)]
-                            for parameter in Statistics.parameters()
                         ]
                     ]
                 )
             )
         main_box.add(data_box)
+        main_box.add(toga.Divider())
+        statistics_box.add(
+            toga.Box(
+                style=Pack(
+                    flex=1,
+                    direction=COLUMN,
+                    padding_left=SMALL_PADDING,
+                    padding_right=SMALL_PADDING,
+                ),
+                children=[
+                    toga.Label(
+                        text=parameter.replace("_", " ").title(),
+                        style=Pack(height=LINE_HEIGHT, font_weight=BOLD),
+                    )
+                    for parameter in Statistics.parameters()
+                ]
+            )
+        )
+        for header, column in fitting_data.data.items():
+            statistics_box.add(
+                toga.Box(
+                    style=Pack(
+                        flex=1,
+                        direction=COLUMN,
+                        padding_left=SMALL_PADDING,
+                        padding_right=SMALL_PADDING,
+                    ),
+                    children=[
+                        self.__statistics_labels[(header, parameter)]
+                        for parameter in Statistics.parameters()
+                    ]
+                )
+            )
+        main_box.add(statistics_box)
         main_box.add(
             LineBox(
                 children=[
