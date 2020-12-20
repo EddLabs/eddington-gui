@@ -1,6 +1,6 @@
 """Window for choosing record to use in fit data."""
 import itertools
-from typing import Callable, List, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import toga
 from eddington import FittingData
@@ -31,9 +31,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         statistics_box = toga.Box()
         self.__statistics_labels = {
             (column, parameter): toga.Label(
-                text=getattr(
-                    fitting_data.statistics(column), parameter, 0
-                ),
+                text=getattr(fitting_data.statistics(column), parameter, 0),
                 style=Pack(height=LINE_HEIGHT),
             )
             for column, parameter in itertools.product(
@@ -65,11 +63,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 ),
                 children=[
                     toga.Box(
-                        style=Pack(height=LINE_HEIGHT),
-                        children=[self.__all_checkbox]
+                        style=Pack(height=LINE_HEIGHT), children=[self.__all_checkbox]
                     ),
                     *self.__checkboxes,
-                 ]
+                ],
             )
         )
         for header, column in fitting_data.data.items():
@@ -89,8 +86,8 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                         *[
                             toga.Label(text=element, style=Pack(height=LINE_HEIGHT))
                             for element in column
-                        ]
-                    ]
+                        ],
+                    ],
                 )
             )
         main_box.add(data_box)
@@ -109,7 +106,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                         style=Pack(height=LINE_HEIGHT, font_weight=BOLD),
                     )
                     for parameter in Statistics.parameters()
-                ]
+                ],
             )
         )
         for header, column in fitting_data.data.items():
@@ -124,22 +121,20 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                     children=[
                         self.__statistics_labels[(header, parameter)]
                         for parameter in Statistics.parameters()
-                    ]
+                    ],
                 )
             )
         main_box.add(statistics_box)
         main_box.add(
             LineBox(
-                children=[
-                    toga.Button(label="Close", on_press=lambda _: self.close())
-                ],
+                children=[toga.Button(label="Close", on_press=lambda _: self.close())],
             )
         )
         scroller = toga.ScrollContainer(content=main_box)
         self.content = scroller
         self.app = app
 
-    def select_records(self, widget):
+    def select_records(self, widget):  # pylint: disable=unused-argument
         """Set selected records to fitting data."""
         for i in range(self.__fitting_data.length):
             if self.__checkboxes[i].is_on:
@@ -150,7 +145,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.update_statistics()
         self.app.reset_fitting_result()
 
-    def select_all(self, widget):
+    def select_all(self, widget):  # pylint: disable=unused-argument
         """Select/Deselect all records to fitting data."""
         if self.__all_checkbox.is_on:
             for checkbox in self.__checkboxes:
@@ -160,7 +155,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 checkbox.is_on = False
 
     def update_statistics(self):
-        """Update statistics at the bottom of the window"""
+        """Update statistics at the bottom of the window."""
         for header in self.__fitting_data.all_columns:
             for parameter in Statistics.parameters():
                 self.__statistics_labels[(header, parameter)].text = str(
