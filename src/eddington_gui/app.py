@@ -149,7 +149,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             toga.Command(
                 self.input_file_box.select_file,
                 label="Upload data file",
-                shortcut=toga.Key.MOD_1 + "f",
+                shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
                 order=1,
             ),
@@ -163,14 +163,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             toga.Command(
                 self.choose_records,
                 label="Choose records",
-                shortcut=toga.Key.MOD_1 + "c",
+                shortcut=toga.Key.MOD_1 + "d",
                 group=toga.Group.FILE,
                 order=3,
             ),
             toga.Command(
                 self.output_box.choose_output_dir,
                 label="Choose output directory",
-                shortcut=toga.Key.MOD_1 + "o",
+                shortcut=toga.Key.MOD_1 + "u",
                 group=toga.Group.FILE,
                 order=4,
             ),
@@ -181,8 +181,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 group=toga.Group.FILE,
                 order=5,
             ),
-            # Plot
-            #   Section 2
             toga.Command(
                 self.fit,
                 label="Fit result",
@@ -295,7 +293,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             fitting_data=self.data_columns_box.fitting_data, app=self
         )
         window.show()
-        self.reset_fitting_result()
 
     def can_plot_fit(self):
         """Can plot a fitting plot."""
