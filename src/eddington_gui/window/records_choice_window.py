@@ -18,6 +18,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
     __fitting_data: FittingData
     __save_action: Callable
+    __all_checkbox: toga.Switch
     __checkboxes: List[toga.Switch]
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
 
@@ -48,6 +49,12 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             )
             for i in range(1, fitting_data.length + 1)
         ]
+        self.__all_checkbox = toga.Switch(
+            label="",
+            is_on=self.are_all_selected(),
+            on_toggle=self.select_all,
+            style=Pack(height=LINE_HEIGHT),
+        )
         data_box.add(
             toga.Box(
                 style=Pack(
@@ -57,7 +64,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                     padding_right=SMALL_PADDING,
                 ),
                 children=[
-                    toga.Box(style=Pack(height=LINE_HEIGHT)),
+                    toga.Box(
+                        style=Pack(height=LINE_HEIGHT),
+                        children=[self.__all_checkbox]
+                    ),
                     *self.__checkboxes,
                  ]
             )
@@ -130,19 +140,33 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.app = app
 
     def select_records(self, widget):
-        """Set selected records to fit data."""
-
+        """Set selected records to fitting data."""
         for i in range(self.__fitting_data.length):
             if self.__checkboxes[i].is_on:
                 self.__fitting_data.select_record(i + 1)
             else:
                 self.__fitting_data.unselect_record(i + 1)
+        self.__all_checkbox.is_on = self.are_all_selected()
         self.update_statistics()
         self.app.reset_fitting_result()
 
+    def select_all(self, widget):
+        """Select/Deselect all records to fitting data."""
+        if self.__all_checkbox.is_on:
+            for checkbox in self.__checkboxes:
+                checkbox.is_on = True
+        elif self.are_all_selected():
+            for checkbox in self.__checkboxes:
+                checkbox.is_on = False
+
     def update_statistics(self):
+        """Update statistics at the bottom of the window"""
         for header in self.__fitting_data.all_columns:
             for parameter in Statistics.parameters():
                 self.__statistics_labels[(header, parameter)].text = str(
                     getattr(self.__fitting_data.statistics(header), parameter, 0)
                 )
+
+    def are_all_selected(self):
+        """Informs whether all records are selected."""
+        return all([checkbox.is_on for checkbox in self.__checkboxes])
