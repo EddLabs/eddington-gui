@@ -10,7 +10,12 @@ from toga.style.pack import COLUMN
 from travertino.constants import BOLD
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import LINE_HEIGHT, RECORD_WINDOW_SIZE, SMALL_PADDING
+from eddington_gui.consts import (
+    COLUMN_WIDTH,
+    LINE_HEIGHT,
+    RECORD_WINDOW_SIZE,
+    SMALL_PADDING,
+)
 
 
 class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-methods
@@ -32,7 +37,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.__statistics_labels = {
             (column, parameter): toga.Label(
                 text=getattr(fitting_data.statistics(column), parameter, 0),
-                style=Pack(height=LINE_HEIGHT),
+                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
             )
             for column, parameter in itertools.product(
                 fitting_data.all_columns, Statistics.parameters()
@@ -43,7 +48,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 label="",
                 is_on=fitting_data.is_selected(i),
                 on_toggle=self.select_records,
-                style=Pack(height=LINE_HEIGHT),
+                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
             )
             for i in range(1, fitting_data.length + 1)
         ]
@@ -51,7 +56,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             label="",
             is_on=self.are_all_selected(),
             on_toggle=self.select_all,
-            style=Pack(height=LINE_HEIGHT),
+            style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
         )
         data_box.add(
             toga.Box(
@@ -63,7 +68,8 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 ),
                 children=[
                     toga.Box(
-                        style=Pack(height=LINE_HEIGHT), children=[self.__all_checkbox]
+                        style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                        children=[self.__all_checkbox],
                     ),
                     *self.__checkboxes,
                 ],
@@ -81,10 +87,15 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                     children=[
                         toga.Label(
                             text=header,
-                            style=Pack(height=LINE_HEIGHT, font_weight=BOLD),
+                            style=Pack(
+                                height=LINE_HEIGHT, width=COLUMN_WIDTH, font_weight=BOLD
+                            ),
                         ),
                         *[
-                            toga.Label(text=element, style=Pack(height=LINE_HEIGHT))
+                            toga.Label(
+                                text=element,
+                                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                            )
                             for element in column
                         ],
                     ],
@@ -103,7 +114,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 children=[
                     toga.Label(
                         text=parameter.replace("_", " ").title(),
-                        style=Pack(height=LINE_HEIGHT, font_weight=BOLD),
+                        style=Pack(
+                            height=LINE_HEIGHT, width=COLUMN_WIDTH, font_weight=BOLD
+                        ),
                     )
                     for parameter in Statistics.parameters()
                 ],
