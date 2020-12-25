@@ -3,7 +3,7 @@ import itertools
 from typing import Callable, Dict, List, Tuple
 
 import toga
-from eddington import FittingData
+from eddington import FittingData, to_relevant_precision_string
 from eddington.statistics import Statistics
 from toga.style import Pack
 from toga.style.pack import COLUMN
@@ -15,6 +15,8 @@ from eddington_gui.consts import (
     LINE_HEIGHT,
     RECORD_WINDOW_SIZE,
     SMALL_PADDING,
+    TITLES_LINE_HEIGHT,
+    FontSize,
 )
 
 
@@ -27,17 +29,22 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
     __checkboxes: List[toga.Switch]
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
 
-    def __init__(self, fitting_data: FittingData, app: toga.App):
+    def __init__(self, fitting_data: FittingData, font_size: FontSize, app: toga.App):
         """Initialize window."""
         super().__init__(title="Choose Records", size=RECORD_WINDOW_SIZE)
         self.__fitting_data = fitting_data
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         statistics_box = toga.Box()
+        font_size_value = FontSize.get_font_size(font_size)
         self.__statistics_labels = {
             (column, parameter): toga.Label(
-                text=getattr(fitting_data.statistics(column), parameter, 0),
-                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                text=to_relevant_precision_string(
+                    getattr(fitting_data.statistics(column), parameter, 0)
+                ),
+                style=Pack(
+                    height=LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
+                ),
             )
             for column, parameter in itertools.product(
                 fitting_data.all_columns, Statistics.parameters()
@@ -48,7 +55,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 label="",
                 is_on=fitting_data.is_selected(i),
                 on_toggle=self.select_records,
-                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                style=Pack(
+                    height=LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
+                ),
             )
             for i in range(1, fitting_data.length + 1)
         ]
@@ -56,7 +65,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             label="",
             is_on=self.are_all_selected(),
             on_toggle=self.select_all,
-            style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+            style=Pack(
+                height=TITLES_LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
+            ),
         )
         data_box.add(
             toga.Box(
@@ -68,7 +79,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 ),
                 children=[
                     toga.Box(
-                        style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                        style=Pack(
+                            height=LINE_HEIGHT,
+                            width=COLUMN_WIDTH,
+                            font_size=font_size_value,
+                        ),
                         children=[self.__all_checkbox],
                     ),
                     *self.__checkboxes,
@@ -88,13 +103,20 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                         toga.Label(
                             text=header,
                             style=Pack(
-                                height=LINE_HEIGHT, width=COLUMN_WIDTH, font_weight=BOLD
+                                height=TITLES_LINE_HEIGHT,
+                                width=COLUMN_WIDTH,
+                                font_size=font_size_value,
+                                font_weight=BOLD,
                             ),
                         ),
                         *[
                             toga.Label(
-                                text=element,
-                                style=Pack(height=LINE_HEIGHT, width=COLUMN_WIDTH),
+                                text=to_relevant_precision_string(element),
+                                style=Pack(
+                                    height=LINE_HEIGHT,
+                                    width=COLUMN_WIDTH,
+                                    font_size=font_size_value,
+                                ),
                             )
                             for element in column
                         ],
@@ -115,7 +137,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                     toga.Label(
                         text=parameter.replace("_", " ").title(),
                         style=Pack(
-                            height=LINE_HEIGHT, width=COLUMN_WIDTH, font_weight=BOLD
+                            height=LINE_HEIGHT,
+                            width=COLUMN_WIDTH,
+                            font_size=font_size_value,
+                            font_weight=BOLD,
                         ),
                     )
                     for parameter in Statistics.parameters()
@@ -171,9 +196,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         """Update statistics at the bottom of the window."""
         for header in self.__fitting_data.all_columns:
             for parameter in Statistics.parameters():
-                self.__statistics_labels[(header, parameter)].text = str(
+                text = to_relevant_precision_string(
                     getattr(self.__fitting_data.statistics(header), parameter, 0)
                 )
+                self.__statistics_labels[(header, parameter)].text = text
 
     def are_all_selected(self):
         """Informs whether all records are selected."""

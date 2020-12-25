@@ -8,6 +8,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
 from toga.validators import Number
 
+from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
@@ -16,7 +17,7 @@ EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_relevant_precision_string(y)
 NULL_LOCATOR = NullLocator()
 
 
-class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
+class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
     """Visual box to create plot configuration."""
 
     __title_input: toga.TextInput
