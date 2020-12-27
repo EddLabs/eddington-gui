@@ -5,7 +5,7 @@ Most validators here will be replaces by Toga's default validators once they are
 """
 import re
 
-NUMBER_REGEX = r"^[-]?(\d+|\d*\.\d+|\d+.\d*)$"
+NUMBER_REGEX = r"^[-+]?(\d+\.|\d*\.?\d+)([eE][-+]?\d+)?$"
 
 
 def number(allow_empty=True):
