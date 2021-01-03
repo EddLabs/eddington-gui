@@ -1,7 +1,7 @@
 """Main app."""
 import webbrowser
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 import numpy as np
 import toga
@@ -21,6 +21,7 @@ from toga.style.pack import COLUMN
 
 from eddington_gui import has_matplotlib
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
+from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.footer_box import FooterBox
 from eddington_gui.boxes.header_box import HeaderBox
@@ -28,7 +29,7 @@ from eddington_gui.boxes.initial_guess_box import InitialGuessBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.consts import NO_VALUE, WINDOW_SIZE
+from eddington_gui.consts import NO_VALUE, WINDOW_SIZE, FontSize
 from eddington_gui.window.figure_window import FigureWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
@@ -48,8 +49,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
 
-    __a0: np.ndarray = None
-    __fitting_result: FittingResult = None
+    __a0: Optional[np.ndarray] = None
+    __fitting_result: Optional[FittingResult] = None
+    __font_size: Optional[FontSize] = None
 
     def startup(self):
         """
@@ -59,7 +61,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         We then create a main window (with a name matching the app), and
         show the main window.
         """
-        main_box = toga.Box(style=Pack(direction=COLUMN))
+        main_box = EddingtonBox(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
 
         self.input_file_box = InputFileBox(on_choose_record=self.choose_records)
@@ -187,7 +189,26 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 shortcut=toga.Key.MOD_1 + "e",
                 group=PLOT_GROUP,
             ),
+            toga.Command(
+                lambda _: self.set_font_size(FontSize.SMALL),
+                "Set small font size",
+                group=toga.Group.VIEW,
+                order=FontSize.SMALL.value,
+            ),
+            toga.Command(
+                lambda _: self.set_font_size(FontSize.MEDIUM),
+                "Set medium font size",
+                group=toga.Group.VIEW,
+                order=FontSize.MEDIUM.value,
+            ),
+            toga.Command(
+                lambda _: self.set_font_size(FontSize.LARGE),
+                "Set large font size",
+                group=toga.Group.VIEW,
+                order=FontSize.LARGE.value,
+            ),
         )
+        self.set_font_size(FontSize.DEFAULT)
         if not has_matplotlib:
             self.main_window.info_dialog(
                 "Error",
@@ -290,7 +311,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             )
             return
         window = RecordsChoiceWindow(
-            fitting_data=self.data_columns_box.fitting_data, app=self
+            fitting_data=self.data_columns_box.fitting_data,
+            font_size=self.__font_size,
+            app=self,
         )
         window.show()
 
@@ -334,7 +357,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     def show_figure_window(self, plot_method, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(plot_method=plot_method, title=title, app=self)
+        figure_window = FigureWindow(
+            plot_method=plot_method, title=title, app=self, font_size=self.__font_size
+        )
         figure_window.show()
 
     def reset_fitting_data(self):
@@ -393,6 +418,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
                 ),
             )
             self.input_file_box.file_path = None
+
+    def set_font_size(self, font_size: FontSize):
+        """Set font size to all components in app."""
+        self.__font_size = font_size
+        self.main_window.content.set_font_size(font_size)
+        for plot_box in self.plot_boxes.values():
+            plot_box.set_font_size(font_size)
+        self.main_window.content.refresh()
 
 
 def main():

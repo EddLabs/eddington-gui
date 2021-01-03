@@ -8,6 +8,9 @@ from toga.style import Pack
 from toga.style.pack import COLUMN
 from toga_chart import Chart
 
+from eddington_gui.boxes.eddington_box import EddingtonBox
+from eddington_gui.consts import FontSize
+
 
 class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
     """
@@ -16,7 +19,13 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
     This is made using toga.Chart widget.
     """
 
-    def __init__(self, plot_method: Callable[[], Figure], title: str, app: toga.App):
+    def __init__(
+        self,
+        plot_method: Callable[[], Figure],
+        title: str,
+        app: toga.App,
+        font_size: FontSize,
+    ):
         """Initialize window."""
         self.plot_method = plot_method
         with self.plot_method() as figure:
@@ -27,15 +36,16 @@ class FigureWindow(toga.Window):  # pylint: disable=too-few-public-methods
             chart = Chart()
 
             save_button = toga.Button(label="Save", on_press=self.save_figure)
-            save_box = toga.Box(children=[save_button])
-            chart_box = toga.Box(
+            save_box = EddingtonBox(children=[save_button])
+            chart_box = EddingtonBox(
                 children=[chart],
                 style=Pack(height=(figure.get_size_inches() * figure.get_dpi())[1]),
             )
-            main_box = toga.Box(
+            main_box = EddingtonBox(
                 children=[chart_box, save_box], style=Pack(direction=COLUMN)
             )
             self.content = main_box
+            main_box.set_font_size(font_size)
             chart.draw(figure)
         self.app = app
 
