@@ -357,7 +357,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     def show_figure_window(self, plot_method, title):
         """Open a window with matplotlib window."""
-        figure_window = FigureWindow(plot_method=plot_method, title=title, app=self)
+        figure_window = FigureWindow(
+            plot_method=plot_method, title=title, app=self, font_size=self.__font_size
+        )
         figure_window.show()
 
     def reset_fitting_data(self):
