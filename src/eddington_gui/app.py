@@ -1,7 +1,7 @@
 """Main app."""
 import webbrowser
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 import numpy as np
 import toga
@@ -49,9 +49,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
 
-    __a0: np.ndarray = None
-    __fitting_result: FittingResult = None
-    __font_size: FontSize = None
+    __a0: Optional[np.ndarray] = None
+    __fitting_result: Optional[FittingResult] = None
+    __font_size: Optional[FontSize] = None
 
     def startup(self):
         """
@@ -191,19 +191,19 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             ),
             toga.Command(
                 lambda _: self.set_font_size(FontSize.SMALL),
-                f"Set small font size",
+                "Set small font size",
                 group=toga.Group.VIEW,
                 order=FontSize.SMALL.value,
             ),
             toga.Command(
                 lambda _: self.set_font_size(FontSize.MEDIUM),
-                f"Set medium font size",
+                "Set medium font size",
                 group=toga.Group.VIEW,
                 order=FontSize.MEDIUM.value,
             ),
             toga.Command(
                 lambda _: self.set_font_size(FontSize.LARGE),
-                f"Set large font size",
+                "Set large font size",
                 group=toga.Group.VIEW,
                 order=FontSize.LARGE.value,
             ),
@@ -418,6 +418,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
             self.input_file_box.file_path = None
 
     def set_font_size(self, font_size: FontSize):
+        """Set font size to all components in app."""
         self.__font_size = font_size
         self.main_window.content.set_font_size(font_size)
         for plot_box in self.plot_boxes.values():

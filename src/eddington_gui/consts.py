@@ -1,5 +1,5 @@
 """Constants list."""
-from enum import Enum
+from enum import IntEnum
 
 from toga.style.pack import MONOSPACE
 
@@ -26,7 +26,8 @@ FOOTER_FONT_FAMILY = MONOSPACE
 SMALL_FONT_SIZE = 10
 
 
-class FontSize(Enum):
+class FontSize(IntEnum):
+    """Font size enum for the Eddington app."""
 
     SMALL = 1
     MEDIUM = 2
@@ -35,6 +36,7 @@ class FontSize(Enum):
 
     @classmethod
     def get_font_size(cls, font_size: "FontSize"):
+        """Get the actual font size from enum value."""
         if font_size == FontSize.SMALL:
             return 10
         if font_size == FontSize.MEDIUM:
@@ -45,6 +47,7 @@ class FontSize(Enum):
 
     @classmethod
     def get_button_height(cls, font_size: "FontSize"):
+        """Get the height of button, related to font size."""
         if font_size == FontSize.SMALL:
             return 25
         if font_size == FontSize.MEDIUM:
@@ -52,10 +55,3 @@ class FontSize(Enum):
         if font_size == FontSize.LARGE:
             return 35
         return None
-
-    @classmethod
-    def get_line_height(cls, font_size: "FontSize"):
-        return LINE_HEIGHT
-
-    def __lt__(self, other):
-        return self.value < other.value

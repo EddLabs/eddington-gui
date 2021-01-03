@@ -3,7 +3,7 @@ from toga.style import Pack
 from toga.style.pack import CENTER, ROW
 
 from eddington_gui.boxes.eddington_box import EddingtonBox
-from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING, FontSize
+from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 
 
 class LineBox(EddingtonBox):  # pylint: disable=too-few-public-methods
@@ -11,7 +11,6 @@ class LineBox(EddingtonBox):  # pylint: disable=too-few-public-methods
 
     def __init__(
         self,
-        font_size=FontSize.SMALL,
         height=LINE_HEIGHT,
         alignment=CENTER,
         padding_left=SMALL_PADDING,
