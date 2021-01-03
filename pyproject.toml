@@ -24,26 +24,26 @@ requires = [
 
 [tool.briefcase.app.eddington_gui.macOS]
 requires = [
-    'toga-cocoa>=0.3.0.dev25',
+    'toga-cocoa>=0.3.0.dev26',
 ]
 
 [tool.briefcase.app.eddington_gui.linux]
 requires = [
-    'toga-gtk>=0.3.0.dev25',
+    'toga-gtk>=0.3.0.dev26',
 ]
 
 [tool.briefcase.app.eddington_gui.windows]
 requires = [
-    'toga-winforms>=0.3.0.dev25',
+    'toga-winforms>=0.3.0.dev26',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.eddington_gui.iOS]
 requires = [
-    'toga-iOS>=0.3.0.dev25',
+    'toga-iOS>=0.3.0.dev26',
 ]
 
 [tool.briefcase.app.eddington_gui.android]
 requires = [
-    'toga-android>=0.3.0.dev25',
+    'toga-android>=0.3.0.dev26',
 ]

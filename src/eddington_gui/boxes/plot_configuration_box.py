@@ -6,8 +6,8 @@ from eddington import EddingtonException, FittingFunction, to_relevant_precision
 from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
+from toga.validators import Number
 
-from eddington_gui import validators
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
@@ -71,11 +71,11 @@ class PlotConfigurationBox(toga.Box):  # pylint: disable=R0902,R0904
         )
         self.__x_min_title = toga.Label("X minimum:", style=Pack(visibility=HIDDEN))
         self.__x_min_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN), validator=validators.number()
+            style=Pack(visibility=HIDDEN), validators=[Number()]
         )
         self.__x_max_title = toga.Label("X maximum:", style=Pack(visibility=HIDDEN))
         self.__x_max_input = toga.TextInput(
-            style=Pack(visibility=HIDDEN), validator=validators.number()
+            style=Pack(visibility=HIDDEN), validators=[Number()]
         )
         self.add(
             LineBox(
