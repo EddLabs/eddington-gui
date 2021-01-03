@@ -19,6 +19,8 @@ requires = [
     'toga-chart>=0.1.0',
     'openpyxl>=3.0.5',
     'eddington==0.0.22',
+    'lastversion>=1.2.3',
+    'packaging>=20.4',
 ]
 
 
