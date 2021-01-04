@@ -35,16 +35,20 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
     __y_log_scale: toga.Switch
 
     __has_legend: bool
-    __fitting_function: Optional[FittingFunction] = None
-    __base_name: Optional[str] = None
-    __xcolumn: Optional[str] = None
-    __ycolumn: Optional[str] = None
+    __fitting_function: Optional[FittingFunction]
+    __base_name: Optional[str]
+    __xcolumn: Optional[str]
+    __ycolumn: Optional[str]
 
     def __init__(  # pylint: disable=too-many-arguments
         self, plot_label, plot_method, suffix, can_plot, has_legend=True
     ):
         """Initialize box."""
         super().__init__(style=Pack(direction=COLUMN))
+        self.__fitting_function = None
+        self.__base_name = None
+        self.__ycolumn = None
+        self.__xcolumn = None
 
         self.plot_method = plot_method
         self.suffix = suffix

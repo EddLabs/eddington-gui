@@ -19,13 +19,17 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
     polynomial_degree_input: toga.NumberInput
     load_module_button: toga.Button
 
-    __fitting_function: Optional[FittingFunction] = None
-    __on_fitting_function_load: Optional[Callable[[FittingFunction], None]] = None
-    __polynomial_is_set: bool = False
+    __fitting_function: Optional[FittingFunction]
+    __on_fitting_function_load: Optional[Callable[[FittingFunction], None]]
+    __polynomial_is_set: bool
 
     def __init__(self, on_fit):
         """Initialize box."""
         super().__init__()
+        self.__fitting_function = None
+        self.on_fitting_function_load = None
+        self.__polynomial_is_set = False
+
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
             on_select=self.load_select_fitting_function_name,
@@ -66,7 +70,9 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         """
         self.__fitting_function = fitting_function
         if self.on_fitting_function_load is not None:
-            self.on_fitting_function_load(self.fitting_function)
+            self.on_fitting_function_load(  # pylint: disable=not-callable
+                self.fitting_function
+            )
 
     @property
     def fitting_function_state(self):
@@ -74,7 +80,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         return self.fitting_function_selection.value
 
     @property
-    def on_fitting_function_load(self):
+    def on_fitting_function_load(self) -> Optional[Callable]:
         """on_fitting_function_load getter."""
         return self.__on_fitting_function_load
 

@@ -21,13 +21,16 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     y_selection: toga.Selection
     yerr_selection: toga.Selection
 
-    __fitting_data: Optional[FittingData] = None
-    __on_columns_change: Optional[Callable[[FittingData], None]] = None
-    __handlers: List[Callable] = []
+    __fitting_data: Optional[FittingData]
+    __on_columns_change: Optional[Callable[[FittingData], None]]
+    __handlers: List[Callable]
 
     def __init__(self):
         """Initialize box."""
         super().__init__()
+        self.__fitting_data = None
+        self.__handlers = []
+        self.on_columns_change = None
 
         self.x_selection = self.__add_column_option(
             label="X column:", on_select=lambda widget: self.set_columns()
@@ -68,7 +71,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.set_columns()
 
     @property
-    def on_columns_change(self):
+    def on_columns_change(self) -> Optional[Callable]:
         """on_columns_change getter."""
         return self.__on_columns_change
 
@@ -146,7 +149,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     def run_on_columns_change(self):
         """If on_columns_change is not None, runs it."""
         if self.on_columns_change is not None:
-            self.on_columns_change(self.fitting_data)
+            self.on_columns_change(self.fitting_data)  # pylint: disable=not-callable
 
     def read_csv(self, filepath):
         """

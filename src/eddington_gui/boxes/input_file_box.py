@@ -18,16 +18,22 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __sheet_label: toga.Label
     __sheet_selection: toga.Selection
 
-    __sheet_selection_enabled: bool = False
-    __on_input_file_change: Optional[Callable[[], None]] = None
+    __sheet_selection_enabled: bool
+    __on_input_file_change: Optional[Callable[[], None]]
 
-    on_csv_read: Optional[Callable] = None
-    on_excel_read: Optional[Callable] = None
-    on_select_excel_file: Optional[Callable] = None
+    on_csv_read: Optional[Callable]
+    on_excel_read: Optional[Callable]
+    on_select_excel_file: Optional[Callable]
 
     def __init__(self, on_choose_record):
         """Initialize box."""
         super().__init__()
+        self.__sheet_selection_enabled = False
+        self.on_input_file_change = None
+        self.on_csv_read = None
+        self.on_excel_read = None
+        self.on_select_excel_file = None
+
         self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1))
         self.__select_file_button = toga.Button(
             label="Choose file",
@@ -66,7 +72,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         else:
             self.__input_file_path.value = str(file_path)
         if self.on_input_file_change is not None:
-            self.on_input_file_change()
+            self.on_input_file_change()  # pylint: disable=not-callable
 
     @property
     def sheets_options(self):
@@ -101,7 +107,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.insert(3, self.__sheet_selection)
 
     @property
-    def on_input_file_change(self):
+    def on_input_file_change(self) -> Optional[Callable]:
         """on_input_file_change getter."""
         return self.__on_input_file_change
 
