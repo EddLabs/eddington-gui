@@ -72,7 +72,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         else:
             self.__input_file_path.value = str(file_path)
         if self.on_input_file_change is not None:
-            self.on_input_file_change()
+            self.on_input_file_change()  # pylint: disable=not-callable
 
     @property
     def sheets_options(self):
@@ -107,7 +107,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.insert(3, self.__sheet_selection)
 
     @property
-    def on_input_file_change(self):
+    def on_input_file_change(self) -> Optional[Callable]:
         """on_input_file_change getter."""
         return self.__on_input_file_change
 

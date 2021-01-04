@@ -70,7 +70,9 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         """
         self.__fitting_function = fitting_function
         if self.on_fitting_function_load is not None:
-            self.on_fitting_function_load(self.fitting_function)
+            self.on_fitting_function_load(  # pylint: disable=not-callable
+                self.fitting_function
+            )
 
     @property
     def fitting_function_state(self):
@@ -78,7 +80,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         return self.fitting_function_selection.value
 
     @property
-    def on_fitting_function_load(self):
+    def on_fitting_function_load(self) -> Optional[Callable]:
         """on_fitting_function_load getter."""
         return self.__on_fitting_function_load
 

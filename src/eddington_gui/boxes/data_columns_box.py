@@ -71,7 +71,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.set_columns()
 
     @property
-    def on_columns_change(self):
+    def on_columns_change(self) -> Optional[Callable]:
         """on_columns_change getter."""
         return self.__on_columns_change
 
@@ -149,7 +149,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     def run_on_columns_change(self):
         """If on_columns_change is not None, runs it."""
         if self.on_columns_change is not None:
-            self.on_columns_change(self.fitting_data)
+            self.on_columns_change(self.fitting_data)  # pylint: disable=not-callable
 
     def read_csv(self, filepath):
         """
