@@ -18,16 +18,22 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __sheet_label: toga.Label
     __sheet_selection: toga.Selection
 
-    __sheet_selection_enabled: bool = False
-    __on_input_file_change: Optional[Callable[[], None]] = None
+    __sheet_selection_enabled: bool
+    __on_input_file_change: Optional[Callable[[], None]]
 
-    on_csv_read: Optional[Callable] = None
-    on_excel_read: Optional[Callable] = None
-    on_select_excel_file: Optional[Callable] = None
+    on_csv_read: Optional[Callable]
+    on_excel_read: Optional[Callable]
+    on_select_excel_file: Optional[Callable]
 
     def __init__(self, on_choose_record):
         """Initialize box."""
         super().__init__()
+        self.__sheet_selection_enabled = False
+        self.on_input_file_change = None
+        self.on_csv_read = None
+        self.on_excel_read = None
+        self.on_select_excel_file = None
+
         self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1))
         self.__select_file_button = toga.Button(
             label="Choose file",
