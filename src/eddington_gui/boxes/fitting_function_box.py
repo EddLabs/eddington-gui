@@ -19,13 +19,17 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
     polynomial_degree_input: toga.NumberInput
     load_module_button: toga.Button
 
-    __fitting_function: Optional[FittingFunction] = None
-    __on_fitting_function_load: Optional[Callable[[FittingFunction], None]] = None
-    __polynomial_is_set: bool = False
+    __fitting_function: Optional[FittingFunction]
+    __on_fitting_function_load: Optional[Callable[[FittingFunction], None]]
+    __polynomial_is_set: bool
 
     def __init__(self, on_fit):
         """Initialize box."""
         super().__init__()
+        self.__fitting_function = None
+        self.on_fitting_function_load = None
+        self.__polynomial_is_set = False
+
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
             on_select=self.load_select_fitting_function_name,
