@@ -179,6 +179,7 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
         return self.set_scale(self.plot_method(**self.get_plot_kwargs()))
 
     def get_plot_kwargs(self):
+        """Get plot kwargs from configuration box."""
         kwargs = dict(
             title_name=self.title,
             xlabel=self.xlabel,

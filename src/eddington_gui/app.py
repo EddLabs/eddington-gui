@@ -265,9 +265,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         ):
             self.open_latest_version_webpage()
 
-    def build_plot_configuration_box(
+    def build_plot_configuration_box(  # pylint: disable=too-many-arguments
         self, label, plot_method, can_plot, suffix, has_legend=True
     ):
+        """Build a plot configuration box."""
         plot_configuration_box = PlotConfigurationBox(
             plot_method=plot_method,
             suffix=suffix,

@@ -1,9 +1,16 @@
+"""Button for plotting in a designated window."""
+
 import toga
 from eddington import EddingtonException
 
 
 class PlotButton(toga.Button):
-    def __init__(self, label, can_plot, plot_method, plot_title, app=None):
+    """Plot button."""
+
+    def __init__(  # pylint: disable=too-many-arguments
+        self, label, can_plot, plot_method, plot_title, app=None
+    ):
+        """Initialize button."""
         super().__init__(label=label, on_press=lambda widget: self.plot())
         self.app = app
         self.can_plot = can_plot

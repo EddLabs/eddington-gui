@@ -11,7 +11,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import SMALL_INPUT_WIDTH
 
 
-class ParametersBox(LineBox):
+class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box for specifying parameters."""
 
     parameters_labels: List[toga.Label]
@@ -27,8 +27,8 @@ class ParametersBox(LineBox):
         self.parameters_labels = []
         self.parameters_inputs = []
         self.on_parameters_change = on_parameters_change
-        self.n = n
-        self.a0 = None
+        self.n = n  # pylint: disable=invalid-name
+        self.a0 = None  # pylint: disable=invalid-name
 
     @property
     def n(self):  # pylint: disable=invalid-name

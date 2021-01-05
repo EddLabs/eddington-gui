@@ -1,3 +1,4 @@
+"""Module for the explore window."""
 import toga
 from eddington import EddingtonException
 
@@ -7,7 +8,10 @@ from eddington_gui.consts import EXPLORE_WINDOW_SIZE
 
 
 class ExploreWindow(toga.Window):
+    """A window class for displaying optional fittings with given parameters."""
+
     def __init__(self, data, app):
+        """Initialize window."""
         super().__init__(size=EXPLORE_WINDOW_SIZE)
         self.app = app
         window_width = self.size[0]
@@ -19,6 +23,7 @@ class ExploreWindow(toga.Window):
         self.draw()
 
     def draw(self):
+        """Draw the figure."""
         try:
             self.figure_box.draw()
         except EddingtonException as error:
