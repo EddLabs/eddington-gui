@@ -40,9 +40,7 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
     __xcolumn: Optional[str]
     __ycolumn: Optional[str]
 
-    def __init__(  # pylint: disable=too-many-arguments
-        self, plot_label, plot_method, suffix, can_plot, has_legend=True
-    ):
+    def __init__(self, plot_method, suffix, has_legend=True):
         """Initialize box."""
         super().__init__(style=Pack(direction=COLUMN))
         self.__fitting_function = None
@@ -52,7 +50,6 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
 
         self.plot_method = plot_method
         self.suffix = suffix
-        self.can_plot = can_plot
         self.__title_input = self.__add_column_option("Title:")
         self.__x_log_scale = toga.Switch(
             label="X log scale", style=Pack(padding_left=SMALL_PADDING)
@@ -91,8 +88,7 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
                     self.__x_max_title,
                     self.__x_max_input,
                 ]
-            ),
-            toga.Button(label=plot_label, on_press=self.on_plot),
+            )
         )
 
     @property
@@ -180,32 +176,24 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
 
     def plot(self):
         """Create a plot."""
-        extra_kwargs = {}
-        if self.__has_legend:
-            extra_kwargs["legend"] = self.legend
         return self.set_scale(
-            self.plot_method(
-                title_name=self.title,
-                xlabel=self.xlabel,
-                ylabel=self.ylabel,
-                grid=self.grid,
-                x_log_scale=self.x_log_scale,
-                y_log_scale=self.y_log_scale,
-                xmin=self.xmin,
-                xmax=self.xmax,
-                **extra_kwargs,
-            )
+            self.plot_method(**self.get_plot_kwargs())
         )
 
-    def on_plot(self, widget):  # pylint: disable=unused-argument
-        """Run when plot button is pressed."""
-        if not self.can_plot():
-            self.app.show_nothing_to_plot()
-            return
-        try:
-            self.app.show_figure_window(plot_method=self.plot, title=self.suffix)
-        except EddingtonException as error:
-            self.window.error_dialog(title="Plot error", message=str(error))
+    def get_plot_kwargs(self):
+        kwargs = dict(
+            title_name=self.title,
+            xlabel=self.xlabel,
+            ylabel=self.ylabel,
+            grid=self.grid,
+            x_log_scale=self.x_log_scale,
+            y_log_scale=self.y_log_scale,
+            xmin=self.xmin,
+            xmax=self.xmax,
+        )
+        if self.__has_legend:
+            kwargs["legend"] = self.legend
+        return kwargs
 
     def set_scale(self, figure):
         """Set ticks of figure if in log scale."""

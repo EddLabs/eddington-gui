@@ -33,6 +33,7 @@ from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.parameters_box import ParametersBox
+from eddington_gui.boxes.plot_button import PlotButton
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.boxes.save_figure_button import SaveFigureButton
 from eddington_gui.consts import (
@@ -111,17 +112,17 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         main_box.add(self.initial_guess_box)
 
         self.plot_boxes = {
-            "Data": PlotConfigurationBox(
-                "Plot data",
+            "Data": self.build_plot_configuration_box(
+                label="Plot data",
                 plot_method=lambda **kwargs: plot_data(
                     data=self.data_columns_box.fitting_data, **kwargs
                 ),
-                suffix="Data",
                 can_plot=self.can_plot_data,
-                has_legend=False,
+                suffix="Data",
+                has_legend=False
             ),
-            "Initial guess": PlotConfigurationBox(
-                "Plot initial guess",
+            "Initial guess": self.build_plot_configuration_box(
+                label="Plot initial guess",
                 plot_method=lambda **kwargs: plot_fitting(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
@@ -131,8 +132,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 suffix="Initial Guess",
                 can_plot=self.can_plot_initial_guess,
             ),
-            "Fit": PlotConfigurationBox(
-                "Plot fit",
+            "Fit": self.build_plot_configuration_box(
+                label="Plot fit",
                 plot_method=lambda **kwargs: plot_fitting(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
@@ -142,8 +143,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 suffix="Fitting",
                 can_plot=self.can_plot_fit,
             ),
-            "Residuals": PlotConfigurationBox(
-                "Plot residuals",
+            "Residuals": self.build_plot_configuration_box(
+                label="Plot residuals",
                 plot_method=lambda **kwargs: plot_residuals(
                     func=self.fitting_function_box.fitting_function,
                     data=self.data_columns_box.fitting_data,
@@ -263,6 +264,25 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             ),
         ):
             self.open_latest_version_webpage()
+
+    def build_plot_configuration_box(
+        self, label, plot_method, can_plot, suffix, has_legend=True
+    ):
+        plot_configuration_box = PlotConfigurationBox(
+            plot_method=plot_method,
+            suffix=suffix,
+            has_legend=has_legend,
+        )
+        plot_configuration_box.add(
+            PlotButton(
+                label=label,
+                can_plot=can_plot,
+                plot_method=plot_configuration_box.plot,
+                plot_title=suffix,
+                app=self
+            )
+        )
+        return plot_configuration_box
 
     @property
     def has_newer_version(self):
