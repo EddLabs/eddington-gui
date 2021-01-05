@@ -34,6 +34,7 @@ from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
+from eddington_gui.boxes.save_figure_button import SaveFigureButton
 from eddington_gui.consts import (
     FIGURE_WINDOW_SIZE,
     GITHUB_USER_NAME,
@@ -444,7 +445,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     def show_figure_window(self, plot_method, title):
         """Open a window with matplotlib window."""
         figure_window = toga.Window(title=title, size=FIGURE_WINDOW_SIZE)
-        figure_window.content = FigureBox(plot_method=plot_method)
+        figure_box = FigureBox(plot_method=plot_method)
+        figure_box.add(SaveFigureButton("save", plot_method=plot_method))
+        figure_window.content = figure_box
         figure_window.app = self
         figure_window.content.set_font_size(self.__font_size)
         figure_window.content.draw()

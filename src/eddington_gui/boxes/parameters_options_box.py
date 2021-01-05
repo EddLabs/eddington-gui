@@ -7,6 +7,7 @@ from travertino.constants import COLUMN
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.parameters_box import ParametersBox
+from eddington_gui.boxes.save_figure_button import SaveFigureButton
 
 
 class ParametersOptionsBox(EddingtonBox):
@@ -38,7 +39,14 @@ class ParametersOptionsBox(EddingtonBox):
         )
 
         self.add(toga.Box(style=Pack(flex=1)))
-        self.add(toga.Button("Refresh", on_press=lambda widget: draw_method()))
+        self.add(
+            EddingtonBox(
+                children=[
+                    toga.Button("Refresh", on_press=lambda widget: draw_method()),
+                    SaveFigureButton("Save", plot_method=self.plot)
+                ]
+            )
+        )
 
     def on_fitting_function_load(self, _):
         for child in self.parameters_boxes.children:
