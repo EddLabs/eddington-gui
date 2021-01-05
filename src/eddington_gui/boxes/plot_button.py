@@ -3,7 +3,6 @@ from eddington import EddingtonException
 
 
 class PlotButton(toga.Button):
-
     def __init__(self, label, can_plot, plot_method, plot_title, app=None):
         super().__init__(label=label, on_press=lambda widget: self.plot())
         self.app = app

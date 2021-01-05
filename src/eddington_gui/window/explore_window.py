@@ -1,12 +1,7 @@
-import numpy as np
 import toga
-from eddington import EddingtonException, add_plot, errorbar, get_figure
-from toga.style import Pack
-from travertino.constants import COLUMN
+from eddington import EddingtonException
 
 from eddington_gui.boxes.figure_box import FigureBox
-from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
-from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.parameters_options_box import ParametersOptionsBox
 from eddington_gui.consts import EXPLORE_WINDOW_SIZE
 

@@ -176,9 +176,7 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
 
     def plot(self):
         """Create a plot."""
-        return self.set_scale(
-            self.plot_method(**self.get_plot_kwargs())
-        )
+        return self.set_scale(self.plot_method(**self.get_plot_kwargs()))
 
     def get_plot_kwargs(self):
         kwargs = dict(

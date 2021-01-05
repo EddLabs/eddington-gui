@@ -1,7 +1,5 @@
-from pathlib import Path
 from typing import Callable
 
-import toga
 from matplotlib.figure import Figure
 from toga.style import Pack
 from toga_chart import Chart
@@ -22,4 +20,3 @@ class FigureBox(EddingtonBox):
         with self.plot_method() as figure:
             self.chart.style.height = (figure.get_size_inches() * figure.get_dpi())[1]
             self.chart.draw(figure)
-

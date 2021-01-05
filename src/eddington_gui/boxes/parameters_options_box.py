@@ -1,7 +1,6 @@
 import numpy as np
 import toga
-from eddington import get_figure, errorbar, add_plot, EddingtonException, plot_data, \
-    add_legend
+from eddington import add_legend, add_plot, plot_data
 from eddington.plot import get_plot_borders
 from toga.style import Pack
 from travertino.constants import COLUMN
@@ -14,7 +13,6 @@ from eddington_gui.boxes.save_figure_button import SaveFigureButton
 
 
 class ParametersOptionsBox(EddingtonBox):
-
     def __init__(self, data, draw_method):
         super().__init__(style=Pack(direction=COLUMN))
         self.data = data
@@ -25,8 +23,7 @@ class ParametersOptionsBox(EddingtonBox):
         self.add(self.fitting_function_box)
 
         self.parameters_boxes = EddingtonBox(
-            children=[ParametersBox()],
-            style=Pack(direction=COLUMN, padding_left=20)
+            children=[ParametersBox()], style=Pack(direction=COLUMN, padding_left=20)
         )
         self.add(self.parameters_boxes)
 
@@ -52,9 +49,9 @@ class ParametersOptionsBox(EddingtonBox):
             EddingtonBox(
                 children=[
                     toga.Button("Refresh", on_press=lambda widget: draw_method()),
-                    SaveFigureButton("Save", plot_method=self.plot)
+                    SaveFigureButton("Save", plot_method=self.plot),
                 ]
-            )
+            ),
         )
 
     def on_fitting_function_load(self, _):

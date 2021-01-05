@@ -119,7 +119,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 ),
                 can_plot=self.can_plot_data,
                 suffix="Data",
-                has_legend=False
+                has_legend=False,
             ),
             "Initial guess": self.build_plot_configuration_box(
                 label="Plot initial guess",
@@ -279,7 +279,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 can_plot=can_plot,
                 plot_method=plot_configuration_box.plot,
                 plot_title=suffix,
-                app=self
+                app=self,
             )
         )
         return plot_configuration_box

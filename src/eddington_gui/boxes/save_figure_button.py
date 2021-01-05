@@ -4,7 +4,6 @@ import toga
 
 
 class SaveFigureButton(toga.Button):
-
     def __init__(self, label, plot_method):
         super().__init__(label=label, on_press=lambda widget: self.save_figure())
         self.plot_method = plot_method
