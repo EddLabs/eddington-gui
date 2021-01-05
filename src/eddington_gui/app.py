@@ -33,9 +33,9 @@ from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.input_file_box import InputFileBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.parameters_box import ParametersBox
-from eddington_gui.boxes.plot_button import PlotButton
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
-from eddington_gui.boxes.save_figure_button import SaveFigureButton
+from eddington_gui.buttons.plot_button import PlotButton
+from eddington_gui.buttons.save_figure_button import SaveFigureButton
 from eddington_gui.consts import (
     FIGURE_WINDOW_SIZE,
     GITHUB_USER_NAME,
