@@ -96,6 +96,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.a0 = None  # pylint: disable=invalid-name
 
     def set_font_size(self, font_size: FontSize):
+        """Override the set font size method to include all labels in text inputs."""
         super().set_font_size(font_size)
         font_size_value = FontSize.get_font_size(font_size)
         for label in self.parameters_labels:
