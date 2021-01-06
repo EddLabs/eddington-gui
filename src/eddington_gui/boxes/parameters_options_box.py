@@ -11,7 +11,6 @@ from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.buttons.save_figure_button import SaveFigureButton
-from eddington_gui.consts import FontSize
 
 
 class ParametersOptionsBox(EddingtonBox):
