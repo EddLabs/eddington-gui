@@ -425,7 +425,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
                 title="Explore", message="No data has been loaded yet"
             )
             return
-        window = ExploreWindow(data=self.data_columns_box.fitting_data, app=self)
+        window = ExploreWindow(
+            data=self.data_columns_box.fitting_data,
+            app=self,
+            font_size=self.main_window.content.font_size,
+        )
         window.show()
 
     def fit(self, widget):  # pylint: disable=unused-argument

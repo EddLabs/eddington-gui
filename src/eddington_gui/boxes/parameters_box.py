@@ -19,18 +19,16 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __n: Optional[int]
     __a0: Optional[np.ndarray]
     __on_parameters_change: Optional[Callable[[], None]]
-    __font_size: Optional[FontSize]
 
-    def __init__(self, on_parameters_change=None, n=0):
+    def __init__(self, on_parameters_change=None, n=0, font_size=None):
         """Initial box."""
-        super().__init__()
-        self.__n = None
         self.parameters_labels = []
         self.parameters_inputs = []
+        super().__init__(font_size=font_size)
+        self.__n = None
         self.on_parameters_change = on_parameters_change
         self.n = n  # pylint: disable=invalid-name
         self.a0 = None  # pylint: disable=invalid-name
-        self.__font_size = None
 
     @property
     def n(self):  # pylint: disable=invalid-name
@@ -44,7 +42,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         old_n = 0 if self.__n is None else self.__n
         self.__n = n
         if self.n > len(self.parameters_inputs):
-            font_size_value = FontSize.get_font_size(self.__font_size)
+            font_size_value = FontSize.get_font_size(self.font_size)
             for i in range(len(self.parameters_inputs), self.n):
                 self.parameters_labels.append(
                     toga.Label(f"a[{i}]:", style=Pack(font_size=font_size_value))
@@ -103,7 +101,6 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
             label.style.font_size = font_size_value
         for text_input in self.parameters_inputs:
             text_input.style.font_size = font_size_value
-        self.__font_size = font_size
 
     def __calculate_a0(self):
         if self.n is None:

@@ -68,6 +68,7 @@ class ParametersOptionsBox(EddingtonBox):
         parameters_box = ParametersBox()
         parameters_box.n = self.n
         self.parameters_boxes.add(parameters_box)
+        parameters_box.font_size = self.font_size
         self.enable_or_disable_remove()
 
     def remove_parameters(self, widget):  # pylint: disable=unused-argument

@@ -1,6 +1,7 @@
 """Constants list."""
 from enum import IntEnum
 
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style.pack import MONOSPACE
 
 GITHUB_USER_NAME = "EddLabs"
@@ -47,7 +48,7 @@ class FontSize(IntEnum):
             return 12
         if font_size == FontSize.LARGE:
             return 15
-        return None
+        return SYSTEM_DEFAULT_FONT_SIZE
 
     @classmethod
     def get_button_height(cls, font_size: "FontSize"):
