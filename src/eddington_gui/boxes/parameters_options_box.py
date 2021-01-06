@@ -11,6 +11,7 @@ from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.buttons.save_figure_button import SaveFigureButton
+from eddington_gui.consts import FontSize
 
 
 class ParametersOptionsBox(EddingtonBox):
@@ -68,6 +69,7 @@ class ParametersOptionsBox(EddingtonBox):
         parameters_box = ParametersBox()
         parameters_box.n = self.n
         self.parameters_boxes.add(parameters_box)
+        parameters_box.font_size = self.font_size
         self.enable_or_disable_remove()
 
     def remove_parameters(self, widget):  # pylint: disable=unused-argument

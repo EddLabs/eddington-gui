@@ -18,6 +18,7 @@ class LineBox(EddingtonBox):  # pylint: disable=too-few-public-methods
         padding_top=SMALL_PADDING,
         padding_bottom=SMALL_PADDING,
         children=None,
+        font_size=None,
     ):  # pylint: disable=too-many-arguments
         """Initialize box."""
         super().__init__(
@@ -31,4 +32,5 @@ class LineBox(EddingtonBox):  # pylint: disable=too-few-public-methods
                 padding_bottom=padding_bottom,
             ),
             children=children,
+            font_size=font_size,
         )
