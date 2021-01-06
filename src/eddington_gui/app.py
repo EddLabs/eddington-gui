@@ -401,29 +401,27 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     def can_plot_fit(self):
         """Can plot a fitting plot."""
         return (
-            self.fitting_result is not None
-            and self.fitting_function_box.fitting_function is not None  # noqa: W503
-            and self.data_columns_box.fitting_data is not None  # noqa: W503
+                self.fitting_result is not None
+                and self.fitting_function_box.fitting_function is not None  # noqa: W503
+                and self.__has_data()  # noqa: W503
         )
 
     def can_plot_data(self):
         """Can plot a data plot."""
-        return self.data_columns_box.fitting_data is not None
+        return self.__has_data()
 
     def can_plot_initial_guess(self):
         """Can plot initial guess plot."""
         return (
-            self.initial_guess_box.a0 is not None
-            and self.fitting_function_box.fitting_function is not None  # noqa: W503
-            and self.data_columns_box.fitting_data is not None  # noqa: W503
+                self.initial_guess_box.a0 is not None
+                and self.fitting_function_box.fitting_function is not None  # noqa: W503
+                and self.__has_data()  # noqa: W503
         )
 
     def explore(self, widget):  # pylint: disable=unused-argument
         """Explore different fitting functions and parameters to fit the data."""
-        if self.data_columns_box.fitting_data is None:
-            self.main_window.info_dialog(
-                title="Explore", message="No data has been loaded yet"
-            )
+        if not self.__has_data():
+            self.show_nothing_to_plot()
             return
         window = ExploreWindow(
             data=self.data_columns_box.fitting_data,
@@ -436,9 +434,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         """Handler for the "fit" button."""
         try:
             if self.fitting_result is None:
-                self.main_window.info_dialog(
-                    title="Fit Result", message="Nothing to fit yet"
-                )
+                self.show_nothing_to_plot()
                 return
         except EddingtonException:
             return
@@ -490,24 +486,6 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         """Set number of parameters."""
         self.initial_guess_box.n = 0 if func is None else func.n
 
-    def __calculate_fitting_result(self):
-        if (
-            self.data_columns_box.fitting_data is None
-            or self.fitting_function_box.fitting_function is None  # noqa: W503
-        ):
-            self.fitting_result = None
-            return
-        try:
-            self.fitting_result = fit(
-                data=self.data_columns_box.fitting_data,
-                func=self.fitting_function_box.fitting_function,
-                a0=self.initial_guess_box.a0,
-            )
-        except EddingtonException as error:
-            self.fitting_result = None
-            self.main_window.error_dialog(title="Fit result error", message=str(error))
-            raise error
-
     def select_default_sheet(self):
         """
         Automatically choose the first valid sheet.
@@ -556,6 +534,30 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     def open_latest_version_webpage(self):
         """Open latest version webpage."""
         webbrowser.open(self.latest_version_url)
+
+    def __calculate_fitting_result(self):
+        if (
+            self.data_columns_box.fitting_data is None
+            or self.fitting_function_box.fitting_function is None  # noqa: W503
+        ):
+            self.fitting_result = None
+            return
+        try:
+            self.fitting_result = fit(
+                data=self.data_columns_box.fitting_data,
+                func=self.fitting_function_box.fitting_function,
+                a0=self.initial_guess_box.a0,
+            )
+        except EddingtonException as error:
+            self.fitting_result = None
+            self.main_window.error_dialog(title="Fit result error", message=str(error))
+            raise error
+
+    def __has_data(self):
+        return (
+            self.data_columns_box.fitting_data is not None
+            and any(self.data_columns_box.fitting_data.records_indices)
+        )
 
 
 def main():
