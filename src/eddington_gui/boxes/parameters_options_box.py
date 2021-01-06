@@ -62,7 +62,7 @@ class ParametersOptionsBox(EddingtonBox):
 
     def on_fitting_function_load(self, widget):  # pylint: disable=unused-argument
         """Set function number of parameters to each parameters box."""
-        n = self.n
+        n = self.n  # pylint: disable=invalid-name
         for child in self.parameters_boxes.children:
             child.n = n
         if n == 0:
