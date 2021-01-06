@@ -401,9 +401,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     def can_plot_fit(self):
         """Can plot a fitting plot."""
         return (
-                self.fitting_result is not None
-                and self.fitting_function_box.fitting_function is not None  # noqa: W503
-                and self.__has_data()  # noqa: W503
+            self.fitting_result is not None
+            and self.fitting_function_box.fitting_function is not None  # noqa: W503
+            and self.__has_data()  # noqa: W503
         )
 
     def can_plot_data(self):
@@ -413,9 +413,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     def can_plot_initial_guess(self):
         """Can plot initial guess plot."""
         return (
-                self.initial_guess_box.a0 is not None
-                and self.fitting_function_box.fitting_function is not None  # noqa: W503
-                and self.__has_data()  # noqa: W503
+            self.initial_guess_box.a0 is not None
+            and self.fitting_function_box.fitting_function is not None  # noqa: W503
+            and self.__has_data()  # noqa: W503
         )
 
     def explore(self, widget):  # pylint: disable=unused-argument
@@ -554,9 +554,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             raise error
 
     def __has_data(self):
-        return (
-            self.data_columns_box.fitting_data is not None
-            and any(self.data_columns_box.fitting_data.records_indices)
+        return self.data_columns_box.fitting_data is not None and any(
+            self.data_columns_box.fitting_data.records_indices
         )
 
 
