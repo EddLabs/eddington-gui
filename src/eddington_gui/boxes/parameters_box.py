@@ -8,7 +8,7 @@ from toga.style import Pack
 from toga.validators import Number
 
 from eddington_gui.boxes.line_box import LineBox
-from eddington_gui.consts import SMALL_INPUT_WIDTH
+from eddington_gui.consts import SMALL_INPUT_WIDTH, FontSize
 
 
 class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
@@ -19,6 +19,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __n: Optional[int]
     __a0: Optional[np.ndarray]
     __on_parameters_change: Optional[Callable[[], None]]
+    __font_size: Optional[FontSize]
 
     def __init__(self, on_parameters_change=None, n=0):
         """Initial box."""
@@ -29,6 +30,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.on_parameters_change = on_parameters_change
         self.n = n  # pylint: disable=invalid-name
         self.a0 = None  # pylint: disable=invalid-name
+        self.__font_size = None
 
     @property
     def n(self):  # pylint: disable=invalid-name
@@ -42,11 +44,14 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         old_n = 0 if self.__n is None else self.__n
         self.__n = n
         if self.n > len(self.parameters_inputs):
+            font_size_value = FontSize.get_font_size(self.__font_size)
             for i in range(len(self.parameters_inputs), self.n):
-                self.parameters_labels.append(toga.Label(f"a[{i}]:"))
+                self.parameters_labels.append(
+                    toga.Label(f"a[{i}]:", style=Pack(font_size=font_size_value))
+                )
                 self.parameters_inputs.append(
                     toga.TextInput(
-                        style=Pack(width=SMALL_INPUT_WIDTH),
+                        style=Pack(width=SMALL_INPUT_WIDTH, font_size=font_size_value),
                         on_change=lambda widget: self.reset_initial_guess(),
                         validators=[Number()],
                     )
@@ -89,6 +94,15 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     def reset_initial_guess(self):
         """Reset the parameters."""
         self.a0 = None  # pylint: disable=invalid-name
+
+    def set_font_size(self, font_size: FontSize):
+        super().set_font_size(font_size)
+        font_size_value = FontSize.get_font_size(font_size)
+        for label in self.parameters_labels:
+            label.style.font_size = font_size_value
+        for text_input in self.parameters_inputs:
+            text_input.style.font_size = font_size_value
+        self.__font_size = font_size
 
     def __calculate_a0(self):
         if self.n is None:
