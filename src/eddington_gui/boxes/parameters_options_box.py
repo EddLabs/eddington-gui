@@ -31,9 +31,11 @@ class ParametersOptionsBox(EddingtonBox):
         )
         self.add(self.parameters_boxes)
 
-        self.add_parameters_button = toga.Button("+", on_press=self.add_parameters)
+        self.add_parameters_button = toga.Button(
+            "+", on_press=lambda widget: self.add_parameters(), enabled=False
+        )
         self.remove_parameters_button = toga.Button(
-            "-", on_press=self.remove_parameters, enabled=False
+            "-", on_press=lambda widget: self.remove_parameters(), enabled=False
         )
         self.add(
             EddingtonBox(
@@ -60,26 +62,34 @@ class ParametersOptionsBox(EddingtonBox):
 
     def on_fitting_function_load(self, widget):  # pylint: disable=unused-argument
         """Set function number of parameters to each parameters box."""
+        n = self.n
         for child in self.parameters_boxes.children:
-            child.n = self.n
+            child.n = n
+        if n == 0:
+            while len(self.parameters_boxes.children) > 1:
+                self.remove_parameters()
+        self.enable_or_disable_buttons()
 
-    def add_parameters(self, widget):  # pylint: disable=unused-argument
+    def add_parameters(self):
         """Add parameters box."""
         parameters_box = ParametersBox()
         parameters_box.n = self.n
         self.parameters_boxes.add(parameters_box)
         parameters_box.font_size = self.font_size
-        self.enable_or_disable_remove()
+        self.enable_or_disable_buttons()
 
-    def remove_parameters(self, widget):  # pylint: disable=unused-argument
+    def remove_parameters(self):
         """Remove parameters box."""
         self.parameters_boxes.remove(self.parameters_boxes.children[-1])
-        self.enable_or_disable_remove()
+        self.enable_or_disable_buttons()
 
-    def enable_or_disable_remove(self):
+    def enable_or_disable_buttons(self):
         """Enable or disable the remove parameters button."""
         number_of_parameters_box = len(self.parameters_boxes.children)
         self.remove_parameters_button.enabled = number_of_parameters_box > 1
+        self.add_parameters_button.enabled = (
+            self.fitting_function_box.fitting_function is not None
+        )
 
     def plot(self):
         """Plot all the different parameter options."""
