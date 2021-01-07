@@ -13,7 +13,7 @@ from eddington_gui.buttons.save_figure_button import SaveFigureButton
 from eddington_gui.consts import EXPLORE_WINDOW_SIZE, FontSize
 
 
-class ExploreWindow(toga.Window):
+class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attributes
     """A window class for displaying optional fittings with given parameters."""
 
     def __init__(self, data, app=None, font_size=FontSize.DEFAULT):
@@ -21,9 +21,10 @@ class ExploreWindow(toga.Window):
         super().__init__(size=EXPLORE_WINDOW_SIZE)
         self.app = app
         self.data = data
+        self.font_size = font_size
         window_width = self.size[0]
         self.parameters_options_boxes = EddingtonBox(
-            children=[ParametersOptionsBox()], style=Pack(direction=COLUMN)
+            children=[self.build_parameters_options_box()], style=Pack(direction=COLUMN)
         )
         self.plot_configuration_box = PlotConfigurationBox(
             plot_method=None, suffix="Explore"
@@ -45,10 +46,14 @@ class ExploreWindow(toga.Window):
         self.figure_box = FigureBox(self.plot, width=int(window_width * 0.5))
         self.content = toga.SplitContainer(content=[self.controls_box, self.figure_box])
 
-        self.controls_box.set_font_size(font_size)
-        self.figure_box.set_font_size(font_size)
+        self.update_font_size()
 
         self.draw()
+
+    def update_font_size(self):
+        """Update font size of the window components."""
+        self.controls_box.set_font_size(self.font_size)
+        self.figure_box.set_font_size(self.font_size)
 
     def draw(self):
         """Draw the figure."""
@@ -80,4 +85,10 @@ class ExploreWindow(toga.Window):
         ):
             self.parameters_options_boxes.remove(parameters_box)
         if self.parameters_options_boxes.children[-1].fitting_function is not None:
-            self.parameters_options_boxes.add(ParametersOptionsBox())
+            self.parameters_options_boxes.add(self.build_parameters_options_box())
+        self.update_font_size()
+
+    @classmethod
+    def build_parameters_options_box(cls):
+        """Build new options box."""
+        return ParametersOptionsBox()
