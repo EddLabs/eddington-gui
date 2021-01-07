@@ -3,12 +3,12 @@ import numpy as np
 import toga
 from eddington import add_plot
 from toga.style import Pack
-from travertino.constants import COLUMN
+from travertino.constants import BOLD, COLUMN
 
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
 from eddington_gui.boxes.parameters_box import ParametersBox
-from eddington_gui.consts import TAB_PADDING
+from eddington_gui.consts import SMALL_INPUT_WIDTH, SMALL_PADDING, TAB_PADDING
 
 
 class ParametersOptionsBox(EddingtonBox):
@@ -24,7 +24,7 @@ class ParametersOptionsBox(EddingtonBox):
         self.add(self.fitting_function_box)
 
         self.parameters_boxes = EddingtonBox(
-            children=[ParametersBox()],
+            children=[self.build_parameters_box()],
             style=Pack(direction=COLUMN, padding_left=TAB_PADDING),
         )
         self.add(self.parameters_boxes)
@@ -52,19 +52,38 @@ class ParametersOptionsBox(EddingtonBox):
                 self.remove_parameters()
         self.enable_or_disable_buttons()
         self.window.update_parameters_options_boxes(self)
+        self.refresh()
 
     def add_parameters(self):
         """Add parameters box."""
+        self.parameters_boxes.add(self.build_parameters_box())
+        self.enable_or_disable_buttons()
+        self.set_font_size(self.font_size)
+
+    def build_parameters_box(self):
+        """Build a new parameters box."""
         parameters_box = ParametersBox()
         parameters_box.n = self.n
-        self.parameters_boxes.add(parameters_box)
-        parameters_box.font_size = self.font_size
-        self.enable_or_disable_buttons()
+        parameters_box.insert(
+            0,
+            toga.Label(
+                "Label",
+                style=Pack(padding_left=SMALL_PADDING, font_weight=BOLD),
+            ),
+        )
+        parameters_box.insert(
+            1,
+            toga.TextInput(
+                style=Pack(width=SMALL_INPUT_WIDTH, padding_left=SMALL_PADDING)
+            ),
+        )
+        return parameters_box
 
     def remove_parameters(self):
         """Remove parameters box."""
         self.parameters_boxes.remove(self.parameters_boxes.children[-1])
         self.enable_or_disable_buttons()
+        self.set_font_size(self.font_size)
 
     def enable_or_disable_buttons(self):
         """Enable or disable the remove parameters button."""
@@ -78,8 +97,9 @@ class ParametersOptionsBox(EddingtonBox):
         a0_values = self.a0_values
         if len(a0_values) == 0:
             return
-        for a0 in a0_values:  # pylint: disable=invalid-name
-            label = ", ".join(f"a[{i}]={val}" for i, val in enumerate(a0))
+        for label, a0 in a0_values:  # pylint: disable=invalid-name
+            if label == "":
+                label = ", ".join(f"a[{i}]={val}" for i, val in enumerate(a0))
             add_plot(
                 ax,
                 x,
@@ -95,10 +115,15 @@ class ParametersOptionsBox(EddingtonBox):
     @property
     def a0_values(self):
         """Get a0 values from parameters boxes."""
-        a0_values = [
-            parameters_box.a0 for parameters_box in self.parameters_boxes.children
+        parameters_boxes = [
+            parameters_box
+            for parameters_box in self.parameters_boxes.children
+            if parameters_box.a0 is not None
         ]
-        a0_values = [a0 for a0 in a0_values if a0 is not None]
+        a0_values = [
+            (parameters_box.children[1].value.strip(), parameters_box.a0)
+            for parameters_box in parameters_boxes
+        ]
         return a0_values
 
     @property
