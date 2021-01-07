@@ -52,7 +52,6 @@ class ParametersOptionsBox(EddingtonBox):
                 self.remove_parameters()
         self.enable_or_disable_buttons()
         self.window.update_parameters_options_boxes(self)
-        self.refresh()
 
     def add_parameters(self):
         """Add parameters box."""
