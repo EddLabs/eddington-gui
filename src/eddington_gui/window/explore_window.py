@@ -67,9 +67,7 @@ class ExploreWindow(toga.Window):
         ax = figure.get_axes()[0]  # pylint: disable=invalid-name
         step = (xmax - xmin) * 0.001
         for parameters_options_box in self.parameters_options_boxes.children[:-1]:
-            parameters_options_box.plot(
-                ax=ax, xmin=xmin, xmax=xmax, step=step, **kwargs
-            )
+            parameters_options_box.plot(ax=ax, xmin=xmin, xmax=xmax, step=step)
             legend = legend and len(parameters_options_box.a0_values) != 0
         add_legend(ax, legend)
         return figure
