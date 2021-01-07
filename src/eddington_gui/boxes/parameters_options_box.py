@@ -107,13 +107,17 @@ class ParametersOptionsBox(EddingtonBox):
         fitting_function = self.fitting_function_box.fitting_function
         if fitting_function is None:
             return figure
-        for parameters_box in self.parameters_boxes.children:
-            a0 = parameters_box.a0  # pylint: disable=invalid-name
+        a0_values = [
+            parameters_box.a0 for parameters_box in self.parameters_boxes.children
+        ]
+        a0_values = [a0 for a0 in a0_values if a0 is not None]
+        if len(a0_values) == 0:
+            return figure
+        for a0 in a0_values:  # pylint: disable=invalid-name
             if a0 is not None:
                 label = ", ".join(f"a[{i}]={val}" for i, val in enumerate(a0))
                 add_plot(ax, x, fitting_function(a0, x), label=label)
-        if len(self.parameters_boxes.children) > 0:
-            add_legend(ax, legend)
+        add_legend(ax, legend)
         return figure
 
     @property
