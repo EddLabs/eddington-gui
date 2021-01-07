@@ -7,6 +7,7 @@ from eddington import EddingtonException
 from toga.style import Pack
 from toga.validators import Number
 
+from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import SMALL_INPUT_WIDTH, FontSize
 
@@ -14,15 +15,13 @@ from eddington_gui.consts import SMALL_INPUT_WIDTH, FontSize
 class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     """Visual box for specifying parameters."""
 
-    parameters_labels: List[toga.Label]
-    parameters_inputs: List[toga.TextInput]
+    parameters_inputs: List[EddingtonBox]
     __n: Optional[int]
     __a0: Optional[np.ndarray]
     __on_parameters_change: Optional[Callable[[], None]]
 
     def __init__(self, on_parameters_change=None, n=0, font_size=None):
         """Initial box."""
-        self.parameters_labels = []
         self.parameters_inputs = []
         super().__init__(font_size=font_size)
         self.__n = None
@@ -42,24 +41,14 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         old_n = 0 if self.__n is None else self.__n
         self.__n = n
         if self.n > len(self.parameters_inputs):
-            font_size_value = FontSize.get_font_size(self.font_size)
             for i in range(len(self.parameters_inputs), self.n):
-                self.parameters_labels.append(
-                    toga.Label(f"a[{i}]:", style=Pack(font_size=font_size_value))
-                )
-                self.parameters_inputs.append(
-                    toga.TextInput(
-                        style=Pack(width=SMALL_INPUT_WIDTH, font_size=font_size_value),
-                        on_change=lambda widget: self.reset_initial_guess(),
-                        validators=[Number()],
-                    )
-                )
+                self.parameters_inputs.append(self.build_parameter_box(index=i))
         if old_n < self.n:
             for i in range(old_n, self.n):
-                self.add(self.parameters_labels[i], self.parameters_inputs[i])
+                self.add(self.parameters_inputs[i])
         if self.n < old_n:
             for i in range(self.n, old_n):
-                self.remove(self.parameters_labels[i], self.parameters_inputs[i])
+                self.remove(self.parameters_inputs[i])
 
     @property
     def a0(self):  # pylint: disable=invalid-name
@@ -89,6 +78,20 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
         """on_parameters_change setter."""
         self.__on_parameters_change = on_initial_guess_change
 
+    def build_parameter_box(self, index):
+        """Build a new parameters box."""
+        font_size_value = FontSize.get_font_size(self.font_size)
+        return EddingtonBox(
+            children=[
+                toga.Label(f"a[{index}]:", style=Pack(font_size=font_size_value)),
+                toga.TextInput(
+                    style=Pack(width=SMALL_INPUT_WIDTH, font_size=font_size_value),
+                    on_change=lambda widget: self.reset_initial_guess(),
+                    validators=[Number()],
+                ),
+            ]
+        )
+
     def reset_initial_guess(self):
         """Reset the parameters."""
         self.a0 = None  # pylint: disable=invalid-name
@@ -96,17 +99,17 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
     def set_font_size(self, font_size: FontSize):
         """Override the set font size method to include all labels in text inputs."""
         super().set_font_size(font_size)
-        font_size_value = FontSize.get_font_size(font_size)
-        for label in self.parameters_labels:
-            label.style.font_size = font_size_value
-        for text_input in self.parameters_inputs:
-            text_input.style.font_size = font_size_value
+        for parameter_input in self.parameters_inputs:
+            parameter_input.set_font_size(font_size)
 
     def __calculate_a0(self):
         if self.n is None:
             return
         try:
-            a0_values = [self.parameters_inputs[i].value.strip() for i in range(self.n)]
+            a0_values = [
+                self.parameters_inputs[i].children[-1].value.strip()
+                for i in range(self.n)
+            ]
             if all([value == "" for value in a0_values]):
                 return
             self.a0 = np.array(list(map(float, a0_values)))
