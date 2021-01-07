@@ -68,13 +68,16 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
         legend = kwargs.pop("legend")
         xmin, xmax = kwargs.pop("xmin"), kwargs.pop("xmax")
         xmin, xmax = get_plot_borders(x=self.data.x, xmin=xmin, xmax=xmax)
-        figure = plot_data(self.data, **kwargs)
+        figure = plot_data(  # pylint: disable=repeated-keyword
+            self.data, xmin=xmin, xmax=xmax, **kwargs
+        )
         ax = figure.get_axes()[0]  # pylint: disable=invalid-name
         step = (xmax - xmin) * 0.001
+        plot_added = False
         for parameters_options_box in self.parameters_options_boxes.children[:-1]:
             parameters_options_box.plot(ax=ax, xmin=xmin, xmax=xmax, step=step)
-            legend = legend and len(parameters_options_box.a0_values) != 0
-        add_legend(ax, legend)
+            plot_added = plot_added or len(parameters_options_box.a0_values) != 0
+        add_legend(ax, legend and plot_added)
         return figure
 
     def update_parameters_options_boxes(self, parameters_box):
