@@ -14,9 +14,9 @@ from eddington_gui.consts import SMALL_INPUT_WIDTH, SMALL_PADDING, TAB_PADDING
 class ParametersOptionsBox(EddingtonBox):
     """A box for displaying multiple parameters options for a fitting function."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Initialize box."""
-        super().__init__(style=Pack(direction=COLUMN))
+        super().__init__(**kwargs, style=Pack(direction=COLUMN))
 
         self.fitting_function_box = FittingFunctionBox(
             on_fitting_function_load=self.on_fitting_function_load
