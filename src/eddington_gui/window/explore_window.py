@@ -87,6 +87,12 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
             and len(self.parameters_options_boxes.children) > 1  # noqa: W503
         ):
             self.parameters_options_boxes.remove(parameters_box)
+        else:
+            parameters_box.n = (
+                0
+                if parameters_box.fitting_function is None
+                else parameters_box.fitting_function.n
+            )
         if self.parameters_options_boxes.children[-1].fitting_function is not None:
             self.parameters_options_boxes.add(self.build_parameters_options_box())
         self.update_font_size()

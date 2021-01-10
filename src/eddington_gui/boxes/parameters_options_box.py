@@ -19,7 +19,9 @@ class ParametersOptionsBox(EddingtonBox):
         super().__init__(**kwargs, style=Pack(direction=COLUMN))
 
         self.fitting_function_box = FittingFunctionBox(
-            on_fitting_function_load=self.on_fitting_function_load
+            on_fitting_function_load=(
+                lambda widget: self.window.update_parameters_options_boxes(self)
+            )
         )
         self.add(self.fitting_function_box)
 
@@ -41,17 +43,6 @@ class ParametersOptionsBox(EddingtonBox):
                 style=Pack(padding_left=TAB_PADDING),
             )
         )
-
-    def on_fitting_function_load(self, widget):  # pylint: disable=unused-argument
-        """Set function number of parameters to each parameters box."""
-        n = self.n  # pylint: disable=invalid-name
-        for child in self.parameters_boxes.children:
-            child.n = n
-        if n == 0:
-            while len(self.parameters_boxes.children) > 1:
-                self.remove_parameters()
-        self.enable_or_disable_buttons()
-        self.window.update_parameters_options_boxes(self)
 
     def add_parameters(self):
         """Add parameters box."""
@@ -110,6 +101,15 @@ class ParametersOptionsBox(EddingtonBox):
     def n(self):  # pylint: disable=invalid-name
         """Get the number of parameters from the fitting function box."""
         return 0 if self.fitting_function is None else self.fitting_function.n
+
+    @n.setter
+    def n(self, n):  # pylint: disable=invalid-name
+        for child in self.parameters_boxes.children:
+            child.n = n
+        if n == 0:
+            while len(self.parameters_boxes.children) > 1:
+                self.remove_parameters()
+        self.enable_or_disable_buttons()
 
     @property
     def a0_values(self):
