@@ -95,7 +95,7 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
             )
         if self.parameters_options_boxes.children[-1].fitting_function is not None:
             self.parameters_options_boxes.add(self.build_parameters_options_box())
-        self.update_font_size()
+            self.update_font_size()
 
     @classmethod
     def build_parameters_options_box(cls):
