@@ -7,8 +7,14 @@ import toga
 class SaveFigureButton(toga.Button):
     """Button for saving matplotlib figures to file."""
 
-    def __init__(self, label, plot_method):
-        """Initialize button."""
+    def __init__(self, label: str, plot_method):
+        """
+        Initialize button.
+
+        :param label: Label of the button
+        :type label: str
+        :param plot_method: Method for creating the plot figure
+        """
         super().__init__(label=label, on_press=lambda widget: self.save_figure())
         self.plot_method = plot_method
 
