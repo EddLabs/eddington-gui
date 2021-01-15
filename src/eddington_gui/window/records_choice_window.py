@@ -30,7 +30,16 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
 
     def __init__(self, fitting_data: FittingData, font_size: FontSize, app: toga.App):
-        """Initialize window."""
+        """
+        Initialize window.
+
+        :param fitting_data: a fitting fata instance to select or unselect records from
+        :type fitting_data: FittingData
+        :param font_size: a font size enum value to use in window
+        :type font_size: FontSize
+        :param app: Application reference
+        :type app: toga.App
+        """
         super().__init__(title="Choose Records", size=RECORD_WINDOW_SIZE)
         self.__fitting_data = fitting_data
         main_box = toga.Box(style=Pack(direction=COLUMN))
@@ -173,7 +182,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.app = app
 
     def select_records(self, widget):  # pylint: disable=unused-argument
-        """Set selected records to fitting data."""
+        """
+        Set selected records to fitting data.
+
+        :param widget: Unused widget parameter
+        """
         for i in range(self.__fitting_data.length):
             if self.__checkboxes[i].is_on:
                 self.__fitting_data.select_record(i + 1)
@@ -184,7 +197,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.app.reset_fitting_result()
 
     def select_all(self, widget):  # pylint: disable=unused-argument
-        """Select/Deselect all records to fitting data."""
+        """
+        Select/Deselect all records to fitting data.
+
+        :param widget: Unused widget parameter
+        """
         if self.__all_checkbox.is_on:
             for checkbox in self.__checkboxes:
                 checkbox.is_on = True
@@ -202,5 +219,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 self.__statistics_labels[(header, parameter)].text = text
 
     def are_all_selected(self):
-        """Informs whether all records are selected."""
+        """
+        Informs whether all records are selected.
+
+        :return: Whether all records are selected or not
+        :rtype: bool
+        """
         return all([checkbox.is_on for checkbox in self.__checkboxes])
