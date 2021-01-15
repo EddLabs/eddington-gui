@@ -11,6 +11,7 @@ from eddington import (
     EddingtonException,
     FittingData,
     FittingDataError,
+    FittingFunction,
     FittingResult,
     fit,
     plot_data,
@@ -63,10 +64,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
 
-    __a0: Optional[np.ndarray] = None
-    __fitting_result: Optional[FittingResult] = None
-    __font_size: Optional[FontSize] = None
-    __has_newer_version: bool = False
+    __a0: Optional[np.ndarray]
+    __fitting_result: Optional[FittingResult]
+    __font_size: FontSize
+    __has_newer_version: bool
 
     def startup(self):
         """
@@ -76,6 +77,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         We then create a main window (with a name matching the app), and
         show the main window.
         """
+        self.__a0 = None
+        self.__fitting_result = None
+        self.__font_size = FontSize.DEFAULT
+        self.has_newer_version = False
+
         main_box = EddingtonBox(style=Pack(direction=COLUMN))
         main_box.add(HeaderBox())
 
@@ -266,9 +272,20 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             self.open_latest_version_webpage()
 
     def build_plot_configuration_box(  # pylint: disable=too-many-arguments
-        self, label, plot_method, can_plot, suffix, has_legend=True
+        self, label: str, plot_method, can_plot, suffix: str, has_legend: bool = True
     ):
-        """Build a plot configuration box."""
+        """
+        Build a plot configuration box.
+
+        :param label: Label of the added button
+        :type label: str
+        :param plot_method: method to create the desired figure
+        :param can_plot: plot that returns whether a figure can be created
+        :param suffix: Suffix to the plot tile
+        :param has_legend: Whether to add legend button or not
+        :return: Plot configuration box
+        :rtype: PlotConfigurationBox
+        """
         plot_configuration_box = PlotConfigurationBox(
             plot_method=plot_method,
             suffix=suffix,
@@ -287,51 +304,83 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
     @property
     def has_newer_version(self):
-        """Get whether Eddington-GUI has a newer version."""
+        """
+        Property that says whether Eddington-GUI has a newer version.
+
+        :return: Whether there is a new Eddington-GUI version
+        :rtype: bool
+        """
         return self.__has_newer_version
 
     @has_newer_version.setter
-    def has_newer_version(self, has_newer_version):
-        """Set whether Eddington-GUI has a newer version."""
+    def has_newer_version(self, has_newer_version: bool):
         self.__has_newer_version = has_newer_version
 
     @property
     def latest_version_url(self):
-        """Get URL of latest version."""
+        """
+        Property of the URL of latest version.
+
+        :return: latest version URL
+        :rtype: str
+        """
         return f"https://github.com/{GITHUB_USER_NAME}/{self.app_name}/releases/latest"
 
     @property
     def faq_url(self):
-        """URL for frequently asked questions."""
+        """
+        URL for frequently asked questions.
+
+        :return: FAQ page URL
+        :rtype: str
+        """
         return f"https://{self.app_name}.readthedocs.io/en/latest/tutorials/faq.html"
 
     @property
     def fitting_result(self):
-        """Getter of the fit result."""
+        """
+        Property of the fitting result.
+
+        :return: Fitting result
+        :rtype: FittingResult
+        """
         if self.__fitting_result is None:
             self.__calculate_fitting_result()
         return self.__fitting_result
 
     @fitting_result.setter
     def fitting_result(self, fitting_result):
-        """Setter of the fit result."""
         self.__fitting_result = fitting_result
 
-    def on_data_columns_change(self, fitting_data):
-        """Run those methods when data columns are changed."""
+    def on_data_columns_change(self, fitting_data: FittingData):
+        """
+        Run methods when data columns are changed.
+
+        :param fitting_data: Fitting data after change
+        :type fitting_data: FittingData
+        """
         self.reset_fitting_result()
         for plot_box in self.plot_boxes.values():
             plot_box.on_fitting_data_load(fitting_data)
 
-    def on_fitting_function_load(self, fitting_function):
-        """Run those methods when fitting function is changed."""
+    def on_fitting_function_load(self, fitting_function: FittingFunction):
+        """
+        Run methods when fitting function is changed.
+
+        :param fitting_function: Fitting function after change
+        :type fitting_function: FittingFunction
+        """
         self.reset_fitting_result()
         self.set_parameters_number(fitting_function)
         for plot_box in self.plot_boxes.values():
             plot_box.on_fitting_function_load(fitting_function)
 
     def on_save_output(self, widget):  # pylint: disable=unused-argument
-        """Handler for the "save to output directory" button."""
+        """
+        Handler for the "save to output directory" button.
+
+        :param widget: Unused widget parameter
+        """
         if self.output_box.output_directory is None:
             self.main_window.error_dialog(
                 title="Results output save error",
@@ -385,7 +434,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             self.input_file_box.selected_sheet = None
 
     def choose_records(self, widget):  # pylint: disable=unused-argument
-        """Open the choose records window."""
+        """
+        Open the choose records window.
+
+        :param widget: Unused widget parameter
+        """
         if self.data_columns_box.fitting_data is None:
             self.main_window.info_dialog(
                 title="Choose Records", message="No data been given yet"
@@ -399,7 +452,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         window.show()
 
     def can_plot_fit(self):
-        """Can plot a fitting plot."""
+        """
+        Can plot a fitting plot.
+
+        :return: Whether a fitting plot can be created or not
+        :rtype: bool
+        """
         return (
             self.fitting_result is not None
             and self.fitting_function_box.fitting_function is not None  # noqa: W503
@@ -407,11 +465,21 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         )
 
     def can_plot_data(self):
-        """Can plot a data plot."""
+        """
+        Can plot a data plot.
+
+        :return: Whether a data plot can be created or not
+        :rtype: bool
+        """
         return self.__has_data()
 
     def can_plot_initial_guess(self):
-        """Can plot initial guess plot."""
+        """
+        Can plot initial guess plot.
+
+        :return: Whether an initial plot can be created or not
+        :rtype: bool
+        """
         return (
             self.initial_guess_box.a0 is not None
             and self.fitting_function_box.fitting_function is not None  # noqa: W503
@@ -419,7 +487,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         )
 
     def explore(self, widget):  # pylint: disable=unused-argument
-        """Explore different fitting functions and parameters to fit the data."""
+        """
+        Explore different fitting functions and parameters to fit the data.
+
+        :param widget: Unused widget parameter
+        """
         if not self.__has_data():
             self.show_nothing_to_plot()
             return
@@ -431,7 +503,11 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         window.show()
 
     def fit(self, widget):  # pylint: disable=unused-argument
-        """Handler for the "fit" button."""
+        """
+        Handler for the "fit" button.
+
+        :param widget: Unused widget parameter
+        """
         try:
             if self.fitting_result is None:
                 self.show_nothing_to_plot()
@@ -447,6 +523,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         Open a file dialog in order to load user module.
 
         This is done in order to add costume fitting functions.
+
+        :param widget: Unused widget parameter
         """
         try:
             file_path = self.main_window.open_file_dialog(
@@ -463,8 +541,13 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         """Show dialog indicating that there is nothing to plot yet."""
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    def show_figure_window(self, plot_method, title):
-        """Open a window with matplotlib window."""
+    def show_figure_window(self, plot_method, title: str):
+        """
+        Open a window with matplotlib window.
+
+        :param plot_method: A method that creates the plot figure
+        :param title: Title of the figure
+        """
         figure_window = toga.Window(title=title, size=FIGURE_WINDOW_SIZE)
         figure_box = FigureBox(plot_method=plot_method)
         figure_box.add(SaveFigureButton("save", plot_method=plot_method))
@@ -482,8 +565,13 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         """Set fit result to None."""
         self.fitting_result = None
 
-    def set_parameters_number(self, func):
-        """Set number of parameters."""
+    def set_parameters_number(self, func: Optional[FittingFunction]):
+        """
+        Set number of parameters in initial guess box.
+
+        :param func: Fitting function.
+        :type func: Optional[FittingFunction]
+        """
         self.initial_guess_box.n = 0 if func is None else func.n
 
     def select_default_sheet(self):
@@ -514,7 +602,12 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             self.input_file_box.file_path = None
 
     def set_font_size(self, font_size: FontSize):
-        """Set font size to all components in app."""
+        """
+        Set font size to all components in app.
+
+        :param font_size: Font size to be set
+        :type font_size: FontSize
+        """
         self.__font_size = font_size
         self.main_window.content.set_font_size(font_size)
         for plot_box in self.plot_boxes.values():
@@ -560,5 +653,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
 
 def main():
-    """Main function."""
+    """
+    Main function.
+
+    :return: Eddington GUI app instance
+    :rtype: EddingtonGUI
+    """
     return EddingtonGUI()
