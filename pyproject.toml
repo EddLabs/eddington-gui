@@ -38,6 +38,7 @@ requires = [
 requires = [
     'toga-winforms>=0.3.0.dev26',
 ]
+system_installer = true
 
 # Mobile deployments
 [tool.briefcase.app.eddington_gui.iOS]
