@@ -59,46 +59,50 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: true
           prerelease: false
-      - name: Download windows msi
-        uses: actions/download-artifact@v2
-        with:
-          name: msi
-          path: windows
-      - name: Download macos dmg
-        uses: actions/download-artifact@v2
-        with:
-          name: dmg
-          path: macOS
-      - name: Get Name of MSI Artifact
+      - name: Save release URL to file
         run: |
-          MSI_ARTIFACT_PATHNAME=$(ls windows/*.msi | head -n 1)
-          MSI_ARTIFACT_NAME=$(basename $MSI_ARTIFACT_PATHNAME)
-          echo "MSI_ARTIFACT_NAME=${MSI_ARTIFACT_NAME}" >> $GITHUB_ENV
-          echo "MSI_ARTIFACT_PATHNAME=${MSI_ARTIFACT_PATHNAME}" >> $GITHUB_ENV
-      - name: Get Name of DMG Artifact
-        run: |
-          DMG_ARTIFACT_PATHNAME=$(ls macOS/*.dmg | head -n 1)
-          DMG_ARTIFACT_NAME=$(basename $DMG_ARTIFACT_PATHNAME)
-          echo "DMG_ARTIFACT_NAME=${DMG_ARTIFACT_NAME}" >> $GITHUB_ENV
-          echo "DMG_ARTIFACT_PATHNAME=${DMG_ARTIFACT_PATHNAME}" >> $GITHUB_ENV
-      - name: Upload MSI Asset
-        id: upload-msi-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "${{ steps.create_release.outputs.upload_url }}" > release.txt
+      - name: Upload Release URL
+        uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.MSI_ARTIFACT_PATHNAME }}
-          asset_name: ${{ env.MSI_ARTIFACT_NAME }}
-          asset_content_type: application/x-ole-storage
-      - name: Upload DMG Asset
-        id: upload-dmg-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.DMG_ARTIFACT_PATHNAME }}
-          asset_name: ${{ env.DMG_ARTIFACT_NAME }}
-          asset_content_type: application/x-ole-storage
+          name: release
+          path: release.txt
+
+  upload_release_artifacts:
+    name: Upload Artifacts To Relase
+    needs: [ create_release ]
+    strategy:
+      max-parallel: 4
+      matrix:
+        file_type: [ msi, dmg ]
+        include:
+          - file_type: msi
+            output_dir: windows
+          - file_type: dmg
+            output_dir: macOS
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ${{ matrix.file_type }}
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ matrix.file_type }}
+        path: ${{ matrix.output_dir }}
+    - name: Download release
+      uses: actions/download-artifact@v2
+      with:
+        name: release
+    - name: Set Release Environment Variables
+      run: |
+        RELEASE_URL=`cat release.txt`
+        echo "RELEASE_URL=${RELEASE_URL}" >> $GITHUB_ENV
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+    - name: Upload ${{ matrix.file_type }} Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ env.RELEASE_URL }}
+        asset_path: ${{ matrix.output_dir }}/EddingtonGUI-${{ env.RELEASE_VERSION }}.${{ matrix.file_type }}
+        asset_name: EddingtonGUI-${{ env.RELEASE_VERSION }}.${{ matrix.file_type }}
+        asset_content_type: application/x-ole-storage
 
