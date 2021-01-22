@@ -9,6 +9,6 @@ try:
 except ImportError:
     pass
 
-__version__ = "0.0.8.dev1"
+__version__ = "0.0.8.dev2"
 __author__ = "Sagi Shadur"
 __year__ = "2020-2021"
