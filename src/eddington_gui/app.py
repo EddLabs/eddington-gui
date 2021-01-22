@@ -2,7 +2,7 @@
 import importlib
 import webbrowser
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
 import numpy as np
 import requests
@@ -62,6 +62,7 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
 
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
+    can_plot_map: Dict[str, Callable[[], bool]]
 
     __a0: Optional[np.ndarray] = None
     __fitting_result: Optional[FittingResult] = None
@@ -111,51 +112,55 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         self.initial_guess_box.add(toga.Label(text="Initial Guess:"))
         main_box.add(self.initial_guess_box)
 
-        self.plot_boxes = {
-            "Data": self.build_plot_configuration_box(
-                label="Plot data",
-                plot_method=lambda **kwargs: plot_data(
-                    data=self.data_columns_box.fitting_data, **kwargs
-                ),
-                can_plot=self.can_plot_data,
-                suffix="Data",
-                has_legend=False,
+        self.plot_boxes = {}
+        self.can_plot_map = {}
+        self.add_plot_configuration_box(
+            option_label="Data",
+            button_label="Plot data",
+            plot_method=lambda **kwargs: plot_data(
+                data=self.data_columns_box.fitting_data, **kwargs
             ),
-            "Initial guess": self.build_plot_configuration_box(
-                label="Plot initial guess",
-                plot_method=lambda **kwargs: plot_fitting(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.initial_guess_box.a0,
-                    **kwargs,
-                ),
-                suffix="Initial Guess",
-                can_plot=self.can_plot_initial_guess,
+            can_plot=self.can_plot_data,
+            suffix="Data",
+            has_legend=False,
+        )
+        self.add_plot_configuration_box(
+            option_label="Initial guess",
+            button_label="Plot initial guess",
+            plot_method=lambda **kwargs: plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.initial_guess_box.a0,
+                **kwargs,
             ),
-            "Fit": self.build_plot_configuration_box(
-                label="Plot fit",
-                plot_method=lambda **kwargs: plot_fitting(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.fitting_result.a,
-                    **kwargs,
-                ),
-                suffix="Fitting",
-                can_plot=self.can_plot_fit,
+            suffix="Initial Guess",
+            can_plot=self.can_plot_initial_guess,
+        )
+        self.add_plot_configuration_box(
+            option_label="Fit",
+            button_label="Plot fit",
+            plot_method=lambda **kwargs: plot_fitting(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+                **kwargs,
             ),
-            "Residuals": self.build_plot_configuration_box(
-                label="Plot residuals",
-                plot_method=lambda **kwargs: plot_residuals(
-                    func=self.fitting_function_box.fitting_function,
-                    data=self.data_columns_box.fitting_data,
-                    a=self.fitting_result.a,
-                    **kwargs,
-                ),
-                suffix="Residuals",
-                can_plot=self.can_plot_fit,
-                has_legend=False,
+            suffix="Fitting",
+            can_plot=self.can_plot_fit,
+        )
+        self.add_plot_configuration_box(
+            option_label="Residuals",
+            button_label="Plot residuals",
+            plot_method=lambda **kwargs: plot_residuals(
+                func=self.fitting_function_box.fitting_function,
+                data=self.data_columns_box.fitting_data,
+                a=self.fitting_result.a,
+                **kwargs,
             ),
-        }
+            suffix="Residuals",
+            can_plot=self.can_plot_fit,
+            has_legend=False,
+        )
         self.plot_options_container = toga.OptionContainer(style=Pack(flex=5))
         self.plot_options_container.app = self
         for label, box in self.plot_boxes.items():
@@ -265,8 +270,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         ):
             self.open_latest_version_webpage()
 
-    def build_plot_configuration_box(  # pylint: disable=too-many-arguments
-        self, label, plot_method, can_plot, suffix, has_legend=True
+    def add_plot_configuration_box(  # pylint: disable=too-many-arguments
+        self, option_label, button_label, plot_method, can_plot, suffix, has_legend=True
     ):
         """Build a plot configuration box."""
         plot_configuration_box = PlotConfigurationBox(
@@ -276,14 +281,15 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         )
         plot_configuration_box.add(
             PlotButton(
-                label=label,
+                label=button_label,
                 can_plot=can_plot,
                 plot_method=plot_configuration_box.plot,
                 plot_title=suffix,
                 app=self,
             )
         )
-        return plot_configuration_box
+        self.plot_boxes[option_label] = plot_configuration_box
+        self.can_plot_map[option_label] = can_plot
 
     @property
     def has_newer_version(self):
@@ -341,8 +347,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         output_dir = Path(self.output_box.output_directory)
         if not output_dir.exists():
             output_dir.mkdir()
-        for plot_box in self.plot_boxes.values():
-            if plot_box.can_plot():
+        for option_label, plot_box in self.plot_boxes.items():
+            if self.can_plot_map[option_label]():
                 with plot_box.plot() as fig:
                     show_or_export(fig, output_dir / plot_box.file_name)
         if self.fitting_function_box.fitting_function is not None:
