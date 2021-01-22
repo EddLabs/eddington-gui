@@ -28,6 +28,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
     __all_checkbox: toga.Switch
     __checkboxes: List[toga.Switch]
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
+    __update_on_check: bool
 
     def __init__(self, fitting_data: FittingData, font_size: FontSize, app: toga.App):
         """Initialize window."""
@@ -37,6 +38,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         data_box = toga.Box()
         statistics_box = toga.Box()
         font_size_value = FontSize.get_font_size(font_size)
+        self.__update_on_check = True
         self.__statistics_labels = {
             (column, parameter): toga.Label(
                 text=to_relevant_precision_string(
@@ -174,6 +176,8 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
     def select_records(self, widget):  # pylint: disable=unused-argument
         """Set selected records to fitting data."""
+        if not self.__update_on_check:
+            return
         for i in range(self.__fitting_data.length):
             if self.__checkboxes[i].is_on:
                 self.__fitting_data.select_record(i + 1)
@@ -185,12 +189,18 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
 
     def select_all(self, widget):  # pylint: disable=unused-argument
         """Select/Deselect all records to fitting data."""
+        self.__update_on_check = False
         if self.__all_checkbox.is_on:
             for checkbox in self.__checkboxes:
                 checkbox.is_on = True
+            self.__fitting_data.select_all_records()
         elif self.are_all_selected():
             for checkbox in self.__checkboxes:
                 checkbox.is_on = False
+            self.__fitting_data.unselect_all_records()
+        self.__update_on_check = True
+        self.update_statistics()
+        self.app.reset_fitting_result()
 
     def update_statistics(self):
         """Update statistics at the bottom of the window."""
