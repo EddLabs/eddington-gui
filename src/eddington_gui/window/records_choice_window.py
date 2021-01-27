@@ -20,12 +20,13 @@ from eddington_gui.consts import (
 )
 
 
-class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-methods
+class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-attributes
     """Window for choosing which records to consider when using fit data."""
 
     __fitting_data: FittingData
     __save_action: Callable
     __all_checkbox: toga.Switch
+    __selected_records_label: toga.Label
     __checkboxes: List[toga.Switch]
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
     __update_on_check: bool
@@ -67,8 +68,12 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             label="",
             is_on=self.are_all_selected(),
             on_toggle=self.select_all,
+            style=Pack(height=TITLES_LINE_HEIGHT, font_size=font_size_value),
+        )
+        self.__selected_records_label = toga.Label(
+            text="",
             style=Pack(
-                height=TITLES_LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
+                font_size=font_size_value, width=COLUMN_WIDTH, height=TITLES_LINE_HEIGHT
             ),
         )
         data_box.add(
@@ -82,11 +87,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 children=[
                     toga.Box(
                         style=Pack(
-                            height=LINE_HEIGHT,
-                            width=COLUMN_WIDTH,
+                            height=TITLES_LINE_HEIGHT,
                             font_size=font_size_value,
                         ),
-                        children=[self.__all_checkbox],
+                        children=[self.__all_checkbox, self.__selected_records_label],
                     ),
                     *self.__checkboxes,
                 ],
@@ -174,6 +178,8 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
         self.content = scroller
         self.app = app
 
+        self.update()
+
     def select_records(self, widget):  # pylint: disable=unused-argument
         """Set selected records to fitting data."""
         if not self.__update_on_check:
@@ -184,8 +190,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
             else:
                 self.__fitting_data.unselect_record(i + 1)
         self.__all_checkbox.is_on = self.are_all_selected()
-        self.update_statistics()
-        self.app.reset_fitting_result()
+        self.update()
 
     def select_all(self, widget):  # pylint: disable=unused-argument
         """Select/Deselect all records to fitting data."""
@@ -199,8 +204,19 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-few-public-method
                 checkbox.is_on = False
             self.__fitting_data.unselect_all_records()
         self.__update_on_check = True
+        self.update()
+
+    def update(self):
+        """Update all needed fields after setting/unsetting records."""
+        self.update_selected_label()
         self.update_statistics()
         self.app.reset_fitting_result()
+
+    def update_selected_label(self):
+        """Update number of selected records label."""
+        self.__selected_records_label.text = (
+            f"{len(self.__fitting_data.records)} selected records"
+        )
 
     def update_statistics(self):
         """Update statistics at the bottom of the window."""
