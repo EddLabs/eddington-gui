@@ -1,0 +1,36 @@
+name: Submit issue
+
+on:
+  repository_dispatch:
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: print hello
+        run: echo Hello from $PWD
+      - id: create-issue
+        name: Create Issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DESCRIPTION: ${{ github.event.client_payload.description }}
+          SUBJECT: ${{ github.event.client_payload.subject }}
+        with:
+          filename: .github/ISSUE_TEMPLATE/feedback_template.md
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v2
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: Eddington feedback was recieved
+          body: |
+            Opened issue [#${{ steps.create-issue.outputs.number }}](${{ steps.create-issue.outputs.url }})
+          to: ${{ github.event.client_payload.email }}
+          from: Eddington
+          # Optional content type (defaults to text/plain):
+          content_type: text/html
+          convert_markdown: true
