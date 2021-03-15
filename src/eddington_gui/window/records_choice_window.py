@@ -32,7 +32,16 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
     __update_on_check: bool
 
     def __init__(self, fitting_data: FittingData, font_size: FontSize, app: toga.App):
-        """Initialize window."""
+        """
+        Initialize window.
+
+        :param fitting_data: a fitting fata instance to select or unselect records from
+        :type fitting_data: FittingData
+        :param font_size: a font size enum value to use in window
+        :type font_size: FontSize
+        :param app: Application reference
+        :type app: toga.App
+        """
         super().__init__(title="Choose Records", size=RECORD_WINDOW_SIZE)
         self.__fitting_data = fitting_data
         main_box = toga.Box(style=Pack(direction=COLUMN))
@@ -181,7 +190,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         self.update()
 
     def select_records(self, widget):  # pylint: disable=unused-argument
-        """Set selected records to fitting data."""
+        """
+        Set selected records to fitting data.
+
+        :param widget: Unused widget parameter
+        """
         if not self.__update_on_check:
             return
         for i in range(self.__fitting_data.length):
@@ -193,7 +206,11 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         self.update()
 
     def select_all(self, widget):  # pylint: disable=unused-argument
-        """Select/Deselect all records to fitting data."""
+        """
+        Select/Deselect all records to fitting data.
+
+        :param widget: Unused widget parameter
+        """
         self.__update_on_check = False
         if self.__all_checkbox.is_on:
             for checkbox in self.__checkboxes:
@@ -228,5 +245,10 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
                 self.__statistics_labels[(header, parameter)].text = text
 
     def are_all_selected(self):
-        """Informs whether all records are selected."""
+        """
+        Informs whether all records are selected.
+
+        :return: Whether all records are selected or not
+        :rtype: bool
+        """
         return all([checkbox.is_on for checkbox in self.__checkboxes])
