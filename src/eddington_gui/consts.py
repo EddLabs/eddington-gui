@@ -43,7 +43,14 @@ class FontSize(IntEnum):
 
     @classmethod
     def get_font_size(cls, font_size: "FontSize"):
-        """Get the actual font size from enum value."""
+        """
+        Get the actual font size from enum value.
+
+        :param font_size: a font size enum
+        :type font_size: FontSize
+        :return: font size as an integer
+        :rtype: int
+        """
         if font_size == FontSize.SMALL:
             return 10
         if font_size == FontSize.MEDIUM:
@@ -54,7 +61,14 @@ class FontSize(IntEnum):
 
     @classmethod
     def get_button_height(cls, font_size: "FontSize"):
-        """Get the height of button, related to font size."""
+        """
+        Get the height of button, related to font size.
+
+        :param font_size: a font size enum
+        :type font_size: FontSize
+        :return: font size as an integer
+        :rtype: int
+        """
         if font_size == FontSize.SMALL:
             return 25
         if font_size == FontSize.MEDIUM:
