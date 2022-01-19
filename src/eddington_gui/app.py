@@ -282,8 +282,10 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
         """
         Build a plot configuration box.
 
-        :param label: Label of the added button
-        :type label: str
+        :param option_label: Text besides the button
+        :type option_label: str
+        :param button_label: Text of the added button
+        :type button_label: str
         :param plot_method: method to create the desired figure
         :param can_plot: plot that returns whether a figure can be created
         :param suffix: Suffix to the plot tile
