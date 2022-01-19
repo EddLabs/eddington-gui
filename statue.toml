@@ -1,1 +1,29 @@
+[commands.black]
+version = "21.12b0"
+
+[commands.flake8]
+version = "4.0.1"
+
+[commands.isort]
+version = "5.10.1"
+
+[commands.mypy]
+version = "0.931"
+
+[commands.pylint]
+version = "2.12.2"
+
+[commands.bandit]
+version = "1.7.1"
+
+[commands.pydocstyle]
+version = "6.1.1"
+
+[commands.darglint]
+version = "1.8.1"
+
+[commands.autoflake]
+version = "1.4"
+
 [sources.src]
+deny_list = [ "darglint",]

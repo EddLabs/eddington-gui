@@ -110,7 +110,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
                 self.parameters_inputs[i].children[-1].value.strip()
                 for i in range(self.n)
             ]
-            if all([value == "" for value in a0_values]):
+            if all(value == "" for value in a0_values):
                 return
             self.a0 = np.array(list(map(float, a0_values)))
         except ValueError as exc:
