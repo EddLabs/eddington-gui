@@ -2,7 +2,7 @@
 from typing import Optional
 
 import toga
-from eddington import EddingtonException, FittingFunction, to_relevant_precision_string
+from eddington import EddingtonException, to_relevant_precision_string
 from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
@@ -35,7 +35,6 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
     __y_log_scale: toga.Switch
 
     __has_legend: bool
-    __fitting_function: Optional[FittingFunction]
     __base_name: Optional[str]
     __xcolumn: Optional[str]
     __ycolumn: Optional[str]
@@ -43,7 +42,6 @@ class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
     def __init__(self, plot_method, suffix, has_legend=True):
         """Initialize box."""
         super().__init__(style=Pack(direction=COLUMN))
-        self.__fitting_function = None
         self.__base_name = None
         self.__ycolumn = None
         self.__xcolumn = None

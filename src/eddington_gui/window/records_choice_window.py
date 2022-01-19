@@ -251,4 +251,4 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         :return: Whether all records are selected or not
         :rtype: bool
         """
-        return all([checkbox.is_on for checkbox in self.__checkboxes])
+        return all(checkbox.is_on for checkbox in self.__checkboxes)
