@@ -229,4 +229,4 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
 
     def are_all_selected(self):
         """Informs whether all records are selected."""
-        return all([checkbox.is_on for checkbox in self.__checkboxes])
+        return all(checkbox.is_on for checkbox in self.__checkboxes)
