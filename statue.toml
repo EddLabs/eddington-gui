@@ -1,1 +1,2 @@
 [sources.src]
+deny_list = [ "darglint",]
