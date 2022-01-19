@@ -23,13 +23,11 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
 
     __fitting_data: Optional[FittingData]
     __on_columns_change: Optional[Callable[[FittingData], None]]
-    __handlers: List[Callable]
 
     def __init__(self, on_columns_change):
         """Initialize box."""
         super().__init__()
         self.__fitting_data = None
-        self.__handlers = []
         self.on_columns_change = None
 
         self.x_selection = self.__add_column_option(
