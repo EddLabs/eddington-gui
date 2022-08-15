@@ -38,8 +38,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"Eddington-GUI"
-copyright = u"2020, Sagi Shadur"
+project = "Eddington-GUI"
+copyright = "2020, Sagi Shadur"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,8 +204,8 @@ latex_documents = [
     (
         "index",
         "eddington.tex",
-        u"Eddington-GUI Documentation",
-        u"Sagi Shadur",
+        "Eddington-GUI Documentation",
+        "Sagi Shadur",
         "manual",
     ),
 ]
@@ -235,9 +235,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ("index", "eddington", u"Eddington-GUI Documentation", [u"Sagi Shadur"], 1)
-]
+man_pages = [("index", "eddington", "Eddington-GUI Documentation", ["Sagi Shadur"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -252,8 +250,8 @@ texinfo_documents = [
     (
         "index",
         "eddington-gui",
-        u"Eddington-GUI Documentation",
-        u"Sagi Shadur",
+        "Eddington-GUI Documentation",
+        "Sagi Shadur",
         "Eddington-GUI",
         "A Python native, OS native GUI toolkit.",
         "Miscellaneous",
