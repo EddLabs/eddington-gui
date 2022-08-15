@@ -1,8 +1,9 @@
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 """Main app."""
 import importlib
 import webbrowser
 from pathlib import Path
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, Union
 
 import numpy as np
 import requests
@@ -50,7 +51,7 @@ from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 PLOT_GROUP = toga.Group("Plot", order=2)
 
 
-class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
+class EddingtonGUI(toga.App):
     """Main app instance."""
 
     input_file_box: InputFileBox
@@ -359,13 +360,14 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             title="Save output", message="All plots have been saved successfully!"
         )
 
-    def read_csv(self, filepath):
+    def read_csv(self, filepath: Union[str, Path]):
         """
         Read data from csv file.
 
         If failing to read the file, reset the input file path and fit data.
 
         :param filepath: path of the csv file
+        :type filepath: Union[str, Path]
         """
         try:
             self.data_columns_box.read_csv(filepath)
@@ -374,14 +376,16 @@ class EddingtonGUI(toga.App):  # pylint: disable=R0902,R0904
             self.data_columns_box.fitting_data = None
             self.input_file_box.file_path = None
 
-    def read_excel(self, filepath, sheet):
+    def read_excel(self, filepath: Union[str, Path], sheet: str):
         """
         Read data from excel file.
 
         If failing to read the file, reset the selected sheet and fit data.
 
         :param filepath: path of the excel file
+        :type filepath: Union[str, Path]
         :param sheet: sheet from which to read the data.
+        :type sheet: str
         """
         try:
             self.data_columns_box.read_excel(filepath, sheet)

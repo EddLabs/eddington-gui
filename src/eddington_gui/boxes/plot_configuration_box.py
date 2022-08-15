@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes
 """Box for setting up plot configuration for the output graphs."""
 from typing import Optional
 
@@ -17,7 +18,7 @@ EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_relevant_precision_string(y)
 NULL_LOCATOR = NullLocator()
 
 
-class PlotConfigurationBox(EddingtonBox):  # pylint: disable=R0902,R0904
+class PlotConfigurationBox(EddingtonBox):
     """Visual box to create plot configuration."""
 
     __title_input: toga.TextInput

@@ -1,7 +1,7 @@
 """Module for the explore window."""
 import toga
 from eddington import EddingtonException, plot_data
-from eddington.plot import add_legend, get_plot_borders
+from eddington.plot.plot_legacy import add_legend, get_plot_borders
 from toga.style import Pack
 from travertino.constants import COLUMN
 
