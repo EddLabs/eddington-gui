@@ -93,7 +93,7 @@ class ParametersOptionsBox(EddingtonBox):
             add_plot(
                 ax,
                 x,
-                self.fitting_function(a0, x),  # pylint: disable=not-callable
+                self.fitting_function(a0, x),
                 label=label,
             )
 

@@ -1,5 +1,6 @@
 """Box for choosing which columns to use in data dictionary."""
-from typing import Callable, List, Optional
+from pathlib import Path
+from typing import Callable, List, Optional, Union
 
 import toga
 from eddington import FittingData
@@ -114,13 +115,16 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.yerr_selection.enabled = selection_enabled
 
     @staticmethod
-    def set_items(selection, items, value):
+    def set_items(selection: toga.Selection, items: List[str], value: Optional[str]):
         """
         Set items and value in selection widget.
 
         :param selection: Selection widget
+        :type selection: toga.Selection
         :param items: list of options for the widget
+        :type items: List[str]
         :param value: selected value
+        :type value: Optional[str]
         """
         selection.items = items
         if value is not None:
@@ -135,7 +139,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.set_items(self.yerr_selection, [], None)
         self.run_on_columns_change()
 
-    def set_columns(self):  # pylint: disable=unused-argument
+    def set_columns(self):
         """Set columns of the fit data based on the selection of the user."""
         if not self.selection_enabled:
             return
@@ -148,22 +152,25 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
     def run_on_columns_change(self):
         """If on_columns_change is not None, runs it."""
         if self.on_columns_change is not None:
-            self.on_columns_change(self.fitting_data)  # pylint: disable=not-callable
+            self.on_columns_change(self.fitting_data)
 
-    def read_csv(self, filepath):
+    def read_csv(self, filepath: Union[str, Path]):
         """
         Read data from csv file.
 
         :param filepath: path of the csv file
+        :type filepath: Union[str, Path]
         """
         self.fitting_data = FittingData.read_from_csv(filepath)
 
-    def read_excel(self, filepath, sheet):
+    def read_excel(self, filepath: Union[str, Path], sheet: str):
         """
         Read data from excel file.
 
         :param filepath: path of the excel file
+        :type filepath: Union[str, Path]
         :param sheet: sheet from which to read the data.
+        :type sheet: str
         """
         self.fitting_data = FittingData.read_from_excel(filepath, sheet)
 

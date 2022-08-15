@@ -72,7 +72,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         else:
             self.__input_file_path.value = str(file_path)
         if self.on_input_file_change is not None:
-            self.on_input_file_change()  # pylint: disable=not-callable
+            self.on_input_file_change()
 
     @property
     def sheets_options(self):
@@ -132,12 +132,12 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             excel_file = load_workbook(input_file_path)
             self.sheets_options = [NO_VALUE] + excel_file.sheetnames
             if self.on_select_excel_file is not None:
-                self.on_select_excel_file()  # pylint: disable=not-callable
+                self.on_select_excel_file()
             return
         self.sheets_options = None
         if suffix == ".csv":
             if self.on_csv_read is not None:
-                self.on_csv_read(input_file_path)  # pylint: disable=not-callable
+                self.on_csv_read(input_file_path)
             return
         self.file_path = None
         self.window.error_dialog(
@@ -158,11 +158,11 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         else:
             self.__sheet_selection.value = selected_sheet
 
-    def select_sheet(self, widget):  # pylint: disable=unused-argument
+    def select_sheet(self, widget):
         """Select sheet to read data from. Relevant for excel files."""
         value = widget.value
         if value == NO_VALUE:
             return
         file_path_value = Path(self.file_path)
         if self.on_excel_read is not None:
-            self.on_excel_read(file_path_value, value)  # pylint: disable=not-callable
+            self.on_excel_read(file_path_value, value)
