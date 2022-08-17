@@ -2,15 +2,16 @@
 from pathlib import Path
 
 import toga
+from eddington.plot.figure import Figure
 
 
 class SaveFigureButton(toga.Button):
     """Button for saving matplotlib figures to file."""
 
-    def __init__(self, label, plot_method):
+    def __init__(self, label, on_draw):
         """Initialize button."""
         super().__init__(label=label, on_press=lambda widget: self.save_figure())
-        self.plot_method = plot_method
+        self.on_draw = on_draw
 
     def save_figure(self):
         """Save file dialog."""
@@ -27,7 +28,8 @@ class SaveFigureButton(toga.Button):
 
         suffix = output_path.suffix
         if suffix in [".png", ".jpg", ".pdf"]:
-            with self.plot_method() as figure:
+            with Figure() as figure:
+                self.on_draw(self, figure)
                 figure.savefig(fname=output_path)
         else:
             self.window.error_dialog(

@@ -8,14 +8,14 @@ class PlotButton(toga.Button):
     """Plot button."""
 
     def __init__(  # pylint: disable=too-many-arguments
-        self, label, can_plot, plot_method, plot_title, app=None
+        self, label, can_plot, on_draw, plot_title, app=None
     ):
         """Initialize button."""
         super().__init__(label=label, on_press=lambda widget: self.plot())
         self.app = app
         self.can_plot = can_plot
         self.plot_title = plot_title
-        self.plot_method = plot_method
+        self.on_draw = on_draw
 
     def plot(self):
         """Run when plot button is pressed."""
@@ -23,8 +23,6 @@ class PlotButton(toga.Button):
             self.app.show_nothing_to_plot()
             return
         try:
-            self.app.show_figure_window(
-                plot_method=self.plot_method, title=self.plot_title
-            )
+            self.app.show_figure_window(on_draw=self.on_draw, title=self.plot_title)
         except EddingtonException as error:
             self.window.error_dialog(title="Plot error", message=str(error))

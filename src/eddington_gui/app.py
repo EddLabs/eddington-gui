@@ -10,15 +10,15 @@ import requests
 import toga
 from eddington import (
     EddingtonException,
+    FigureBuilder,
     FittingData,
     FittingDataError,
     FittingResult,
     fit,
-    plot_data,
-    plot_fitting,
-    plot_residuals,
     show_or_export,
 )
+from eddington.interval import Interval
+from eddington.plot.figure import Figure
 from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
 from toga.style import Pack
@@ -38,6 +38,7 @@ from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.buttons.plot_button import PlotButton
 from eddington_gui.buttons.save_figure_button import SaveFigureButton
 from eddington_gui.consts import (
+    CHART_HEIGHT_SIZE,
     FIGURE_WINDOW_SIZE,
     GITHUB_USER_NAME,
     MAIN_WINDOW_SIZE,
@@ -118,9 +119,7 @@ class EddingtonGUI(toga.App):
         self.add_plot_configuration_box(
             option_label="Data",
             button_label="Plot data",
-            plot_method=lambda **kwargs: plot_data(
-                data=self.data_columns_box.fitting_data, **kwargs
-            ),
+            additional_instructions=self.plot_data_instructions,
             can_plot=self.can_plot_data,
             suffix="Data",
             has_legend=False,
@@ -128,36 +127,21 @@ class EddingtonGUI(toga.App):
         self.add_plot_configuration_box(
             option_label="Initial guess",
             button_label="Plot initial guess",
-            plot_method=lambda **kwargs: plot_fitting(
-                func=self.fitting_function_box.fitting_function,
-                data=self.data_columns_box.fitting_data,
-                a=self.initial_guess_box.a0,
-                **kwargs,
-            ),
+            additional_instructions=self.plot_initial_guess_instructions,
             suffix="Initial Guess",
             can_plot=self.can_plot_initial_guess,
         )
         self.add_plot_configuration_box(
             option_label="Fit",
             button_label="Plot fit",
-            plot_method=lambda **kwargs: plot_fitting(
-                func=self.fitting_function_box.fitting_function,
-                data=self.data_columns_box.fitting_data,
-                a=self.fitting_result.a,
-                **kwargs,
-            ),
+            additional_instructions=self.plot_fitting_instructions,
             suffix="Fitting",
             can_plot=self.can_plot_fit,
         )
         self.add_plot_configuration_box(
             option_label="Residuals",
             button_label="Plot residuals",
-            plot_method=lambda **kwargs: plot_residuals(
-                func=self.fitting_function_box.fitting_function,
-                data=self.data_columns_box.fitting_data,
-                a=self.fitting_result.a,
-                **kwargs,
-            ),
+            additional_instructions=self.plot_residuals_instructions,
             suffix="Residuals",
             can_plot=self.can_plot_fit,
             has_legend=False,
@@ -272,11 +256,17 @@ class EddingtonGUI(toga.App):
             self.open_latest_version_webpage()
 
     def add_plot_configuration_box(  # pylint: disable=too-many-arguments
-        self, option_label, button_label, plot_method, can_plot, suffix, has_legend=True
+        self,
+        option_label,
+        button_label,
+        additional_instructions,
+        can_plot,
+        suffix,
+        has_legend=True,
     ):
         """Build a plot configuration box."""
         plot_configuration_box = PlotConfigurationBox(
-            plot_method=plot_method,
+            additional_instructions=additional_instructions,
             suffix=suffix,
             has_legend=has_legend,
         )
@@ -284,7 +274,7 @@ class EddingtonGUI(toga.App):
             PlotButton(
                 label=button_label,
                 can_plot=can_plot,
-                plot_method=plot_configuration_box.plot,
+                on_draw=plot_configuration_box.on_draw,
                 plot_title=suffix,
                 app=self,
             )
@@ -350,7 +340,8 @@ class EddingtonGUI(toga.App):
             output_dir.mkdir()
         for option_label, plot_box in self.plot_boxes.items():
             if self.can_plot_map[option_label]():
-                with plot_box.plot() as fig:
+                with Figure() as fig:
+                    plot_box.on_draw(plot_box, fig)
                     show_or_export(fig, output_dir / plot_box.file_name)
         if self.fitting_function_box.fitting_function is not None:
             func_name = self.fitting_function_box.fitting_function.name
@@ -428,6 +419,43 @@ class EddingtonGUI(toga.App):
             and self.__has_data()  # noqa: W503
         )
 
+    def plot_data_instructions(self, figure_builder: FigureBuilder, interval: Interval):
+        figure_builder.add_data(data=self.data_columns_box.fitting_data, label="Data")
+
+    def plot_initial_guess_instructions(
+        self, figure_builder: FigureBuilder, interval: Interval
+    ):
+        figure_builder.add_plot(
+            interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
+            func=self.fitting_function_box.fitting_function,
+            a=self.fitting_result.a0,
+            label="Initial Guess",
+        )
+
+    def plot_fitting_instructions(
+        self, figure_builder: FigureBuilder, interval: Interval
+    ):
+        figure_builder.add_plot(
+            interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
+            func=self.fitting_function_box.fitting_function,
+            a=self.fitting_result.a,
+            label="Fitting",
+        )
+
+    def plot_residuals_instructions(
+        self, figure_builder: FigureBuilder, interval: Interval
+    ):
+        y = self.fitting_function_box.fitting_function(
+            self.fitting_result.a, self.data_columns_box.fitting_data.x
+        )
+        figure_builder.add_error_bar(
+            x=self.data_columns_box.fitting_data.x,
+            y=y,
+            xerr=self.data_columns_box.fitting_data.xerr,
+            yerr=self.data_columns_box.fitting_data.yerr,
+            label="Residuals",
+        )
+
     def explore(self, widget):  # pylint: disable=unused-argument
         """Explore different fitting functions and parameters to fit the data."""
         if not self.__has_data():
@@ -472,15 +500,14 @@ class EddingtonGUI(toga.App):
         """Show dialog indicating that there is nothing to plot yet."""
         self.main_window.info_dialog(title="Fit Result", message="Nothing to plot yet")
 
-    def show_figure_window(self, plot_method, title):
+    def show_figure_window(self, on_draw, title):
         """Open a window with matplotlib window."""
         figure_window = toga.Window(title=title, size=FIGURE_WINDOW_SIZE)
-        figure_box = FigureBox(plot_method=plot_method)
-        figure_box.add(SaveFigureButton("save", plot_method=plot_method))
+        figure_box = FigureBox(on_draw=on_draw, height=CHART_HEIGHT_SIZE)
+        figure_box.add(SaveFigureButton("save", on_draw=on_draw))
         figure_window.content = figure_box
         figure_window.app = self
         figure_window.content.set_font_size(self.__font_size)
-        figure_window.content.draw()
         figure_window.show()
 
     def reset_fitting_data(self):

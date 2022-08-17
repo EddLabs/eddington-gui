@@ -3,7 +3,9 @@
 from typing import Optional
 
 import toga
-from eddington import EddingtonException, to_relevant_precision_string
+from eddington import EddingtonException, FigureBuilder, to_relevant_precision_string
+from eddington.interval import Interval
+from eddington.plot.figure import Figure
 from matplotlib.ticker import FuncFormatter, NullLocator
 from toga.style import Pack
 from toga.style.pack import COLUMN, HIDDEN, VISIBLE
@@ -13,7 +15,6 @@ from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LABEL_WIDTH, LONG_INPUT_WIDTH, SMALL_PADDING
 
-# TODO: remove once https://github.com/beeware/toga-chart/issues/11 is fixed  # pylint: disable=fixme # noqa
 EDDINGTON_FORMATTER = FuncFormatter(lambda y, _: to_relevant_precision_string(y))
 NULL_LOCATOR = NullLocator()
 
@@ -22,11 +23,10 @@ class PlotConfigurationBox(EddingtonBox):
     """Visual box to create plot configuration."""
 
     __title_input: toga.TextInput
-    __residuals_title_input: toga.TextInput
     __xlabel_input: toga.TextInput
     __ylabel_input: toga.TextInput
     __grid_switch: toga.Switch
-    __legend_switch: toga.Switch
+    __legend_switch: Optional[toga.Switch]
     __x_domain_switch: toga.Switch
     __x_min_title: toga.Label
     __x_min_input: toga.TextInput
@@ -40,14 +40,14 @@ class PlotConfigurationBox(EddingtonBox):
     __xcolumn: Optional[str]
     __ycolumn: Optional[str]
 
-    def __init__(self, plot_method, suffix, has_legend=True):
+    def __init__(self, additional_instructions, suffix, has_legend=True):
         """Initialize box."""
         super().__init__(style=Pack(direction=COLUMN))
         self.__base_name = None
         self.__ycolumn = None
         self.__xcolumn = None
 
-        self.plot_method = plot_method
+        self.additional_instructions = additional_instructions
         self.suffix = suffix
         self.__title_input = self.__add_column_option("Title:")
         self.__x_log_scale = toga.Switch(
@@ -65,6 +65,8 @@ class PlotConfigurationBox(EddingtonBox):
         if has_legend:
             self.__legend_switch = toga.Switch(label="Legend")
             switches.append(self.__legend_switch)
+        else:
+            self.__legend_switch = None
         self.add(LineBox(children=switches))
 
         self.__x_domain_switch = toga.Switch(
@@ -137,7 +139,7 @@ class PlotConfigurationBox(EddingtonBox):
     @property
     def legend(self):
         """Should or should not add legend to plots."""
-        return self.__legend_switch.is_on
+        return self.__legend_switch is not None and self.__legend_switch.is_on
 
     @property
     def x_log_scale(self):
@@ -173,9 +175,9 @@ class PlotConfigurationBox(EddingtonBox):
                 "X maximum value must a floating number"
             ) from error
 
-    def plot(self):
-        """Create a plot."""
-        return self.set_scale(self.plot_method(**self.get_plot_kwargs()))
+    @property
+    def interval(self):
+        return Interval(min_val=self.xmin, max_val=self.xmax)
 
     def get_plot_kwargs(self):
         """Get plot kwargs from configuration box."""
@@ -257,6 +259,26 @@ class PlotConfigurationBox(EddingtonBox):
     def toggle_y_log_scale(self, widget):  # pylint: disable=unused-argument
         """Set/unset the y log scale switch."""
         self.__y_log_scale.toggle()
+
+    def build_figure_builder(self):
+        figure_builder = FigureBuilder()
+        if self.title is not None:
+            figure_builder.add_title(self.title)
+        if self.xlabel is not None:
+            figure_builder.add_xlabel(self.xlabel)
+        if self.ylabel is not None:
+            figure_builder.add_ylabel(self.ylabel)
+        if self.grid:
+            figure_builder.add_grid()
+        if self.legend:
+            figure_builder.add_legend()
+        self.additional_instructions(figure_builder, self.interval)
+        return figure_builder
+
+    def on_draw(self, chart, figure, *args, **kwargs):
+        figure_builder = self.build_figure_builder()
+        figure_builder.build(Figure(figure))
+        self.set_scale(figure)
 
     def __add_column_option(self, label, *additional_widgets):
         text_input = toga.TextInput(style=Pack(width=LONG_INPUT_WIDTH))
