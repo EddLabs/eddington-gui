@@ -18,7 +18,7 @@ class SaveFigureButton(toga.Button):
         super().__init__(label=label, on_press=lambda widget: self.save_figure())
         self.plot_method = plot_method
 
-    def save_figure(self):  # pylint: disable=unused-argument
+    def save_figure(self):
         """Save file dialog."""
         try:
             output_path = Path(

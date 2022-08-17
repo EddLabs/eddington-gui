@@ -1,9 +1,7 @@
 """Module for the explore window."""
-from typing import Optional
-
 import toga
-from eddington import EddingtonException, FittingData, plot_data
-from eddington.plot import add_legend, get_plot_borders
+from eddington import EddingtonException, plot_data
+from eddington.plot.plot_legacy import add_legend, get_plot_borders
 from toga.style import Pack
 from travertino.constants import COLUMN
 
@@ -18,22 +16,8 @@ from eddington_gui.consts import EXPLORE_WINDOW_SIZE, FontSize
 class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attributes
     """A window class for displaying optional fittings with given parameters."""
 
-    def __init__(
-        self,
-        data: FittingData,
-        app: Optional[toga.App] = None,
-        font_size: FontSize = FontSize.DEFAULT,
-    ):
-        """
-        Initialize window.
-
-        :param data: Fitting data to be explored
-        :type data: FittingData
-        :param app: Toga application reference
-        :type app: toga.App
-        :param font_size: Font to be used in window
-        :type font_size: FontSize
-        """
+    def __init__(self, data, app=None, font_size=FontSize.DEFAULT):
+        """Initialize window."""
         super().__init__(size=EXPLORE_WINDOW_SIZE)
         self.app = app
         self.data = data
@@ -79,12 +63,7 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
             self.error_dialog(title="Explore error", message=str(error))
 
     def plot(self):
-        """
-        Plot figure to figure box.
-
-        :return: Figure of all plots
-        :rtype: Figure
-        """
+        """Plot figure to figure box."""
         kwargs = self.plot_configuration_box.get_plot_kwargs()
         legend = kwargs.pop("legend")
         xmin, xmax = kwargs.pop("xmin"), kwargs.pop("xmax")
@@ -101,13 +80,8 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
         add_legend(ax, legend and plot_added)
         return figure
 
-    def update_parameters_options_boxes(self, parameters_box: ParametersOptionsBox):
-        """
-        Update parameters box according to fitting functions selection.
-
-        :param parameters_box: Parameters options box to be updated
-        :type parameters_box: ParametersOptionsBox
-        """
+    def update_parameters_options_boxes(self, parameters_box):
+        """Update parameters box according to fitting functions selection."""
         if (
             parameters_box.fitting_function is None
             and len(self.parameters_options_boxes.children) > 1  # noqa: W503
@@ -125,10 +99,5 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
 
     @classmethod
     def build_parameters_options_box(cls):
-        """
-        Build new options box.
-
-        :return: New parameters option box
-        :rtype: ParametersOptionsBox
-        """
+        """Build new options box."""
         return ParametersOptionsBox()

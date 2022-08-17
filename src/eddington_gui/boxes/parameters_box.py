@@ -12,7 +12,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import SMALL_INPUT_WIDTH, FontSize
 
 
-class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
+class ParametersBox(LineBox):
     """Visual box for specifying parameters."""
 
     parameters_inputs: List[EddingtonBox]
@@ -94,7 +94,7 @@ class ParametersBox(LineBox):  # pylint: disable=too-many-instance-attributes
 
     def reset_initial_guess(self):
         """Reset the parameters."""
-        self.a0 = None  # pylint: disable=invalid-name
+        self.a0 = None
 
     def set_font_size(self, font_size: FontSize):
         """Override the set font size method to include all labels in text inputs."""

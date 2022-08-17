@@ -10,7 +10,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import LOGO_SIZE
 
 
-class HeaderBox(LineBox):  # pylint: disable=too-few-public-methods
+class HeaderBox(LineBox):
     """
     Header box of the app.
 

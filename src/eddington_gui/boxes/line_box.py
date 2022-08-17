@@ -6,7 +6,7 @@ from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.consts import LINE_HEIGHT, SMALL_PADDING
 
 
-class LineBox(EddingtonBox):  # pylint: disable=too-few-public-methods
+class LineBox(EddingtonBox):
     """Visual box representing a horizontal row."""
 
     def __init__(

@@ -9,7 +9,7 @@ from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.consts import FOOTER_FONT_FAMILY, SMALL_FONT_SIZE
 
 
-class FooterBox(LineBox):  # pylint: disable=too-few-public-methods
+class FooterBox(LineBox):
     """
     Header box of the app.
 
