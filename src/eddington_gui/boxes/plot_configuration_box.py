@@ -276,8 +276,10 @@ class PlotConfigurationBox(EddingtonBox):
         return figure_builder
 
     def on_draw(self, chart, figure, *args, **kwargs):
+        if not isinstance(figure, Figure):
+            figure = Figure(figure)
         figure_builder = self.build_figure_builder()
-        figure_builder.build(Figure(figure))
+        figure_builder.build(figure)
         self.set_scale(figure)
 
     def __add_column_option(self, label, *additional_widgets):

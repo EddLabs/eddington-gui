@@ -1,7 +1,7 @@
 """Module for the explore window."""
 import toga
-from eddington import EddingtonException, plot_data
-from eddington.plot.plot_legacy import add_legend, get_plot_borders
+from eddington import FigureBuilder
+from eddington.interval import Interval
 from toga.style import Pack
 from travertino.constants import COLUMN
 
@@ -27,7 +27,10 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
             children=[self.build_parameters_options_box()], style=Pack(direction=COLUMN)
         )
         self.plot_configuration_box = PlotConfigurationBox(
-            plot_method=None, suffix="Explore"
+            additional_instructions=self.additional_plot_instructions, suffix="Explore"
+        )
+        self.figure_box = FigureBox(
+            on_draw=self.plot_configuration_box.on_draw, width=int(window_width * 0.5)
         )
         self.controls_box = EddingtonBox(
             children=[
@@ -36,49 +39,23 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
                 self.plot_configuration_box,
                 EddingtonBox(
                     children=[
-                        toga.Button("Refresh", on_press=lambda widget: self.draw()),
-                        SaveFigureButton("Save", plot_method=self.plot),
+                        toga.Button("Refresh", on_press=self.refresh),
+                        SaveFigureButton(
+                            "Save", on_draw=self.plot_configuration_box.on_draw
+                        ),
                     ]
                 ),
             ],
             style=Pack(direction=COLUMN),
         )
-        self.figure_box = FigureBox(self.plot, width=int(window_width * 0.5))
         self.content = toga.SplitContainer(content=[self.controls_box, self.figure_box])
 
         self.update_font_size()
-
-        self.draw()
 
     def update_font_size(self):
         """Update font size of the window components."""
         self.controls_box.set_font_size(self.font_size)
         self.figure_box.set_font_size(self.font_size)
-
-    def draw(self):
-        """Draw the figure."""
-        try:
-            self.figure_box.draw()
-        except EddingtonException as error:
-            self.error_dialog(title="Explore error", message=str(error))
-
-    def plot(self):
-        """Plot figure to figure box."""
-        kwargs = self.plot_configuration_box.get_plot_kwargs()
-        legend = kwargs.pop("legend")
-        xmin, xmax = kwargs.pop("xmin"), kwargs.pop("xmax")
-        xmin, xmax = get_plot_borders(x=self.data.x, xmin=xmin, xmax=xmax)
-        figure = plot_data(  # pylint: disable=repeated-keyword
-            self.data, xmin=xmin, xmax=xmax, **kwargs
-        )
-        ax = figure.get_axes()[0]  # pylint: disable=invalid-name
-        step = (xmax - xmin) * 0.001
-        plot_added = False
-        for parameters_options_box in self.parameters_options_boxes.children[:-1]:
-            parameters_options_box.plot(ax=ax, xmin=xmin, xmax=xmax, step=step)
-            plot_added = plot_added or len(parameters_options_box.a0_values) != 0
-        add_legend(ax, legend and plot_added)
-        return figure
 
     def update_parameters_options_boxes(self, parameters_box):
         """Update parameters box according to fitting functions selection."""
@@ -96,6 +73,26 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
         if self.parameters_options_boxes.children[-1].fitting_function is not None:
             self.parameters_options_boxes.add(self.build_parameters_options_box())
             self.update_font_size()
+
+    def additional_plot_instructions(
+        self, figure_builder: FigureBuilder, interval: Interval
+    ):
+        figure_builder.add_data(data=self.data, label="Data")
+        plot_added = False
+        for parameters_options_box in self.parameters_options_boxes.children[:-1]:
+            for label, a0 in parameters_options_box.a0_values:
+                plot_added = True
+                figure_builder.add_plot(
+                    interval=interval.intersect(self.data.x_domain),
+                    a=a0,
+                    func=parameters_options_box.fitting_function,
+                    label=label,
+                )
+        if plot_added:
+            figure_builder.add_legend()
+
+    def refresh(self, widget):
+        self.figure_box.draw()
 
     @classmethod
     def build_parameters_options_box(cls):

@@ -1,5 +1,5 @@
 """A box displaying a figure."""
-
+from eddington.plot.figure import Figure
 from toga.style import Pack
 from toga_chart import Chart
 from travertino.constants import COLUMN
@@ -15,3 +15,7 @@ class FigureBox(EddingtonBox):
         super().__init__(style=Pack(direction=COLUMN, height=height, width=width))
         self.chart = Chart(on_draw=on_draw)
         self.add(self.chart)
+
+    def draw(self):
+        with Figure() as figure:
+            self.chart.draw(figure)

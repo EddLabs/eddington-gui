@@ -1,5 +1,4 @@
 """Button for saving figures."""
-from pathlib import Path
 
 import toga
 from eddington.plot.figure import Figure
