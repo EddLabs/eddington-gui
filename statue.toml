@@ -161,4 +161,3 @@ contexts = [
 ]
 
 [sources."src/eddington_gui"]
-deny_list = ["darglint"]
