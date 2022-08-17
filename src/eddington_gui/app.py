@@ -452,17 +452,16 @@ class EddingtonGUI(toga.App):
             title="Fit Result", message=str(self.fitting_result)
         )
 
-    def load_module(self, widget):  # pylint: disable=unused-argument
+    async def load_module(self, widget):  # pylint: disable=unused-argument
         """
         Open a file dialog in order to load user module.
 
         This is done in order to add costume fitting functions.
         """
-        try:
-            file_path = self.main_window.open_file_dialog(
-                title="Choose module file", multiselect=False, file_types=["py"]
-            )
-        except ValueError:
+        file_path = await self.main_window.open_file_dialog(
+            title="Choose module file", multiselect=False, file_types=["py"]
+        )
+        if file_path is None:
             return
         spec = importlib.util.spec_from_file_location("eddington.dummy", file_path)
         dummy_module = importlib.util.module_from_spec(spec)

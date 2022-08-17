@@ -116,15 +116,12 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         """on_input_file_change setter."""
         self.__on_input_file_change = on_input_data_change
 
-    def select_file(self, widget):  # pylint: disable=unused-argument
+    async def select_file(self, widget):  # pylint: disable=unused-argument
         """Open file selection dialog."""
-        try:
-            input_file_path = Path(
-                self.window.open_file_dialog(
-                    title="Choose input file", multiselect=False
-                )
-            )
-        except ValueError:
+        input_file_path = await self.window.open_file_dialog(
+            title="Choose input file", multiselect=False
+        )
+        if input_file_path is None:
             return
         self.file_path = input_file_path
         suffix = input_file_path.suffix

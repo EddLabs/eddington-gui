@@ -41,10 +41,7 @@ class OutputBox(LineBox):
         """Setter of the output directory."""
         self.output_directory_input.value = output_directory
 
-    def choose_output_dir(self, widget):  # pylint: disable=unused-argument
+    async def choose_output_dir(self, widget):  # pylint: disable=unused-argument
         """Open output directory choice dialog."""
-        try:
-            folder_path = self.window.select_folder_dialog(title="Output directory")
-        except ValueError:
-            return
-        self.output_directory = folder_path[0]
+        folder_path = await self.window.select_folder_dialog(title="Output directory")
+        self.output_directory = folder_path
