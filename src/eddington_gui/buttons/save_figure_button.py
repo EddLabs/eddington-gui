@@ -10,20 +10,17 @@ class SaveFigureButton(toga.Button):
 
     def __init__(self, label, on_draw):
         """Initialize button."""
-        super().__init__(label=label, on_press=lambda widget: self.save_figure())
+        super().__init__(label=label, on_press=self.save_figure)
         self.on_draw = on_draw
 
-    def save_figure(self):
+    async def save_figure(self, widget):
         """Save file dialog."""
-        try:
-            output_path = Path(
-                self.window.save_file_dialog(
-                    title="Save Figure",
-                    suggested_filename="fig",
-                    file_types=["png", "jpg", "pdf"],
-                )
-            )
-        except ValueError:
+        output_path = await self.window.save_file_dialog(
+            title="Save Figure",
+            suggested_filename="fig",
+            file_types=["png", "jpg", "pdf"],
+        )
+        if output_path is None:
             return
 
         suffix = output_path.suffix
