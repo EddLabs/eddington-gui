@@ -81,13 +81,13 @@ class ParametersOptionsBox(EddingtonBox):
         self.remove_parameters_button.enabled = number_of_parameters_box > 1
         self.add_parameters_button.enabled = self.fitting_function is not None
 
-    def plot(self, ax, xmin, xmax, step):  # pylint: disable=invalid-name
+    def plot(self, ax, xmin, xmax, step):
         """Plot all the different parameter options."""
-        x = np.arange(xmin, xmax, step=step)  # pylint: disable=invalid-name
+        x = np.arange(xmin, xmax, step=step)
         a0_values = self.a0_values
         if len(a0_values) == 0:
             return
-        for label, a0 in a0_values:  # pylint: disable=invalid-name
+        for label, a0 in a0_values:
             if label == "":
                 label = ", ".join(f"a[{i}]={val}" for i, val in enumerate(a0))
             add_plot(
@@ -98,12 +98,12 @@ class ParametersOptionsBox(EddingtonBox):
             )
 
     @property
-    def n(self):  # pylint: disable=invalid-name
+    def n(self):
         """Get the number of parameters from the fitting function box."""
         return 0 if self.fitting_function is None else self.fitting_function.n
 
     @n.setter
-    def n(self, n):  # pylint: disable=invalid-name
+    def n(self, n):
         for child in self.parameters_boxes.children:
             child.n = n
         if n == 0:
