@@ -71,7 +71,7 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
         figure = plot_data(  # pylint: disable=repeated-keyword
             self.data, xmin=xmin, xmax=xmax, **kwargs
         )
-        ax = figure.get_axes()[0]  # pylint: disable=invalid-name
+        ax = figure.get_axes()[0]
         step = (xmax - xmin) * 0.001
         plot_added = False
         for parameters_options_box in self.parameters_options_boxes.children[:-1]:
