@@ -12,7 +12,7 @@ class SaveFigureButton(toga.Button):
         super().__init__(label=label, on_press=self.save_figure)
         self.on_draw = on_draw
 
-    async def save_figure(self, widget):
+    async def save_figure(self, widget):  # pylint: disable=unused-argument
         """Save file dialog."""
         output_path = await self.window.save_file_dialog(
             title="Save Figure",

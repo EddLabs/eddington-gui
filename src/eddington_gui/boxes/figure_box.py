@@ -17,5 +17,6 @@ class FigureBox(EddingtonBox):
         self.add(self.chart)
 
     def draw(self):
+        """Draw figure in the figure box."""
         with Figure() as figure:
             self.chart.draw(figure)

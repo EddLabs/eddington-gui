@@ -77,6 +77,7 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
     def additional_plot_instructions(
         self, figure_builder: FigureBuilder, interval: Interval
     ):
+        """Plot data and fittings in figure box."""
         figure_builder.add_data(data=self.data, label="Data")
         plot_added = False
         for parameters_options_box in self.parameters_options_boxes.children[:-1]:
@@ -91,7 +92,8 @@ class ExploreWindow(toga.Window):  # pylint: disable=too-many-instance-attribute
         if plot_added:
             figure_builder.add_legend()
 
-    def refresh(self, widget):
+    def refresh(self, widget):  # pylint: disable=unused-argument
+        """Refresh drawing in figure box."""
         self.figure_box.draw()
 
     @classmethod

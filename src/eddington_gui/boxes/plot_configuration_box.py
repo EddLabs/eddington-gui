@@ -1,4 +1,4 @@
-# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 """Box for setting up plot configuration for the output graphs."""
 from typing import Optional
 
@@ -177,6 +177,7 @@ class PlotConfigurationBox(EddingtonBox):
 
     @property
     def interval(self):
+        """Get data interval from the user."""
         return Interval(min_val=self.xmin, max_val=self.xmax)
 
     def get_plot_kwargs(self):
@@ -261,6 +262,7 @@ class PlotConfigurationBox(EddingtonBox):
         self.__y_log_scale.toggle()
 
     def build_figure_builder(self):
+        """Build FigureBuilder to use when drawing."""
         figure_builder = FigureBuilder()
         if self.title is not None:
             figure_builder.add_title(self.title)
@@ -275,7 +277,10 @@ class PlotConfigurationBox(EddingtonBox):
         self.additional_instructions(figure_builder, self.interval)
         return figure_builder
 
-    def on_draw(self, chart, figure, *args, **kwargs):
+    def on_draw(
+        self, chart, figure, *args, **kwargs
+    ):  # pylint: disable=unused-argument
+        """Draw on figure using the figure builder."""
         if not isinstance(figure, Figure):
             figure = Figure(figure)
         figure_builder = self.build_figure_builder()

@@ -419,12 +419,16 @@ class EddingtonGUI(toga.App):
             and self.__has_data()  # noqa: W503
         )
 
-    def plot_data_instructions(self, figure_builder: FigureBuilder, interval: Interval):
+    def plot_data_instructions(
+        self, figure_builder: FigureBuilder, interval: Interval
+    ):  # pylint: disable=unused-argument
+        """Instruction for plotting data."""
         figure_builder.add_data(data=self.data_columns_box.fitting_data, label="Data")
 
     def plot_initial_guess_instructions(
         self, figure_builder: FigureBuilder, interval: Interval
     ):
+        """Instruction for plotting initial guess."""
         figure_builder.add_plot(
             interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
             func=self.fitting_function_box.fitting_function,
@@ -435,6 +439,7 @@ class EddingtonGUI(toga.App):
     def plot_fitting_instructions(
         self, figure_builder: FigureBuilder, interval: Interval
     ):
+        """Instruction for plotting fitting."""
         figure_builder.add_plot(
             interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
             func=self.fitting_function_box.fitting_function,
@@ -442,10 +447,11 @@ class EddingtonGUI(toga.App):
             label="Fitting",
         )
 
-    def plot_residuals_instructions(
+    def plot_residuals_instructions(  # pylint: disable=unused-argument
         self, figure_builder: FigureBuilder, interval: Interval
     ):
-        y = self.fitting_function_box.fitting_function(
+        """Instruction for plotting residuals."""
+        y = self.fitting_function_box.fitting_function(  # pylint: disable=not-callable
             self.fitting_result.a, self.data_columns_box.fitting_data.x
         )
         figure_builder.add_error_bar(
