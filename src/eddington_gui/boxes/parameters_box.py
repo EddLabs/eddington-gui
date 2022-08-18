@@ -27,7 +27,7 @@ class ParametersBox(LineBox):
         self.__n = None
         self.on_parameters_change = on_parameters_change
         self.n = n  # pylint: disable=invalid-name
-        self.a0 = None  # pylint: disable=invalid-name
+        self.a0 = None
 
     @property
     def n(self):  # pylint: disable=invalid-name
@@ -51,14 +51,14 @@ class ParametersBox(LineBox):
                 self.remove(self.parameters_inputs[i])
 
     @property
-    def a0(self):  # pylint: disable=invalid-name
+    def a0(self):
         """Getter of the parameters."""
         if self.__a0 is None:
             self.__calculate_a0()
         return self.__a0
 
     @a0.setter
-    def a0(self, a0):  # pylint: disable=invalid-name
+    def a0(self, a0):
         """
         Setter of the parameters.
 
