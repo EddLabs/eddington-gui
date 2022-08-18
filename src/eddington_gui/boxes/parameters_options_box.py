@@ -80,12 +80,12 @@ class ParametersOptionsBox(EddingtonBox):
         self.add_parameters_button.enabled = self.fitting_function is not None
 
     @property
-    def n(self):  # pylint: disable=invalid-name
+    def n(self):
         """Get the number of parameters from the fitting function box."""
         return 0 if self.fitting_function is None else self.fitting_function.n
 
     @n.setter
-    def n(self, n):  # pylint: disable=invalid-name
+    def n(self, n):
         for child in self.parameters_boxes.children:
             child.n = n
         if n == 0:

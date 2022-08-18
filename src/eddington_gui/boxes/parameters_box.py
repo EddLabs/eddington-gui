@@ -26,16 +26,16 @@ class ParametersBox(LineBox):
         super().__init__(font_size=font_size)
         self.__n = None
         self.on_parameters_change = on_parameters_change
-        self.n = n  # pylint: disable=invalid-name
-        self.a0 = None  # pylint: disable=invalid-name
+        self.n = n
+        self.a0 = None
 
     @property
-    def n(self):  # pylint: disable=invalid-name
+    def n(self):
         """Getter of the expected number of parameters."""
         return self.__n
 
     @n.setter
-    def n(self, n):  # pylint: disable=invalid-name
+    def n(self, n):
         """Setter of the expected number of parameters."""
         self.reset_initial_guess()
         old_n = 0 if self.__n is None else self.__n
@@ -51,14 +51,14 @@ class ParametersBox(LineBox):
                 self.remove(self.parameters_inputs[i])
 
     @property
-    def a0(self):  # pylint: disable=invalid-name
+    def a0(self):
         """Getter of the parameters."""
         if self.__a0 is None:
             self.__calculate_a0()
         return self.__a0
 
     @a0.setter
-    def a0(self, a0):  # pylint: disable=invalid-name
+    def a0(self, a0):
         """
         Setter of the parameters.
 
