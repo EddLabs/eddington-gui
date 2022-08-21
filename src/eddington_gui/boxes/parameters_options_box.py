@@ -1,7 +1,5 @@
 """Parameters box for multiple parameters options."""
-import numpy as np
 import toga
-from eddington import add_plot
 from toga.style import Pack
 from travertino.constants import BOLD, COLUMN
 
@@ -80,22 +78,6 @@ class ParametersOptionsBox(EddingtonBox):
         number_of_parameters_box = len(self.parameters_boxes.children)
         self.remove_parameters_button.enabled = number_of_parameters_box > 1
         self.add_parameters_button.enabled = self.fitting_function is not None
-
-    def plot(self, ax, xmin, xmax, step):
-        """Plot all the different parameter options."""
-        x = np.arange(xmin, xmax, step=step)
-        a0_values = self.a0_values
-        if len(a0_values) == 0:
-            return
-        for label, a0 in a0_values:
-            if label == "":
-                label = ", ".join(f"a[{i}]={val}" for i, val in enumerate(a0))
-            add_plot(
-                ax,
-                x,
-                self.fitting_function(a0, x),
-                label=label,
-            )
 
     @property
     def n(self):
