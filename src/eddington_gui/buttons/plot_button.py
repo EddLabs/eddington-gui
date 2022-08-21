@@ -8,11 +8,10 @@ class PlotButton(toga.Button):
     """Plot button."""
 
     def __init__(  # pylint: disable=too-many-arguments
-        self, label, can_plot, on_draw, plot_title, app=None
+        self, label, can_plot, on_draw, plot_title
     ):
         """Initialize button."""
         super().__init__(label=label, on_press=lambda widget: self.plot())
-        self.app = app
         self.can_plot = can_plot
         self.plot_title = plot_title
         self.on_draw = on_draw
