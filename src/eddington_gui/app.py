@@ -1,4 +1,3 @@
-# pylint: disable=too-many-instance-attributes,too-many-public-methods
 """Main app."""
 import webbrowser
 from typing import Callable, Dict, Optional

@@ -7,9 +7,7 @@ from eddington import EddingtonException
 class PlotButton(toga.Button):
     """Plot button."""
 
-    def __init__(  # pylint: disable=too-many-arguments
-        self, text, can_plot, on_draw, plot_title
-    ):
+    def __init__(self, text, can_plot, on_draw, plot_title):
         """Initialize button."""
         super().__init__(text=text, on_press=lambda widget: self.plot())
         self.can_plot = can_plot

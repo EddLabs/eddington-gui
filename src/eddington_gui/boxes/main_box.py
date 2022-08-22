@@ -1,3 +1,5 @@
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
+"""Main Eddington box."""
 import importlib
 from pathlib import Path
 from typing import Optional, Union
@@ -34,6 +36,7 @@ from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
 
 class MainBox(EddingtonBox):
+    """Class representing the main box of the application."""
 
     input_file_box: InputFileBox
     fitting_function_box: FittingFunctionBox
@@ -46,7 +49,8 @@ class MainBox(EddingtonBox):
     __fitting_result: Optional[FittingResult] = None
 
     def __init__(self):
-        super(MainBox, self).__init__(style=Pack(direction=COLUMN))
+        """Constructor."""
+        super().__init__(style=Pack(direction=COLUMN))
 
         self.add(HeaderBox())
         self.input_file_box = InputFileBox(on_choose_record=self.choose_records)
