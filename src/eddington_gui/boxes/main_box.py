@@ -242,9 +242,10 @@ class MainBox(EddingtonBox):
             return
         window = RecordsChoiceWindow(
             fitting_data=self.data_columns_box.fitting_data,
-            font_size=self.__font_size,
-            app=self.app,
+            font_size=self.font_size,
+            on_change=self.reset_fitting_result,
         )
+        window.app = self.app
         window.show()
 
     def can_plot_fit(self):

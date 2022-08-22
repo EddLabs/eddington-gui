@@ -31,10 +31,16 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
     __statistics_labels: Dict[Tuple[str, str], toga.Label]
     __update_on_check: bool
 
-    def __init__(self, fitting_data: FittingData, font_size: FontSize, app: toga.App):
+    def __init__(
+        self,
+        fitting_data: FittingData,
+        font_size: FontSize,
+        on_change: Callable[[], None],
+    ):
         """Initialize window."""
         super().__init__(title="Choose Records", size=RECORD_WINDOW_SIZE)
         self.__fitting_data = fitting_data
+        self.on_change = on_change
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         statistics_box = toga.Box()
@@ -56,17 +62,17 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         self.__checkboxes = [
             toga.Switch(
                 text="",
-                is_on=fitting_data.is_selected(i),
+                value=fitting_data.is_selected(i),
                 on_change=self.select_records,
                 style=Pack(
                     height=LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
                 ),
             )
-            for i in range(1, fitting_data.length + 1)
+            for i in range(1, fitting_data.number_of_records + 1)
         ]
         self.__all_checkbox = toga.Switch(
             text="",
-            is_on=self.are_all_selected(),
+            value=self.are_all_selected(),
             on_change=self.select_all,
             style=Pack(height=TITLES_LINE_HEIGHT, font_size=font_size_value),
         )
@@ -176,7 +182,6 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         )
         scroller = toga.ScrollContainer(content=main_box)
         self.content = scroller
-        self.app = app
 
         self.update()
 
@@ -184,24 +189,24 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         """Set selected records to fitting data."""
         if not self.__update_on_check:
             return
-        for i in range(self.__fitting_data.length):
-            if self.__checkboxes[i].is_on:
+        for i in range(self.__fitting_data.number_of_records):
+            if self.__checkboxes[i].value:
                 self.__fitting_data.select_record(i + 1)
             else:
                 self.__fitting_data.unselect_record(i + 1)
-        self.__all_checkbox.is_on = self.are_all_selected()
+        self.__all_checkbox.value = self.are_all_selected()
         self.update()
 
     def select_all(self, widget):  # pylint: disable=unused-argument
         """Select/Deselect all records to fitting data."""
         self.__update_on_check = False
-        if self.__all_checkbox.is_on:
+        if self.__all_checkbox.value:
             for checkbox in self.__checkboxes:
-                checkbox.is_on = True
+                checkbox.value = True
             self.__fitting_data.select_all_records()
         elif self.are_all_selected():
             for checkbox in self.__checkboxes:
-                checkbox.is_on = False
+                checkbox.value = False
             self.__fitting_data.unselect_all_records()
         self.__update_on_check = True
         self.update()
@@ -210,7 +215,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         """Update all needed fields after setting/unsetting records."""
         self.update_selected_label()
         self.update_statistics()
-        self.app.reset_fitting_result()
+        self.on_change()
 
     def update_selected_label(self):
         """Update number of selected records label."""
@@ -229,4 +234,4 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
 
     def are_all_selected(self):
         """Informs whether all records are selected."""
-        return all(checkbox.is_on for checkbox in self.__checkboxes)
+        return all(checkbox.value for checkbox in self.__checkboxes)
