@@ -283,6 +283,7 @@ class MainBox(EddingtonBox):
         self, figure_builder: FigureBuilder, interval: Interval
     ):
         """Instruction for plotting initial guess."""
+        figure_builder.add_data(data=self.data_columns_box.fitting_data, label="Data")
         figure_builder.add_plot(
             interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
             func=self.fitting_function_box.fitting_function,
@@ -294,6 +295,7 @@ class MainBox(EddingtonBox):
         self, figure_builder: FigureBuilder, interval: Interval
     ):
         """Instruction for plotting fitting."""
+        figure_builder.add_data(data=self.data_columns_box.fitting_data, label="Data")
         figure_builder.add_plot(
             interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
             func=self.fitting_function_box.fitting_function,
