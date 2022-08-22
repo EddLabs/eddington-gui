@@ -55,9 +55,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         }
         self.__checkboxes = [
             toga.Switch(
-                label="",
+                text="",
                 is_on=fitting_data.is_selected(i),
-                on_toggle=self.select_records,
+                on_change=self.select_records,
                 style=Pack(
                     height=LINE_HEIGHT, width=COLUMN_WIDTH, font_size=font_size_value
                 ),
@@ -65,9 +65,9 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
             for i in range(1, fitting_data.length + 1)
         ]
         self.__all_checkbox = toga.Switch(
-            label="",
+            text="",
             is_on=self.are_all_selected(),
-            on_toggle=self.select_all,
+            on_change=self.select_all,
             style=Pack(height=TITLES_LINE_HEIGHT, font_size=font_size_value),
         )
         self.__selected_records_label = toga.Label(
@@ -171,7 +171,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         main_box.add(statistics_box)
         main_box.add(
             LineBox(
-                children=[toga.Button(label="Close", on_press=lambda _: self.close())],
+                children=[toga.Button(text="Close", on_press=lambda _: self.close())],
             )
         )
         scroller = toga.ScrollContainer(content=main_box)

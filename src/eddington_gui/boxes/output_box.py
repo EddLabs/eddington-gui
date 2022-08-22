@@ -20,12 +20,12 @@ class OutputBox(LineBox):
             toga.Label(text="Output directory:"),
             self.output_directory_input,
             toga.Button(
-                label="Choose directory",
+                text="Choose directory",
                 on_press=self.choose_output_dir,
                 style=Pack(padding_left=SMALL_PADDING),
             ),
             toga.Button(
-                label="Save",
+                text="Save",
                 on_press=on_save_output,
                 style=Pack(padding_left=SMALL_PADDING, padding_right=SMALL_PADDING),
             ),

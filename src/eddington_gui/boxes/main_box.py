@@ -70,8 +70,8 @@ class MainBox(EddingtonBox):
             on_fitting_function_load=self.on_fitting_function_load
         )
         self.fitting_function_box.add(
-            toga.Button(label="Fit", on_press=self.fit),
-            toga.Button(label="Load module", on_press=self.load_module),
+            toga.Button(text="Fit", on_press=self.fit),
+            toga.Button(text="Load module", on_press=self.load_module),
         )
         self.add(self.fitting_function_box)
 
@@ -84,30 +84,30 @@ class MainBox(EddingtonBox):
         self.plot_boxes = {}
         self.can_plot_map = {}
         self.add_plot_configuration_box(
-            option_label="Data",
-            button_label="Plot data",
+            option_text="Data",
+            button_text="Plot data",
             additional_instructions=self.plot_data_instructions,
             can_plot=self.can_plot_data,
             suffix="Data",
             has_legend=False,
         )
         self.add_plot_configuration_box(
-            option_label="Initial guess",
-            button_label="Plot initial guess",
+            option_text="Initial guess",
+            button_text="Plot initial guess",
             additional_instructions=self.plot_initial_guess_instructions,
             suffix="Initial Guess",
             can_plot=self.can_plot_initial_guess,
         )
         self.add_plot_configuration_box(
-            option_label="Fit",
-            button_label="Plot fit",
+            option_text="Fit",
+            button_text="Plot fit",
             additional_instructions=self.plot_fitting_instructions,
             suffix="Fitting",
             can_plot=self.can_plot_fit,
         )
         self.add_plot_configuration_box(
-            option_label="Residuals",
-            button_label="Plot residuals",
+            option_text="Residuals",
+            button_text="Plot residuals",
             additional_instructions=self.plot_residuals_instructions,
             suffix="Residuals",
             can_plot=self.can_plot_fit,
@@ -138,8 +138,8 @@ class MainBox(EddingtonBox):
 
     def add_plot_configuration_box(  # pylint: disable=too-many-arguments
         self,
-        option_label,
-        button_label,
+        option_text,
+        button_text,
         additional_instructions,
         can_plot,
         suffix,
@@ -153,14 +153,14 @@ class MainBox(EddingtonBox):
         )
         plot_configuration_box.add(
             PlotButton(
-                label=button_label,
+                text=button_text,
                 can_plot=can_plot,
                 on_draw=plot_configuration_box.on_draw,
                 plot_title=suffix,
             )
         )
-        self.plot_boxes[option_label] = plot_configuration_box
-        self.can_plot_map[option_label] = can_plot
+        self.plot_boxes[option_text] = plot_configuration_box
+        self.can_plot_map[option_text] = can_plot
 
     def on_data_columns_change(self, fitting_data):
         """Run those methods when data columns are changed."""

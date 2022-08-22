@@ -7,9 +7,9 @@ from eddington.plot.figure import Figure
 class SaveFigureButton(toga.Button):
     """Button for saving matplotlib figures to file."""
 
-    def __init__(self, label, on_draw):
+    def __init__(self, text, on_draw):
         """Initialize button."""
-        super().__init__(label=label, on_press=self.save_figure)
+        super().__init__(text=text, on_press=self.save_figure)
         self.on_draw = on_draw
 
     async def save_figure(self, widget):  # pylint: disable=unused-argument
