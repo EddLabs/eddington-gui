@@ -11,6 +11,7 @@ from eddington_gui import __version__, has_matplotlib
 from eddington_gui.boxes.figure_box import FigureBox
 from eddington_gui.boxes.main_box import MainBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
+from eddington_gui.boxes.welcome_box import WelcomeBox
 from eddington_gui.buttons.save_figure_button import SaveFigureButton
 from eddington_gui.consts import (
     CHART_HEIGHT_SIZE,
@@ -20,12 +21,12 @@ from eddington_gui.consts import (
     FontSize,
 )
 
-PLOT_GROUP = toga.Group("Plot", order=2)
-
 
 class EddingtonGUI(toga.App):
     """Main app instance."""
 
+    welcome_box: WelcomeBox
+    main_box: MainBox
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
     can_plot_map: Dict[str, Callable[[], bool]]
@@ -42,58 +43,19 @@ class EddingtonGUI(toga.App):
         show the main window.
         """
         self.main_window = toga.Window(title=self.formal_name, size=MAIN_WINDOW_SIZE)
-        self.main_window.content = MainBox()
+        self.welcome_box = WelcomeBox(on_start=self.on_start)
+        self.main_box = MainBox(on_back=self.on_back)
+        self.main_window.content = self.welcome_box
 
         self.check_latest_version()
         self.commands.add(
             # File group
-            toga.Command(
-                self.main_window.content.input_file_box.select_file,
-                label="Upload data file",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-                order=1,
-            ),
-            toga.Command(
-                self.main_window.content.load_module,
-                label="Load module",
-                shortcut=toga.Key.MOD_1 + "m",
-                group=toga.Group.FILE,
-                order=2,
-            ),
-            toga.Command(
-                self.main_window.content.choose_records,
-                label="Choose records",
-                shortcut=toga.Key.MOD_1 + "d",
-                group=toga.Group.FILE,
-                order=3,
-            ),
-            toga.Command(
-                self.main_window.content.output_box.choose_output_dir,
-                label="Choose output directory",
-                shortcut=toga.Key.MOD_1 + "u",
-                group=toga.Group.FILE,
-                order=4,
-            ),
-            toga.Command(
-                self.main_window.content.on_save_output,
-                label="Save plots and results",
-                shortcut=toga.Key.MOD_1 + "s",
-                group=toga.Group.FILE,
-                order=5,
-            ),
             toga.Command(
                 lambda widget: self.open_latest_version_webpage(),
                 label="Install Eddington-GUI latest version",
                 group=toga.Group.FILE,
                 order=6,
                 enabled=self.has_newer_version,
-            ),
-            toga.Command(
-                self.main_window.content.fit,
-                label="Fit result",
-                shortcut=toga.Key.MOD_1 + "e",
-                group=PLOT_GROUP,
             ),
             toga.Command(
                 lambda _: self.set_font_size(FontSize.SMALL),
@@ -156,12 +118,18 @@ class EddingtonGUI(toga.App):
         """URL for frequently asked questions."""
         return f"https://{self.app_name}.readthedocs.io/en/latest/tutorials/faq.html"
 
+    def on_start(self):
+        """Move to main box."""
+        self.main_window.content = self.main_box
+
+    def on_back(self):
+        """Move to welcome box."""
+        self.main_window.content = self.welcome_box
+
     def set_font_size(self, font_size: FontSize):
         """Set font size to all components in app."""
         self.__font_size = font_size
         self.main_window.content.set_font_size(font_size)
-        for plot_box in self.main_window.content.plot_boxes.values():
-            plot_box.set_font_size(font_size)
         self.main_window.content.refresh()
 
     def check_latest_version(self):
