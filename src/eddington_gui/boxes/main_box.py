@@ -307,14 +307,17 @@ class MainBox(EddingtonBox):
         self, figure_builder: FigureBuilder, interval: Interval
     ):
         """Instruction for plotting residuals."""
-        y = self.fitting_function_box.fitting_function(  # pylint: disable=not-callable
-            self.fitting_result.a, self.data_columns_box.fitting_data.x
-        ) - self.data_columns_box.fitting_data.y
+        y = (
+            self.fitting_function_box.fitting_function(  # pylint: disable=not-callable
+                self.fitting_result.a, self.data_columns_box.fitting_data.x
+            )
+            - self.data_columns_box.fitting_data.y
+        )
         figure_builder.add_horizontal_line(
             interval=interval.intersect(self.data_columns_box.fitting_data.x_domain),
             y_value=0,
             linestyle=LineStyle.DASHED,
-            color="black"
+            color="black",
         )
         figure_builder.add_error_bar(
             x=self.data_columns_box.fitting_data.x,
