@@ -54,11 +54,13 @@ class MainBox(EddingtonBox):
         super().__init__(style=Pack(direction=COLUMN))
 
         self.add(HeaderBox())
-        self.input_file_box = InputFileBox(on_choose_record=self.choose_records)
-        self.input_file_box.on_input_file_change = self.reset_fitting_data
-        self.input_file_box.on_csv_read = self.read_csv
-        self.input_file_box.on_excel_read = self.read_excel
-        self.input_file_box.on_select_excel_file = self.select_default_sheet
+        self.input_file_box = InputFileBox(
+            on_choose_records=self.choose_records,
+            on_input_file_change=self.reset_fitting_data,
+            on_csv_read=self.read_csv,
+            on_excel_read=self.read_excel,
+            on_select_excel_file=self.select_default_sheet,
+        )
         self.add(self.input_file_box)
 
         self.data_columns_box = DataColumnsBox(

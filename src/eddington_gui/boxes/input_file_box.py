@@ -1,6 +1,6 @@
 """Box for choosing from which file to load the input data."""
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable
 
 import toga
 from openpyxl import load_workbook
@@ -19,20 +19,22 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
     __sheet_selection: toga.Selection
 
     __sheet_selection_enabled: bool
-    __on_input_file_change: Optional[Callable[[], None]]
 
-    on_csv_read: Optional[Callable]
-    on_excel_read: Optional[Callable]
-    on_select_excel_file: Optional[Callable]
-
-    def __init__(self, on_choose_record):
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        on_choose_records,
+        on_input_file_change: Callable[[], None],
+        on_csv_read: Callable[[Path], None],
+        on_excel_read: Callable[[Path, str], None],
+        on_select_excel_file: Callable[[], None],
+    ):
         """Initialize box."""
         super().__init__()
         self.__sheet_selection_enabled = False
-        self.on_input_file_change = None
-        self.on_csv_read = None
-        self.on_excel_read = None
-        self.on_select_excel_file = None
+        self.on_input_file_change = on_input_file_change
+        self.on_csv_read = on_csv_read
+        self.on_excel_read = on_excel_read
+        self.on_select_excel_file = on_select_excel_file
 
         self.__input_file_path = toga.TextInput(readonly=True, style=Pack(flex=1))
         self.__select_file_button = toga.Button(
@@ -46,7 +48,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.__select_file_button,
             toga.Button(
                 text="Choose records",
-                on_press=on_choose_record,
+                on_press=on_choose_records,
                 style=Pack(padding_left=SMALL_PADDING),
             ),
         )
@@ -71,8 +73,7 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.__input_file_path.value = ""
         else:
             self.__input_file_path.value = str(file_path)
-        if self.on_input_file_change is not None:
-            self.on_input_file_change()
+        self.on_input_file_change()
 
     @property
     def sheets_options(self):
@@ -107,12 +108,12 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
             self.insert(3, self.__sheet_selection)
 
     @property
-    def on_input_file_change(self) -> Optional[Callable]:
+    def on_input_file_change(self) -> Callable[[], None]:
         """on_input_file_change getter."""
         return self.__on_input_file_change
 
     @on_input_file_change.setter
-    def on_input_file_change(self, on_input_data_change):
+    def on_input_file_change(self, on_input_data_change: Callable[[], None]):
         """on_input_file_change setter."""
         self.__on_input_file_change = on_input_data_change
 
@@ -128,13 +129,11 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         if suffix in [".xlsx", ".xls"]:
             excel_file = load_workbook(input_file_path)
             self.sheets_options = [NO_VALUE] + excel_file.sheetnames
-            if self.on_select_excel_file is not None:
-                self.on_select_excel_file()
+            self.on_select_excel_file()
             return
         self.sheets_options = None
         if suffix == ".csv":
-            if self.on_csv_read is not None:
-                self.on_csv_read(input_file_path)
+            self.on_csv_read(input_file_path)
             return
         self.file_path = None
         self.window.error_dialog(
@@ -161,5 +160,4 @@ class InputFileBox(LineBox):  # pylint: disable=too-many-instance-attributes
         if value == NO_VALUE:
             return
         file_path_value = Path(self.file_path)
-        if self.on_excel_read is not None:
-            self.on_excel_read(file_path_value, value)
+        self.on_excel_read(file_path_value, value)
