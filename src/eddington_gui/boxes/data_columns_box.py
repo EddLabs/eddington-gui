@@ -32,16 +32,16 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.on_columns_change = None
 
         self.x_selection = self.__add_column_option(
-            label="X column:", on_select=lambda widget: self.set_columns()
+            text="X column:", on_select=lambda widget: self.set_columns()
         )
         self.xerr_selection = self.__add_column_option(
-            label="X error column:", on_select=lambda widget: self.set_columns()
+            text="X error column:", on_select=lambda widget: self.set_columns()
         )
         self.y_selection = self.__add_column_option(
-            label="Y column:", on_select=lambda widget: self.set_columns()
+            text="Y column:", on_select=lambda widget: self.set_columns()
         )
         self.yerr_selection = self.__add_column_option(
-            label="Y error column:", on_select=lambda widget: self.set_columns()
+            text="Y error column:", on_select=lambda widget: self.set_columns()
         )
         self.on_columns_change = on_columns_change
 
@@ -174,9 +174,9 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         """
         self.fitting_data = FittingData.read_from_excel(filepath, sheet)
 
-    def __add_column_option(self, label, on_select):
+    def __add_column_option(self, text, on_select):
 
-        self.add(toga.Label(text=label))
+        self.add(toga.Label(text=text))
         selection = toga.Selection(
             enabled=self.selection_enabled,
             on_select=on_select,

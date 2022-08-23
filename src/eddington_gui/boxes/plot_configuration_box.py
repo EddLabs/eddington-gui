@@ -51,26 +51,26 @@ class PlotConfigurationBox(EddingtonBox):
         self.suffix = suffix
         self.__title_input = self.__add_column_option("Title:")
         self.__x_log_scale = toga.Switch(
-            label="X log scale", style=Pack(padding_left=SMALL_PADDING)
+            text="X log scale", style=Pack(padding_left=SMALL_PADDING)
         )
         self.__y_log_scale = toga.Switch(
-            label="Y log scale", style=Pack(padding_left=SMALL_PADDING)
+            text="Y log scale", style=Pack(padding_left=SMALL_PADDING)
         )
         self.__xlabel_input = self.__add_column_option("X label:", self.__x_log_scale)
         self.__ylabel_input = self.__add_column_option("Y label:", self.__y_log_scale)
 
-        self.__grid_switch = toga.Switch(label="Grid")
+        self.__grid_switch = toga.Switch(text="Grid")
         switches = [self.__grid_switch]
         self.__has_legend = has_legend
         if has_legend:
-            self.__legend_switch = toga.Switch(label="Legend")
+            self.__legend_switch = toga.Switch(text="Legend")
             switches.append(self.__legend_switch)
         else:
             self.__legend_switch = None
         self.add(LineBox(children=switches))
 
         self.__x_domain_switch = toga.Switch(
-            label="Custom X domain", on_toggle=lambda _: self.x_domain_switch_handler()
+            text="Custom X domain", on_change=lambda _: self.x_domain_switch_handler()
         )
         self.__x_min_title = toga.Label("X minimum:", style=Pack(visibility=HIDDEN))
         self.__x_min_input = toga.TextInput(
@@ -134,27 +134,27 @@ class PlotConfigurationBox(EddingtonBox):
     @property
     def grid(self):
         """Should or should not add grid lines to plots."""
-        return self.__grid_switch.is_on
+        return self.__grid_switch.value
 
     @property
     def legend(self):
         """Should or should not add legend to plots."""
-        return self.__legend_switch is not None and self.__legend_switch.is_on
+        return self.__legend_switch is not None and self.__legend_switch.value
 
     @property
     def x_log_scale(self):
         """Is x axis log scale on or off."""
-        return self.__x_log_scale.is_on
+        return self.__x_log_scale.value
 
     @property
     def y_log_scale(self):
         """Is y axis log scale on or off."""
-        return self.__y_log_scale.is_on
+        return self.__y_log_scale.value
 
     @property
     def xmin(self):
         """Get minimum value of X, if presented by user."""
-        if not self.__x_domain_switch.is_on or self.__x_min_input.value == "":
+        if not self.__x_domain_switch.value or self.__x_min_input.value == "":
             return None
         try:
             return float(self.__x_min_input.value)
@@ -166,7 +166,7 @@ class PlotConfigurationBox(EddingtonBox):
     @property
     def xmax(self):
         """Get minimum value of X, if presented by user."""
-        if not self.__x_domain_switch.is_on or self.__x_max_input.value == "":
+        if not self.__x_domain_switch.value or self.__x_max_input.value == "":
             return None
         try:
             return float(self.__x_max_input.value)
@@ -233,7 +233,7 @@ class PlotConfigurationBox(EddingtonBox):
 
     def x_domain_switch_handler(self):
         """Handler to run whenever the custom x domain toggle is switched."""
-        if self.__x_domain_switch.is_on:
+        if self.__x_domain_switch.value:
             self.__x_min_title.style.visibility = VISIBLE
             self.__x_min_input.style.visibility = VISIBLE
             self.__x_max_title.style.visibility = VISIBLE
