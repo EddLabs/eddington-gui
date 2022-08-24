@@ -2,7 +2,7 @@
 """Main Eddington box."""
 import importlib
 from pathlib import Path
-from typing import Optional, Union
+from typing import Callable, Dict, Optional, Union
 
 import numpy as np
 import toga
@@ -24,14 +24,13 @@ from travertino.constants import COLUMN
 from eddington_gui.boxes.data_columns_box import DataColumnsBox
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.fitting_function_box import FittingFunctionBox
-from eddington_gui.boxes.footer_box import FooterBox
-from eddington_gui.boxes.header_box import HeaderBox
 from eddington_gui.boxes.input_file_box import InputFileBox
+from eddington_gui.boxes.line_box import LineBox
 from eddington_gui.boxes.output_box import OutputBox
 from eddington_gui.boxes.parameters_box import ParametersBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
 from eddington_gui.buttons.plot_button import PlotButton
-from eddington_gui.consts import NO_VALUE, SMALL_PADDING
+from eddington_gui.consts import NO_VALUE, SMALL_PADDING, FontSize
 from eddington_gui.window.explore_window import ExploreWindow
 from eddington_gui.window.records_choice_window import RecordsChoiceWindow
 
@@ -49,11 +48,20 @@ class MainBox(EddingtonBox):
     __a0: Optional[np.ndarray] = None
     __fitting_result: Optional[FittingResult] = None
 
-    def __init__(self):
+    def __init__(self, on_back: Callable[[], None]):
         """Constructor."""
+        self.plot_boxes: Dict[str, PlotConfigurationBox] = {}
+        self.can_plot_map: Dict[str, Callable[[], None]] = {}
         super().__init__(style=Pack(direction=COLUMN))
 
-        self.add(HeaderBox())
+        self.add(
+            LineBox(
+                children=[
+                    toga.Button("Back", on_press=lambda _: on_back()),
+                    toga.Box(style=Pack(flex=1)),
+                ]
+            )
+        )
         self.input_file_box = InputFileBox(
             on_choose_records=self.choose_records,
             on_input_file_change=self.reset_fitting_data,
@@ -88,8 +96,6 @@ class MainBox(EddingtonBox):
         self.initial_guess_box.add(toga.Label(text="Initial Guess:"))
         self.add(self.initial_guess_box)
 
-        self.plot_boxes = {}
-        self.can_plot_map = {}
         self.add_plot_configuration_box(
             option_text="Data",
             button_text="Plot data",
@@ -128,8 +134,6 @@ class MainBox(EddingtonBox):
 
         self.output_box = OutputBox(on_save_output=self.on_save_output)
         self.add(self.output_box)
-
-        self.add(FooterBox())
 
     @property
     def fitting_result(self):
@@ -405,6 +409,12 @@ class MainBox(EddingtonBox):
                 ),
             )
             self.input_file_box.file_path = None
+
+    def set_font_size(self, font_size: FontSize):
+        """Set font size."""
+        super().set_font_size(font_size=font_size)
+        for plot_box in self.plot_boxes.values():
+            plot_box.set_font_size(font_size)
 
     def __calculate_fitting_result(self):
         if (
