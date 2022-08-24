@@ -2,7 +2,7 @@
 """Main Eddington box."""
 import importlib
 from pathlib import Path
-from typing import Callable, Optional, Union, Dict
+from typing import Callable, Dict, Optional, Union
 
 import numpy as np
 import toga
