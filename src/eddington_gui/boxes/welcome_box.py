@@ -9,7 +9,7 @@ from travertino.constants import COLUMN, ROW
 
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.footer_box import FooterBox
-from eddington_gui.consts import LOGO_SIZE, FontSize
+from eddington_gui.consts import LOGO_SIZE
 
 
 class WelcomeBox(EddingtonBox):
@@ -57,13 +57,11 @@ class WelcomeBox(EddingtonBox):
                 EddingtonBox(
                     style=Pack(direction=ROW, alignment=CENTER),
                     children=[
-                        toga.Label(
-                            "Welcome to Eddington!"
-                        ),
+                        toga.Label("Welcome to Eddington!"),
                     ],
                 ),
                 EddingtonBox(style=Pack(flex=1)),
                 FooterBox(),
             ],
-            fix_font_size=True
+            fix_font_size=True,
         )
