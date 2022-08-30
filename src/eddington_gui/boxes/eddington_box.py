@@ -9,10 +9,11 @@ class EddingtonBox(toga.Box):
 
     __font_size: FontSize
 
-    def __init__(self, *args, font_size=None, **kwargs):
+    def __init__(self, *args, font_size=None, fix_font_size: bool = False, **kwargs):
         """Initialize box."""
         super().__init__(*args, **kwargs)
         self.font_size = font_size
+        self.fix_font_size = fix_font_size
 
     def set_font_size(self, font_size: FontSize):
         """Set font size and refresh."""
@@ -24,7 +25,7 @@ class EddingtonBox(toga.Box):
         font_size_value = font_size.get_font_size()
         button_height_value = font_size.get_button_height()
         for child in self.children:
-            if isinstance(child, EddingtonBox):
+            if isinstance(child, EddingtonBox) and not child.fix_font_size:
                 child.set_font_size(font_size)
             if isinstance(child, toga.Button):
                 child.style.height = button_height_value
