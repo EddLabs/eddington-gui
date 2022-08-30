@@ -8,6 +8,7 @@ from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
 
 from eddington_gui import __version__, has_matplotlib
+from eddington_gui.app_data import AppData
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.figure_box import FigureBox
 from eddington_gui.boxes.main_box import MainBox
@@ -31,6 +32,7 @@ class EddingtonGUI(toga.App):
     main_window: toga.Window
     plot_boxes: Dict[str, PlotConfigurationBox]
     can_plot_map: Dict[str, Callable[[], bool]]
+    app_data: AppData
 
     __font_size: Optional[FontSize] = None
     __has_newer_version: bool = False
@@ -43,7 +45,9 @@ class EddingtonGUI(toga.App):
         We then create a main window (with a name matching the app), and
         show the main window.
         """
-        self.main_window = toga.Window(title=self.formal_name, size=MAIN_WINDOW_SIZE)
+        self.app_data = AppData(self.name)
+        self.main_window = toga.MainWindow(title=self.formal_name, size=MAIN_WINDOW_SIZE)
+        self.on_exit = self.save_style
         self.welcome_box = WelcomeBox(on_start=self.on_start)
         self.main_box = MainBox(on_back=self.on_back)
         self.main_window.content = self.welcome_box
@@ -77,7 +81,7 @@ class EddingtonGUI(toga.App):
                 order=FontSize.LARGE.value,
             ),
         )
-        self.set_font_size(FontSize.DEFAULT)
+        self.load_style()
         if not has_matplotlib:
             self.main_window.info_dialog(
                 "Error",
@@ -126,6 +130,15 @@ class EddingtonGUI(toga.App):
     def on_back(self):
         """Move to welcome box."""
         self.set_main_window_content(self.welcome_box)
+
+    def save_style(self, app, **kwargs):
+        self.app_data.save_style(font_size=self.__font_size.name)
+        return True
+
+    def load_style(self):
+        style_dict = self.app_data.load_style()
+        font_size = style_dict.get("font_size", FontSize.DEFAULT.name)
+        self.set_font_size(FontSize[font_size])
 
     def set_main_window_content(self, box: EddingtonBox):
         """Set the content of the window as the given box."""

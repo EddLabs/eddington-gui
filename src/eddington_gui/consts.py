@@ -4,6 +4,8 @@ from enum import IntEnum
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style.pack import MONOSPACE
 
+ENCODING = "utf-8"
+
 GITHUB_USER_NAME = "EddLabs"
 
 NO_VALUE = "----------"
