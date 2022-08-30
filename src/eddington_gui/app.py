@@ -128,6 +128,7 @@ class EddingtonGUI(toga.App):
         self.set_main_window_content(self.welcome_box)
 
     def set_main_window_content(self, box: EddingtonBox):
+        """Set the content of the window as the given box."""
         self.main_window.content = box
         self.update_content_font()
 
@@ -165,6 +166,7 @@ class EddingtonGUI(toga.App):
         figure_window.show()
 
     def update_content_font(self):
+        """Update the font of the content widget."""
         self.main_window.content.set_font_size(self.__font_size)
         self.main_window.content.refresh()
 
