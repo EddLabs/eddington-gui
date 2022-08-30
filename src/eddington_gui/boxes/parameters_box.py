@@ -80,7 +80,7 @@ class ParametersBox(LineBox):
 
     def build_parameter_box(self, index):
         """Build a new parameters box."""
-        font_size_value = FontSize.get_font_size(self.font_size)
+        font_size_value = self.font_size.get_font_size()
         return EddingtonBox(
             children=[
                 toga.Label(f"a[{index}]:", style=Pack(font_size=font_size_value)),

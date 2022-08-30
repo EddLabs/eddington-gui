@@ -59,9 +59,7 @@ class WelcomeBox(EddingtonBox):
                     children=[
                         toga.Label(
                             "Welcome to Eddington!",
-                            style=Pack(
-                                font_size=FontSize.get_font_size(FontSize.LARGE)
-                            ),
+                            style=Pack(font_size=FontSize.LARGE.get_font_size()),
                         ),
                     ],
                 ),

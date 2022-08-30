@@ -21,8 +21,8 @@ class EddingtonBox(toga.Box):
             return
         if font_size is None:
             return
-        font_size_value = FontSize.get_font_size(font_size)
-        button_height_value = FontSize.get_button_height(font_size)
+        font_size_value = font_size.get_font_size()
+        button_height_value = font_size.get_button_height()
         for child in self.children:
             if isinstance(child, EddingtonBox):
                 child.set_font_size(font_size)
