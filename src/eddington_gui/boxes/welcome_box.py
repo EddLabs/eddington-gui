@@ -9,7 +9,7 @@ from travertino.constants import COLUMN, ROW
 
 from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.footer_box import FooterBox
-from eddington_gui.consts import LOGO_SIZE, FontSize
+from eddington_gui.consts import LOGO_SIZE
 
 
 class WelcomeBox(EddingtonBox):
@@ -25,19 +25,19 @@ class WelcomeBox(EddingtonBox):
     @classmethod
     def build_left_side(cls, on_start: Callable[[], None]):
         """Build the left side of the welcome box."""
-        return toga.Box(
+        return EddingtonBox(
             style=Pack(flex=1, direction=COLUMN),
             children=[
-                toga.Box(style=Pack(flex=1)),
-                toga.Box(
+                EddingtonBox(style=Pack(flex=1)),
+                EddingtonBox(
                     style=Pack(direction=ROW, alignment=CENTER),
                     children=[
-                        toga.Box(style=Pack(flex=1)),
+                        EddingtonBox(style=Pack(flex=1)),
                         toga.Button("Start", on_press=lambda _: on_start()),
-                        toga.Box(style=Pack(flex=1)),
+                        EddingtonBox(style=Pack(flex=1)),
                     ],
                 ),
-                toga.Box(style=Pack(flex=1)),
+                EddingtonBox(style=Pack(flex=1)),
             ],
         )
 
@@ -46,26 +46,22 @@ class WelcomeBox(EddingtonBox):
         """Build the right side of the welcome box."""
         logo_path = Path(__file__).parent.parent / "resources" / "eddington_gui.png"
         logo = toga.Image(str(logo_path))
-        return toga.Box(
+        return EddingtonBox(
             style=Pack(direction=COLUMN, alignment=CENTER, flex=1),
             children=[
-                toga.Box(style=Pack(flex=1)),
+                EddingtonBox(style=Pack(flex=1)),
                 toga.ImageView(
                     image=logo,
                     style=Pack(height=LOGO_SIZE, width=LOGO_SIZE, alignment=CENTER),
                 ),
-                toga.Box(
+                EddingtonBox(
                     style=Pack(direction=ROW, alignment=CENTER),
                     children=[
-                        toga.Label(
-                            "Welcome to Eddington!",
-                            style=Pack(
-                                font_size=FontSize.get_font_size(FontSize.LARGE)
-                            ),
-                        ),
+                        toga.Label("Welcome to Eddington!"),
                     ],
                 ),
-                toga.Box(style=Pack(flex=1)),
+                EddingtonBox(style=Pack(flex=1)),
                 FooterBox(),
             ],
+            fix_font_size=True,
         )

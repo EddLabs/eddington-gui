@@ -44,7 +44,7 @@ class RecordsChoiceWindow(toga.Window):  # pylint: disable=too-many-instance-att
         main_box = toga.Box(style=Pack(direction=COLUMN))
         data_box = toga.Box()
         statistics_box = toga.Box()
-        font_size_value = FontSize.get_font_size(font_size)
+        font_size_value = font_size.get_font_size()
         self.__update_on_check = True
         self.__statistics_labels = {
             (column, parameter): toga.Label(
