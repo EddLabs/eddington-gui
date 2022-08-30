@@ -8,6 +8,7 @@ from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
 
 from eddington_gui import __version__, has_matplotlib
+from eddington_gui.boxes.eddington_box import EddingtonBox
 from eddington_gui.boxes.figure_box import FigureBox
 from eddington_gui.boxes.main_box import MainBox
 from eddington_gui.boxes.plot_configuration_box import PlotConfigurationBox
@@ -120,17 +121,20 @@ class EddingtonGUI(toga.App):
 
     def on_start(self):
         """Move to main box."""
-        self.main_window.content = self.main_box
+        self.set_main_window_content(self.main_box)
 
     def on_back(self):
         """Move to welcome box."""
-        self.main_window.content = self.welcome_box
+        self.set_main_window_content(self.welcome_box)
+
+    def set_main_window_content(self, box: EddingtonBox):
+        self.main_window.content = box
+        self.update_content_font()
 
     def set_font_size(self, font_size: FontSize):
         """Set font size to all components in app."""
         self.__font_size = font_size
-        self.main_window.content.set_font_size(font_size)
-        self.main_window.content.refresh()
+        self.update_content_font()
 
     def check_latest_version(self):
         """Checker whether a new version of Eddington-GUI is available or not."""
@@ -159,6 +163,10 @@ class EddingtonGUI(toga.App):
         figure_window.app = self.app
         figure_window.content.set_font_size(self.__font_size)
         figure_window.show()
+
+    def update_content_font(self):
+        self.main_window.content.set_font_size(self.__font_size)
+        self.main_window.content.refresh()
 
 
 def main():
