@@ -4,6 +4,11 @@ from enum import IntEnum
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style.pack import MONOSPACE
 
+ENCODING = "utf-8"
+
+DEFAULT_BACKUP_COUNT = 5  # Maximum of 5 backup files
+DEFAULT_MAX_BYTES = 10_000_000  # 10MB
+
 GITHUB_USER_NAME = "EddLabs"
 
 NO_VALUE = "----------"

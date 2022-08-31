@@ -18,9 +18,10 @@ sources = ['src/eddington_gui']
 requires = [
     'toga-chart>=0.1.0',
     'openpyxl>=3.0.5',
-    'eddington==0.0.24.dev1',
+    'eddington==0.0.24.dev2',
     'lastversion>=1.2.4',
     'packaging>=20.8',
+    'platformdirs>=2.5.2'
 ]
 
 
