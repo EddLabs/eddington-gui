@@ -1,5 +1,8 @@
 """Main app."""
+import logging
+import sys
 import webbrowser
+from traceback import format_exception
 from typing import Callable, Dict, Optional
 
 import requests
@@ -22,11 +25,13 @@ from eddington_gui.consts import (
     MAIN_WINDOW_SIZE,
     FontSize,
 )
+from eddington_gui.logging import create_logger, LoggerStream
 
 
 class EddingtonGUI(toga.App):
     """Main app instance."""
 
+    logger: logging.Logger
     welcome_box: WelcomeBox
     main_box: MainBox
     main_window: toga.Window
@@ -46,7 +51,16 @@ class EddingtonGUI(toga.App):
         show the main window.
         """
         self.app_data = AppData(self.name)
-        self.main_window = toga.MainWindow(title=self.formal_name, size=MAIN_WINDOW_SIZE)
+        self.logger = create_logger(
+            name="eddington_gui.app", log_file=self.app_data.log_path
+        )
+        sys.stdout = LoggerStream(self.logger, logging.INFO)
+        sys.stderr = LoggerStream(self.logger, logging.ERROR)
+        sys.excepthook = self.exception_handler
+
+        self.main_window = toga.MainWindow(
+            title=self.formal_name, size=MAIN_WINDOW_SIZE
+        )
         self.on_exit = self.save_style
         self.welcome_box = WelcomeBox(on_start=self.on_start)
         self.main_box = MainBox(on_back=self.on_back)
@@ -182,6 +196,14 @@ class EddingtonGUI(toga.App):
         """Update the font of the content widget."""
         self.main_window.content.set_font_size(self.__font_size)
         self.main_window.content.refresh()
+
+    def exception_handler(self, exc_type, exc_value, exc_traceback):
+        self.logger.fatal("Uncaught exception was raised")
+        self.logger.fatal("".join(format_exception(exc_type, exc_value, exc_traceback)))
+        self.main_window.error_dialog(
+            "Fatal error", "Unhandled error has occurred. Aborting!"
+        )
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 
 def main():
