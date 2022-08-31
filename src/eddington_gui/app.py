@@ -25,7 +25,7 @@ from eddington_gui.consts import (
     MAIN_WINDOW_SIZE,
     FontSize,
 )
-from eddington_gui.logging import create_logger, LoggerStream
+from eddington_gui.logging import LoggerStream, create_logger
 
 
 class EddingtonGUI(toga.App):
