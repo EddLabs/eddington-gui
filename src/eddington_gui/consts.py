@@ -7,7 +7,7 @@ from toga.style.pack import MONOSPACE
 ENCODING = "utf-8"
 
 DEFAULT_BACKUP_COUNT = 5  # Maximum of 5 backup files
-DEFAULT_MAX_BYTES = 1e7  # 10MB
+DEFAULT_MAX_BYTES = 10_000_000  # 10MB
 
 GITHUB_USER_NAME = "EddLabs"
 

@@ -2,7 +2,6 @@
 import logging
 import sys
 import webbrowser
-from traceback import format_exception
 from typing import Callable, Dict, Optional
 
 import requests
@@ -28,7 +27,7 @@ from eddington_gui.consts import (
 from eddington_gui.logging import LoggerStream, create_logger
 
 
-class EddingtonGUI(toga.App):
+class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
     """Main app instance."""
 
     logger: logging.Logger
@@ -56,7 +55,6 @@ class EddingtonGUI(toga.App):
         )
         sys.stdout = LoggerStream(self.logger, logging.INFO)
         sys.stderr = LoggerStream(self.logger, logging.ERROR)
-        sys.excepthook = self.exception_handler
 
         self.main_window = toga.MainWindow(
             title=self.formal_name, size=MAIN_WINDOW_SIZE
@@ -145,11 +143,13 @@ class EddingtonGUI(toga.App):
         """Move to welcome box."""
         self.set_main_window_content(self.welcome_box)
 
-    def save_style(self, app, **kwargs):
+    def save_style(self, app, **kwargs):  # pylint: disable=unused-argument
+        """Save style in application data."""
         self.app_data.save_style(font_size=self.__font_size.name)
         return True
 
     def load_style(self):
+        """Load style from app data."""
         style_dict = self.app_data.load_style()
         font_size = style_dict.get("font_size", FontSize.DEFAULT.name)
         self.set_font_size(FontSize[font_size])
@@ -196,14 +196,6 @@ class EddingtonGUI(toga.App):
         """Update the font of the content widget."""
         self.main_window.content.set_font_size(self.__font_size)
         self.main_window.content.refresh()
-
-    def exception_handler(self, exc_type, exc_value, exc_traceback):
-        self.logger.fatal("Uncaught exception was raised")
-        self.logger.fatal("".join(format_exception(exc_type, exc_value, exc_traceback)))
-        self.main_window.error_dialog(
-            "Fatal error", "Unhandled error has occurred. Aborting!"
-        )
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 
 def main():
