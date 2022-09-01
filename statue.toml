@@ -39,7 +39,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "1.4"
+version = "1.5.3"
 
 [commands.bandit]
 help = "Python security checks tool."
@@ -58,7 +58,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "22.6.0"
+version = "22.8.0"
 
 [commands.black.format]
 clear_args = true
@@ -135,7 +135,7 @@ args = [
     "--enable=useless-suppression,use-symbolic-message-instead",
     "--fail-on=useless-suppression,use-symbolic-message-instead",
 ]
-version = "2.14.5"
+version = "2.15.0"
 
 [commands.pylint.documentation]
 args = [
@@ -161,4 +161,6 @@ contexts = [
 ]
 
 [sources."src/eddington_gui"]
-deny_list = ["darglint"]
+deny_list = [
+    "darglint",
+]
