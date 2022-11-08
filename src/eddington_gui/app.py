@@ -6,6 +6,8 @@ from typing import Callable, Dict, Optional
 
 import requests
 import toga
+from toga.style import Pack
+from travertino.constants import COLUMN
 from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
 
@@ -62,7 +64,8 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
         self.on_exit = self.save_style
         self.welcome_box = WelcomeBox(on_start=self.on_start)
         self.main_box = MainBox(on_back=self.on_back)
-        self.main_window.content = self.welcome_box
+        self.main_window.content = EddingtonBox(style=Pack(direction=COLUMN))
+        self.main_window.content.add(self.welcome_box)
 
         self.check_latest_version()
         self.commands.add(
@@ -156,7 +159,9 @@ class EddingtonGUI(toga.App):  # pylint: disable=too-many-instance-attributes
 
     def set_main_window_content(self, box: EddingtonBox):
         """Set the content of the window as the given box."""
-        self.main_window.content = box
+        for child_box in self.main_window.content.children:
+            self.main_window.content.remove(child_box)
+        self.main_window.content.add(box)
         self.update_content_font()
 
     def set_font_size(self, font_size: FontSize):
