@@ -72,8 +72,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
     @property
     def fitting_function_state(self):
         """Set fit function state."""
-        return self.
-.value
+        return self.fitting_function_selection.value
 
     @property
     def on_fitting_function_load(self) -> Optional[Callable]:
