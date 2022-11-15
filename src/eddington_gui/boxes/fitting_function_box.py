@@ -32,6 +32,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
             on_select=self.load_select_fitting_function_name,
+            style=Pack(flex=1)
         )
         self.fitting_function_syntax = toga.TextInput(
             readonly=True,
@@ -70,7 +71,8 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
     @property
     def fitting_function_state(self):
         """Set fit function state."""
-        return self.fitting_function_selection.value
+        return self.
+.value
 
     @property
     def on_fitting_function_load(self) -> Optional[Callable]:
