@@ -6,10 +6,10 @@ from typing import Callable, Dict, Optional
 
 import requests
 import toga
-from toga.style import Pack
-from travertino.constants import COLUMN
 from lastversion.lastversion import latest
 from packaging.version import parse as parse_version
+from toga.style import Pack
+from travertino.constants import COLUMN
 
 from eddington_gui import __version__, has_matplotlib
 from eddington_gui.app_data import AppData

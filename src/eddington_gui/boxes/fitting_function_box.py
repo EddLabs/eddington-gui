@@ -31,8 +31,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
 
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
-            on_select=self.load_select_fitting_function_name,
-            style=Pack(flex=1)
+            on_select=self.load_select_fitting_function_name, style=Pack(flex=1)
         )
         self.fitting_function_syntax = toga.TextInput(
             readonly=True,
@@ -42,12 +41,12 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
 
         self.polynomial_degree_title = toga.Label("Degree:")
         self.polynomial_degree_input = toga.NumberInput(
-            min_value=1,
-            max_value=5,
-            value=1
+            min_value=1, max_value=5, value=1
         )
         # This function uses self.polynomial_degree_input, so we attach it after the relevant assignment
-        self.polynomial_degree_input.on_change = lambda widget: self.set_polynomial_degree()
+        self.polynomial_degree_input.on_change = (
+            lambda widget: self.set_polynomial_degree()
+        )
 
         self.update_fitting_function_options()
         self.on_fitting_function_load = on_fitting_function_load
