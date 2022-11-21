@@ -180,7 +180,7 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         selection = toga.Selection(
             enabled=self.selection_enabled,
             on_select=on_select,
-            style=Pack(alignment=LEFT),
+            style=Pack(alignment=LEFT, flex=1),
         )
         self.add(selection)
         return selection
