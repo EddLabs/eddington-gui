@@ -44,8 +44,8 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
             min_value=1, max_value=5, value=1
         )
 
-        # This function uses self.polynomial_degree_input, so we
-        # attach it only after the relevant assignment
+        # The lambda function depends on the full initialization of self.polynomial_deree_input,
+        # so we attach the on_change hook only after the self.polynomial_degree_input is initialized
         self.polynomial_degree_input.on_change = (
             lambda widget: self.set_polynomial_degree()
         )
