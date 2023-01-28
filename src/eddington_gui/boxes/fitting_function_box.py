@@ -43,7 +43,9 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
         self.polynomial_degree_input = toga.NumberInput(
             min_value=1, max_value=5, value=1
         )
-        # This function uses self.polynomial_degree_input, so we attach it after the relevant assignment
+
+        # This function uses self.polynomial_degree_input, so we
+        # attach it only after the relevant assignment
         self.polynomial_degree_input.on_change = (
             lambda widget: self.set_polynomial_degree()
         )
