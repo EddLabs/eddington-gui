@@ -39,7 +39,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "1.5.3"
+version = "2.0.1"
 
 [commands.bandit]
 help = "Python security checks tool."
@@ -58,7 +58,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "22.8.0"
+version = "23.1.0"
 
 [commands.black.format]
 clear_args = true
@@ -83,7 +83,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "5.0.4"
+version = "6.0.0"
 
 [commands.isort]
 help = "Tool for sorting and cleaning python imports."
@@ -95,7 +95,7 @@ allowed_contexts = [
     "fast",
     "test",
 ]
-version = "5.10.1"
+version = "5.12.0"
 
 [commands.isort.format]
 args = [
@@ -110,7 +110,7 @@ args = [
 allowed_contexts = [
     "test",
 ]
-version = "0.971"
+version = "1.0.0"
 
 [commands.mypy.strict]
 add_args = [
@@ -125,7 +125,7 @@ args = [
 allowed_contexts = [
     "documentation",
 ]
-version = "6.1.1"
+version = "6.3.0"
 
 [commands.pylint]
 help = "Python code linter"
@@ -135,7 +135,7 @@ args = [
     "--enable=useless-suppression,use-symbolic-message-instead",
     "--fail-on=useless-suppression,use-symbolic-message-instead",
 ]
-version = "2.15.0"
+version = "2.16.2"
 
 [commands.pylint.documentation]
 args = [
