@@ -175,7 +175,6 @@ class DataColumnsBox(LineBox):  # pylint: disable=too-many-instance-attributes
         self.fitting_data = FittingData.read_from_excel(filepath, sheet)
 
     def __add_column_option(self, text, on_select):
-
         self.add(toga.Label(text=text))
         selection = toga.Selection(
             enabled=self.selection_enabled,
