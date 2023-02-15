@@ -16,6 +16,7 @@ Contributors
 * Assaf Zohar
 * Ohad Nir
 * Yuval Bardugo
+* Ron Pelled
 
 Special Thanks
 --------------

@@ -31,7 +31,7 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
 
         self.add(toga.Label(text="Fitting function:"))
         self.fitting_function_selection = toga.Selection(
-            on_select=self.load_select_fitting_function_name,
+            on_select=self.load_select_fitting_function_name, style=Pack(flex=1)
         )
         self.fitting_function_syntax = toga.TextInput(
             readonly=True,
@@ -41,10 +41,14 @@ class FittingFunctionBox(LineBox):  # pylint: disable=too-many-instance-attribut
 
         self.polynomial_degree_title = toga.Label("Degree:")
         self.polynomial_degree_input = toga.NumberInput(
-            min_value=1,
-            max_value=5,
-            value=1,
-            on_change=lambda widget: self.set_polynomial_degree(),
+            min_value=1, max_value=5, value=1
+        )
+
+        # The lambda function depends on the full initialization of
+        # self.polynomial_deree_input, so we attach the on_change hook
+        # only after the self.polynomial_degree_input is initialized
+        self.polynomial_degree_input.on_change = (
+            lambda widget: self.set_polynomial_degree()
         )
 
         self.update_fitting_function_options()
