@@ -182,16 +182,16 @@ class PlotConfigurationBox(EddingtonBox):
 
     def get_plot_kwargs(self):
         """Get plot kwargs from configuration box."""
-        kwargs = dict(
-            title_name=self.title,
-            xlabel=self.xlabel,
-            ylabel=self.ylabel,
-            grid=self.grid,
-            x_log_scale=self.x_log_scale,
-            y_log_scale=self.y_log_scale,
-            xmin=self.xmin,
-            xmax=self.xmax,
-        )
+        kwargs = {
+            "title_name": self.title,
+            "xlabel": self.xlabel,
+            "ylabel": self.ylabel,
+            "grid": self.grid,
+            "x_log_scale": self.x_log_scale,
+            "y_log_scale": self.y_log_scale,
+            "xmin": self.xmin,
+            "xmax": self.xmax,
+        }
         if self.__has_legend:
             kwargs["legend"] = self.legend
         return kwargs
